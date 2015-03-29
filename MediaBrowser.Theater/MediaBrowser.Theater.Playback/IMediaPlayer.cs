@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using MediaBrowser.Model.Dto;
 
 namespace MediaBrowser.Theater.Playback
 {
@@ -8,9 +7,9 @@ namespace MediaBrowser.Theater.Playback
     {
         int Priority { get; }
         string Name { get; }
-        bool CanPlay(Media media);
+        Task<PlayableMedia> GetPlayable(Media media);
         bool PrefersBackgroundPlayback { get; }
-        Task<IPreparedSessions> Prepare(IPlaySequence sequence, CancellationToken cancellationToken);
+        Task<IPreparedSessions> Prepare(IPlaySequence<PlayableMedia> sequence, CancellationToken cancellationToken);
         Task Startup();
         Task Shutdown();
     }

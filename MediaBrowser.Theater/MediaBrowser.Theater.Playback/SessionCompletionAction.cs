@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace MediaBrowser.Theater.Playback
 {
     public struct SessionCompletionAction
@@ -8,7 +10,7 @@ namespace MediaBrowser.Theater.Playback
 
     public static class PlaySequenceNavigationExtensions
     {
-        public static bool MoveNext(this IPlaySequence sequence, SessionCompletionAction action)
+        public static Task<bool> MoveNext<T>(this IPlaySequence<T> sequence, SessionCompletionAction action)
         {
             switch (action.Direction) {
                 case NavigationDirection.Forward:
@@ -19,7 +21,7 @@ namespace MediaBrowser.Theater.Playback
                     return sequence.SkipTo(action.Index);
             }
 
-            return false;
+            return Task.FromResult(false);
         }
     }
 }

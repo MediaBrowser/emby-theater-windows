@@ -1,13 +1,14 @@
 using System;
+using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.Playback
 {
-    public interface IPlaySequence : IDisposable
+    public interface IPlaySequence<out T> : IDisposable
     {
-        Media Current { get; }
+        T Current { get; }
         int CurrentIndex { get; }
-        bool Next();
-        bool Previous();
-        bool SkipTo(int index);
+        Task<bool> Next();
+        Task<bool> Previous();
+        Task<bool> SkipTo(int index);
     }
 }

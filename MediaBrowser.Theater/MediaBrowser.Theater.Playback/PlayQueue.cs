@@ -69,7 +69,7 @@ namespace MediaBrowser.Theater.Playback
             }
         }
 
-        public IPlaySequence GetPlayOrder()
+        public IPlaySequence<Media> GetPlayOrder()
         {
             return new PlaySequence(this, _lock);
         }

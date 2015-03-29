@@ -154,6 +154,7 @@ namespace MediaBrowser.Theater
             Container.RegisterSingle(typeof (IImageManager), typeof (ImageManager));
             //Container.RegisterSingle(typeof (IInternalPlayerWindowManager), typeof (InternalPlayerWindowManager));
             Container.RegisterSingle(typeof (IPlaybackManager), typeof (PlaybackManager));
+            Container.RegisterSingle(typeof (IPlayableMediaBuilder), typeof (PlayableMediaBuilder));
             Container.RegisterSingle(typeof (IUserInputManager), typeof (UserInputManager));
             Container.RegisterSingle(typeof (ICommandManager), typeof (CommandManager));
             Container.RegisterSingle(typeof (ICommandRouter), typeof (CommandRouter));

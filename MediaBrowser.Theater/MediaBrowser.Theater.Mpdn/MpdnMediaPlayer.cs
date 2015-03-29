@@ -25,6 +25,7 @@ namespace MediaBrowser.Theater.Mpdn
         private readonly IEventAggregator _events;
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterApplicationPaths _appPaths;
+        private readonly IPlayableMediaBuilder _playableMediaBuilder;
 
         private IDisposable _player;
         private RemoteClient _api;
@@ -45,21 +46,27 @@ namespace MediaBrowser.Theater.Mpdn
                    media.Item.MediaSources.Any(s => s.Protocol == Model.MediaInfo.MediaProtocol.File && File.Exists(s.Path));
         }
 
+        public Task<PlayableMedia> GetPlayable(Media media)
+        {
+            return _playableMediaBuilder.GetPlayableMedia(media, new MpdnDeviceProfile(), true, CancellationToken.None);
+        }
+
         public bool PrefersBackgroundPlayback
         {
             get { return false; }
         }
 
-        public MpdnMediaPlayer(ILogManager logManager, IWindowManager windowManager, IEventAggregator events, IPlaybackManager playbackManager, ITheaterApplicationPaths appPaths)
+        public MpdnMediaPlayer(ILogManager logManager, IWindowManager windowManager, IEventAggregator events, IPlaybackManager playbackManager, ITheaterApplicationPaths appPaths, IPlayableMediaBuilder playableMediaBuilder)
         {
             _logManager = logManager;
             _windowManager = windowManager;
             _events = events;
             _playbackManager = playbackManager;
             _appPaths = appPaths;
+            _playableMediaBuilder = playableMediaBuilder;
         }
 
-        public Task<IPreparedSessions> Prepare(IPlaySequence sequence, CancellationToken cancellationToken)
+        public Task<IPreparedSessions> Prepare(IPlaySequence<PlayableMedia> sequence, CancellationToken cancellationToken)
         {
             var sessions = new SessionSequence(sequence, _api, cancellationToken, _windowManager, _logManager.GetLogger("MPDN"), _playbackManager);
             return Task.FromResult<IPreparedSessions>(sessions);

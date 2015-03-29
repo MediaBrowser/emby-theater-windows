@@ -23,7 +23,7 @@ namespace MediaBrowser.Theater.MockPlayer
         private static int _counter = 0;
 
         private readonly int _id;
-        private readonly IPlaySequence _sequence;
+        private readonly IPlaySequence<PlayableMedia> _sequence;
         private readonly CancellationToken _cancellationToken;
         private readonly ILogManager _logManager;
         private readonly IWindowManager _windowManager;
@@ -34,7 +34,7 @@ namespace MediaBrowser.Theater.MockPlayer
 
         private volatile Session _session;
 
-        public SessionSequence(IPlaySequence sequence, CancellationToken cancellationToken, ILogManager logManager, IWindowManager windowManager, IEventAggregator events)
+        public SessionSequence(IPlaySequence<PlayableMedia> sequence, CancellationToken cancellationToken, ILogManager logManager, IWindowManager windowManager, IEventAggregator events)
         {
             _id = Interlocked.Increment(ref _counter);
             _sequence = sequence;
@@ -104,7 +104,7 @@ namespace MediaBrowser.Theater.MockPlayer
                 _log.Debug("Starting session sequence {0} playback", _id);
 
                 // keep moving to the next media until the sequence is complete
-                while (_sequence.MoveNext(nextAction)) {
+                while (await _sequence.MoveNext(nextAction)) {
 
                     // don't start a new item if cancellation has been requested
                     if (_cancellationToken.IsCancellationRequested) {
@@ -112,8 +112,7 @@ namespace MediaBrowser.Theater.MockPlayer
                     }
 
                     // create a session for the media
-                    PlayableMedia item = GetPlayableMedia(_sequence.Current);
-                    _session = new Session(item, _cancellationToken, _logManager);
+                    _session = new Session(_sequence.Current, _cancellationToken, _logManager);
 
                     // forward playback events to our own event observable
                     using (_session.Events.Subscribe(status => _status.OnNext(status))) {
@@ -142,14 +141,6 @@ namespace MediaBrowser.Theater.MockPlayer
         public IObservable<PlaybackStatus> Status
         {
             get { return _status; }
-        }
-
-        private PlayableMedia GetPlayableMedia(Media media)
-        {
-            return new PlayableMedia {
-                Media = media,
-                Source = media.Item.MediaSources.First()
-            };
         }
     }
 }

@@ -1,26 +1,26 @@
+using System.Threading.Tasks;
+
 namespace MediaBrowser.Theater.Playback
 {
-    internal class PlayableFilteredPlaySequence : IPlaySequence
+    internal class PlayableFilteredPlaySequence : IPlaySequence<PlayableMedia>
     {
         private readonly IMediaPlayer _player;
-        private readonly IPlaySequence _sequence;
+        private readonly IPlaySequence<Media> _sequence;
 
-        private Media _bootstrap;
+        private PlayableMedia _bootstrap;
         private int? _bootstrapIndex;
 
-        public PlayableFilteredPlaySequence(IPlaySequence sequence, IMediaPlayer player, Media bootstrap = null)
+        public PlayableFilteredPlaySequence(IPlaySequence<Media> sequence, IMediaPlayer player, PlayableMedia bootstrap = null)
         {
             _sequence = sequence;
             _player = player;
             _bootstrap = bootstrap;
-            _bootstrapIndex = bootstrap != null ? (int?)sequence.CurrentIndex : null;
+            _bootstrapIndex = bootstrap != null ? (int?) sequence.CurrentIndex : null;
         }
 
-        public void Dispose()
-        {
-        }
+        public void Dispose() { }
 
-        public Media Current { get; private set; }
+        public PlayableMedia Current { get; private set; }
 
         public int CurrentIndex
         {
@@ -34,7 +34,7 @@ namespace MediaBrowser.Theater.Playback
             }
         }
 
-        public bool Next()
+        public async Task<bool> Next()
         {
             if (_bootstrap != null) {
                 Current = _bootstrap;
@@ -43,12 +43,11 @@ namespace MediaBrowser.Theater.Playback
                 return true;
             }
 
-            bool hasNext = _sequence.Next();
+            bool hasNext = await _sequence.Next();
             if (hasNext) {
-                bool canPlay = _player.CanPlay(_sequence.Current);
-
-                if (canPlay) {
-                    Current = _sequence.Current;
+                var playable = await _player.GetPlayable(_sequence.Current);
+                if (playable != null) {
+                    Current = playable;
                     return true;
                 }
             }
@@ -57,14 +56,13 @@ namespace MediaBrowser.Theater.Playback
             return false;
         }
 
-        public bool Previous()
+        public async Task<bool> Previous()
         {
-            bool hasPrevious = _sequence.Previous();
+            bool hasPrevious = await _sequence.Previous();
             if (hasPrevious) {
-                bool canPlay = _player.CanPlay(_sequence.Current);
-
-                if (canPlay) {
-                    Current = _sequence.Current;
+                var playable = await _player.GetPlayable(_sequence.Current);
+                if (playable != null) {
+                    Current = playable;
                     return true;
                 }
             }
@@ -73,14 +71,13 @@ namespace MediaBrowser.Theater.Playback
             return false;
         }
 
-        public bool SkipTo(int index)
+        public async Task<bool> SkipTo(int index)
         {
-            bool itemExists = _sequence.SkipTo(index);
+            bool itemExists = await _sequence.SkipTo(index);
             if (itemExists) {
-                bool canPlay = _player.CanPlay(_sequence.Current);
-
-                if (canPlay) {
-                    Current = _sequence.Current;
+                var playable = await _player.GetPlayable(_sequence.Current);
+                if (playable != null) {
+                    Current = playable;
                     return true;
                 }
             }

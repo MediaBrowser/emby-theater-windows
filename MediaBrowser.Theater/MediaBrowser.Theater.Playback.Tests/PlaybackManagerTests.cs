@@ -21,9 +21,17 @@ namespace MediaBrowser.Theater.Playback.Tests
         private IMediaPlayer CreateMockPlayer(Func<Media, bool> canPlayPredicate)
         {
             var player = new Mock<IMediaPlayer>();
-            player.Setup(p => p.CanPlay(It.IsAny<Media>())).Returns(canPlayPredicate);
+            player.Setup(p => p.GetPlayable(It.IsAny<Media>())).Returns<Media>(m => {
+                if (canPlayPredicate(m)) {
+                    return Task.FromResult(new PlayableMedia {
+                        Media = m
+                    });
+                }
 
-            player.Setup(p => p.Prepare(It.IsAny<IPlaySequence>(), It.IsAny<CancellationToken>())).Returns((IPlaySequence sequence, CancellationToken token) =>
+                return Task.FromResult<PlayableMedia>(null);
+            });
+
+            player.Setup(p => p.Prepare(It.IsAny<IPlaySequence<PlayableMedia>>(), It.IsAny<CancellationToken>())).Returns((IPlaySequence<PlayableMedia> sequence, CancellationToken token) =>
             {
                 var sessions = new Subject<IPlaybackSession>();
                 var events = new Subject<PlaybackStatus>();
@@ -31,23 +39,23 @@ namespace MediaBrowser.Theater.Playback.Tests
                 var prepared = new Mock<IPreparedSessions>();
                 prepared.Setup(p => p.Sessions).Returns(sessions);
                 prepared.Setup(p => p.Status).Returns(events);
-                prepared.Setup(p => p.Start()).Returns(() => Task.Run(() => {
-                    while (sequence.Next()) {
+                prepared.Setup(p => p.Start()).Returns(() => Task.Run(async () => {
+                    while (await sequence.Next()) {
                         var session = new Mock<IPlaybackSession>();
                         sessions.OnNext(session.Object);
 
                         events.OnNext(new PlaybackStatus {
-                            PlayableMedia = new PlayableMedia { Media = sequence.Current },
+                            PlayableMedia = sequence.Current,
                             StatusType = PlaybackStatusType.Started
                         });
 
                         events.OnNext(new PlaybackStatus {
-                            PlayableMedia = new PlayableMedia { Media = sequence.Current },
+                            PlayableMedia = sequence.Current,
                             StatusType = PlaybackStatusType.Playing
                         });
 
                         events.OnNext(new PlaybackStatus {
-                            PlayableMedia = new PlayableMedia { Media = sequence.Current },
+                            PlayableMedia = sequence.Current,
                             StatusType = PlaybackStatusType.Complete
                         });
                     }

@@ -61,7 +61,7 @@ namespace MediaBrowser.Theater.Playback
         public void StepVolumeDown()
         {
             IsMuted = false;
-            Volume -= 2m;
+            Volume -= 2;
         }
     }
 }

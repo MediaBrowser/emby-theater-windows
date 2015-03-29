@@ -19,7 +19,7 @@
         <controls:ExtendedItemsControl ItemsSource="{Binding Movies}">
             <controls:ExtendedItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Vertical" MaxHeight="750"/>
+                    <WrapPanel Orientation="Vertical" MaxHeight="900"/>
                 </ItemsPanelTemplate>
             </controls:ExtendedItemsControl.ItemsPanel>
         </controls:ExtendedItemsControl>

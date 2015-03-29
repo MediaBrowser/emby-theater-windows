@@ -59,23 +59,22 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
             BrowseMoviesCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters { 
-                    Title = "Browse Movies",
+                    Title = movieFolder.Name,
                     ForceShowItemNames = true,
                     Items = ItemChildren.Get(connectionManager, sessionManager, movieFolder, new ChildrenQueryParams {
                         ExpandSingleItems = true,
-                        ExcludeItemTypes = new[] { "Playlist" }
+                        Recursive = true,
+                        IncludeItemTypes = new[] { "Movie" }
                     })
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));
             });
-
-            PlaylistsCommand = new RelayCommand(arg => {
+            
+            GenresCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters {
-                    Title = "Movie Playlists",
-                    Items = ItemChildren.Get(connectionManager, sessionManager, movieFolder, new ChildrenQueryParams {
-                        IncludeItemTypes = new[] { "Playlist" }
-                    })
+                    Title = "Genres",
+                    Items = connectionManager.GetApiClient(movieFolder).GetGenresAsync(new ItemsByNameQuery { ParentId = movieFolder.Id, UserId = sessionManager.CurrentUser.Id})
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));
@@ -110,7 +109,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         public ImageSlideshowViewModel AllMoviesImagesViewModel { get; private set; }
 
         public ICommand BrowseMoviesCommand { get; private set; }
-        public ICommand PlaylistsCommand { get; private set; }
+        public ICommand GenresCommand { get; private set; }
 
         public string Title { get; set; }
 

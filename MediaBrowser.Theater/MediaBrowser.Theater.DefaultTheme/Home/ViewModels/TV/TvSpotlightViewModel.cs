@@ -58,22 +58,21 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
             AllShowsCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters {
-                    Title = "Browse TV Shows",
-                    Items = ItemChildren.Get(_connectionManager, sessionManager, tvFolder, new ChildrenQueryParams {
+                    Title = tvFolder.Name,
+                    Items = ItemChildren.Get(connectionManager, sessionManager, tvFolder, new ChildrenQueryParams {
                         ExpandSingleItems = true,
-                        ExcludeItemTypes = new[] { "Playlist" }
-                    }),
+                        Recursive = true,
+                        IncludeItemTypes = new[] { "Series" }
+                    })
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));
             });
 
-            PlaylistsCommand = new RelayCommand(arg => {
+            GenresCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters {
-                    Title = "TV Playlists",
-                    Items = ItemChildren.Get(_connectionManager, sessionManager, tvFolder, new ChildrenQueryParams {
-                        IncludeItemTypes = new[] { "Playlist" }
-                    })
+                    Title = "Genres",
+                    Items = connectionManager.GetApiClient(tvFolder).GetGenresAsync(new ItemsByNameQuery { ParentId = tvFolder.Id, UserId = sessionManager.CurrentUser.Id })
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));
@@ -107,9 +106,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         public RangeObservableCollection<ItemTileViewModel> MiniSpotlightItems { get; private set; }
         public ImageSlideshowViewModel AllShowsImagesViewModel { get; private set; }
         public ICommand AllShowsCommand { get; private set; }
-        public ICommand PlaylistsCommand { get; private set; }
-        public ICommand UpcomingCommand { get; private set; }
-
+        public ICommand GenresCommand { get; private set; }
+        
         public string Title { get; private set; }
 
         public string SectionTitle { get; private set; }

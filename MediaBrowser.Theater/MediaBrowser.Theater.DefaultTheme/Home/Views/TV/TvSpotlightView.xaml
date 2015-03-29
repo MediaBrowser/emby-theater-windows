@@ -44,28 +44,15 @@
 
                         <controls:ExtendedContentControl Content="{Binding AllShowsImagesViewModel}"
                                                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                    </controls1:TileButton>                   
+                    </controls1:TileButton>
 
-<!--                    <controls1:TileButton x:Name="UpcommingButton"-->
-<!--                                          Command="{Binding UpcomingCommand}"-->
-<!--                                          Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"-->
-<!--                                          Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">-->
-<!--                        <controls1:TileButton.Header>-->
-<!--                            <TextBlock Text="To Watch Next" Margin="10 5 15 10"-->
-<!--                                       Foreground="{Binding Foreground, ElementName=UpcommingButton}" />-->
-<!--                        </controls1:TileButton.Header>-->
-<!---->
-<!--                        <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/upcomingtv.jpg"-->
-<!--                                Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" />-->
-<!--                    </controls1:TileButton>-->
-
-                    <controls1:TileButton x:Name="PlaylistsButton"
-                                          Command="{Binding PlaylistsCommand}"
+                    <controls1:TileButton x:Name="GenresButton"
+                                          Command="{Binding GenresCommand}"
                                           Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"
                                           Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
                         <controls1:TileButton.Header>
-                            <TextBlock Text="Playlists" Margin="10 5 15 10"
-                                       Foreground="{Binding Foreground, ElementName=PlaylistsButton}" />
+                            <TextBlock Text="Genres" Margin="10 5 15 10"
+                                       Foreground="{Binding Foreground, ElementName=GenresButton}" />
                         </controls1:TileButton.Header>
 
                         <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/moviegenres.jpg"

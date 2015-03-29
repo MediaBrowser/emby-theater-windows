@@ -200,12 +200,11 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 return;
             }
 
+            var currentStreamInfo = _mediaPlayer.CurrentStreamInfo;
+
             var info = new PlaybackProgressInfo
             {
-                //SessionId = _sessionManager
-                //Item = item,
                 ItemId = item.Id,
-                //MediaSourceId = string.Empty,
                 IsMuted = _internalPlaybackManager.IsMuted,
                 IsPaused = _mediaPlayer.PlayState == PlayState.Paused,
                 PositionTicks = _mediaPlayer.CurrentPositionTicks,
@@ -213,14 +212,26 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 AudioStreamIndex = _mediaPlayer.CurrentAudioStreamIndex,
                 SubtitleStreamIndex = _mediaPlayer.CurrentSubtitleStreamIndex,
                 VolumeLevel = (_mediaPlayer.PlayState != PlayState.Idle) ? (int?) _internalPlaybackManager.Volume : null,
-                PlayMethod = PlayMethod.DirectPlay, // todo remove hard coding
+                PlayMethod = currentStreamInfo.PlayMethod
             };
 
             var apiClient = _connectionManager.GetApiClient(item);
 
             try
             {
-                await apiClient.ReportPlaybackProgressAsync(info);
+                // Have to test this for null because external players are currently not supplying this
+                // Also some players will play in contexts not currently supported by common playback managers, e.g. direct play of folder rips, and iso-mounted media
+                // Remove when implemented
+                if (currentStreamInfo != null)
+                {
+                    info.MediaSourceId = currentStreamInfo.MediaSourceId;
+
+                    await _apiPlaybackManager.ReportPlaybackProgress(info, currentStreamInfo, false, apiClient);
+                }
+                else
+                {
+                    await apiClient.ReportPlaybackProgressAsync(info);
+                }
             }
             catch (Exception ex)
             {

@@ -4,13 +4,13 @@
         <id>MediaBrowser.Theater</id>
         <version>3.0.74</version>
         <title>MediaBrowser.Theater</title>
-        <authors>Media Browser Team</authors>
+        <authors>Emby Team</authors>
         <owners>ebr,Luke,scottisafool</owners>
         <projectUrl>https://github.com/MediaBrowser/MediaBrowser.Theater</projectUrl>
         <iconUrl>http://www.mb3admin.com/images/mb3icons1-1.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Contains components required to build plugins for Media Browser Theater.</description>
-        <copyright>Copyright © Media Browser 2013</copyright>
+        <description>Contains components required to build plugins for Emby Theater.</description>
+        <copyright>Copyright © Emby 2013</copyright>
         <dependencies>
             <dependency id="MediaBrowser.Common" version="3.0.239" />
         </dependencies>

@@ -73,6 +73,11 @@ namespace MediaBrowser.Theater.Presentation.Playback
             }
         }
 
+        public Model.Dlna.StreamInfo CurrentStreamInfo
+        {
+            get { return null; }
+        }
+
         /// <summary>
         /// Gets the index of the current playlist.
         /// </summary>

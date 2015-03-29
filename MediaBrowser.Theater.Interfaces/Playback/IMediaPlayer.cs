@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dlna;
+using MediaBrowser.Model.Dto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -48,6 +49,12 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// </summary>
         /// <value>The current media.</value>
         BaseItemDto CurrentMedia { get; }
+
+        /// <summary>
+        /// Gets the current stream information.
+        /// </summary>
+        /// <value>The current stream information.</value>
+        StreamInfo CurrentStreamInfo { get; }
 
         /// <summary>
         /// Gets a value indicating whether this instance can seek.

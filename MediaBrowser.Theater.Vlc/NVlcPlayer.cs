@@ -73,6 +73,11 @@ namespace MediaBrowser.Theater.Vlc
             }
         }
 
+        public Model.Dlna.StreamInfo CurrentStreamInfo
+        {
+            get { return null; }
+        }
+
         public bool RequiresGlobalMouseHook
         {
             get

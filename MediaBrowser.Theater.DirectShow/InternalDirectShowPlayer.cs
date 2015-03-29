@@ -105,6 +105,7 @@ namespace MediaBrowser.Theater.DirectShow
         public int CurrentPlaylistIndex { get; private set; }
 
         public PlayOptions CurrentPlayOptions { get; private set; }
+        public StreamInfo CurrentStreamInfo { get; private set; }
 
         public BaseItemDto CurrentMedia
         {
@@ -274,6 +275,7 @@ namespace MediaBrowser.Theater.DirectShow
         {
             CurrentPlaylistIndex = 0;
             CurrentPlayOptions = options;
+            CurrentStreamInfo = null;
 
             _playlist = options.Items.ToList();
 
@@ -325,6 +327,7 @@ namespace MediaBrowser.Theater.DirectShow
                 throw;
             }
 
+            CurrentStreamInfo = playableItem.StreamInfo;
             CurrentPlaylistIndex = index;
 
             if (startPositionTicks.HasValue && startPositionTicks.Value > 0)

@@ -49,21 +49,21 @@
     <Reference Include="CLAP">
       <HintPath>..\packages\CLAP.4.6\lib\net35\CLAP.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.5563.28320, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.592\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+    <Reference Include="MediaBrowser.ApiInteraction">
+      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.593\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="MediaBrowser.Common, Version=3.0.5563.27699, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.599\lib\net45\MediaBrowser.Common.dll</HintPath>
+    <Reference Include="MediaBrowser.Common">
+      <HintPath>..\packages\MediaBrowser.Common.3.0.603\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="MediaBrowser.Common.Implementations, Version=3.0.5563.27696, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.599\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
+    <Reference Include="MediaBrowser.Common.Implementations">
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.603\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.5563.27700, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.599\lib\net45\MediaBrowser.Model.dll</HintPath>
+    <Reference Include="MediaBrowser.Model">
+      <HintPath>..\packages\MediaBrowser.Common.3.0.603\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -83,9 +83,9 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="ServiceStack.Text, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.599\lib\net45\ServiceStack.Text.dll</HintPath>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.603\lib\net45\ServiceStack.Text.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SimpleInjector, Version=2.7.3.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -336,13 +336,13 @@
     <Content Include="MPDN\MediaPlayerDotNet.exe.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="MPDN\MediaPlayerDotNet_2.22.1.2987.nrmap">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="MPDN\Mpdn.Shaders.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="MPDN\Native\x86\CallbackFilter.ax">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\MediaPlayerDotNet_2.23.3.3003.nrmap">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />

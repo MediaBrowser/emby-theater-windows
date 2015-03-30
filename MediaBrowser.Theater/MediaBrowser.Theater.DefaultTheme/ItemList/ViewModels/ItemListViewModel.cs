@@ -308,13 +308,17 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             await base.Initialize();
         }
 
+        private ItemTileViewModel CreateItemViewModel(BaseItemDto dto)
+        {
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, dto);
+        }
+
         private async Task LoadItems(Task<ItemsResult> itemsTask)
         {
             ItemsResult result = await itemsTask;
             IEnumerable<ItemTileViewModel> viewModels = result.Items.Select(dto => {
-                var vm = new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, dto) {
-                    DesiredImageHeight = ItemHeight
-                };
+                var vm = (_parameters.ViewModelSelector ?? CreateItemViewModel)(dto);
+                vm.DesiredImageHeight = ItemHeight;
 
                 if (_parameters.ForceShowItemNames) {
                     vm.ShowCaptionBar = true;

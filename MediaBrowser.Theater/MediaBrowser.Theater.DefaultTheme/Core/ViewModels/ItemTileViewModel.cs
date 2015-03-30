@@ -25,6 +25,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private readonly IPlaybackManager _playbackManager;
 
         private bool? _showHeader;
+        private ICommand _playCommand;
+        private ICommand _goToDetailsCommand;
+        private ICommand _playTrailerCommand;
 
         public ItemTileViewModel(IConnectionManager connectionManager, IImageManager imageManager,
                                  INavigator navigator, IPlaybackManager playbackManager, BaseItemDto item)
@@ -171,9 +174,44 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         public ItemArtworkViewModel Image { get; private set; }
 
-        public ICommand PlayCommand { get; private set; }
-        public ICommand GoToDetailsCommand { get; private set; }
-        public ICommand PlayTrailerCommand { get; private set; }
+        public ICommand PlayCommand
+        {
+            get { return _playCommand; }
+            set
+            {
+                if (Equals(value, _playCommand)) {
+                    return;
+                }
+                _playCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand GoToDetailsCommand
+        {
+            get { return _goToDetailsCommand; }
+            set
+            {
+                if (Equals(value, _goToDetailsCommand)) {
+                    return;
+                }
+                _goToDetailsCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand PlayTrailerCommand
+        {
+            get { return _playTrailerCommand; }
+            set
+            {
+                if (Equals(value, _playTrailerCommand)) {
+                    return;
+                }
+                _playTrailerCommand = value;
+                OnPropertyChanged();
+            }
+        }
 
         public Size Size
         {

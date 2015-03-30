@@ -1,6 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ItemList
 {
@@ -30,6 +33,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList
         public Task<ItemsResult> Items { get; set; }
         public string Title { get; set; }
         public bool ForceShowItemNames { get; set; }
+        public Func<BaseItemDto, ItemTileViewModel> ViewModelSelector { get; set; }
     }
 
     #endregion

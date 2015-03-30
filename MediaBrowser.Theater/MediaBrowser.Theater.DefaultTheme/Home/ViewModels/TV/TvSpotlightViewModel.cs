@@ -72,7 +72,30 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             GenresCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters {
                     Title = "Genres",
-                    Items = connectionManager.GetApiClient(tvFolder).GetGenresAsync(new ItemsByNameQuery { ParentId = tvFolder.Id, UserId = sessionManager.CurrentUser.Id })
+                    Items = connectionManager.GetApiClient(tvFolder).GetGenresAsync(new ItemsByNameQuery { ParentId = tvFolder.Id, UserId = sessionManager.CurrentUser.Id }),
+                    ViewModelSelector = dto => {
+                        var vm = new ItemTileViewModel(connectionManager, imageManager, navigator, playbackManager, dto) {
+                            GoToDetailsCommand = new RelayCommand(o => {
+                                var api = connectionManager.GetApiClient(dto);
+                                var p = new ItemListParameters {
+                                    Title = dto.GetDisplayName(),
+                                    ForceShowItemNames = true,
+                                    Items = api.GetItemsAsync(new ItemQuery {
+                                        UserId = sessionManager.CurrentUser.Id,
+                                        ParentId = tvFolder.Id,
+                                        Genres = new[] { dto.Name },
+                                        Recursive = true,
+                                        IncludeItemTypes = new[] { "Series" },
+                                        Fields = ItemChildren.DefaultQueryFields
+                                    })
+                                };
+
+                                navigator.Navigate(Go.To.ItemList(p));
+                            })
+                        };
+
+                        return vm;
+                    }
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));

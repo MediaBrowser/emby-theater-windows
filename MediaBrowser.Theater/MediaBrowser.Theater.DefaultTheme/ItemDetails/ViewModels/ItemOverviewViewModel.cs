@@ -14,6 +14,7 @@ using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
+using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
 using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
@@ -58,6 +59,21 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             get { return (!_item.IsFolder && _item.Type != "Person") || !string.IsNullOrEmpty(_item.Overview); }
         }
 
+        public double PosterHeight
+        {
+            get { return HomeViewModel.TileHeight*3 + HomeViewModel.TileMargin*4; }
+        }
+
+        public double DetailsWidth
+        {
+            get { return HomeViewModel.TileWidth*2 + HomeViewModel.TileMargin*2; }
+        }
+
+        public double DetailsHeight
+        {
+            get { return HomeViewModel.TileHeight * 2 + HomeViewModel.TileMargin * 2; }
+        }
+
         public ItemOverviewViewModel(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager, ISessionManager sessionManager, INavigator navigator)
         {
             _item = item;
@@ -67,19 +83,21 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 ShowParentText = item.IsType("Season") || item.IsType("Episode") || item.IsType("Album") || item.IsType("Track")
             };
 
-            PosterArtwork = new ItemArtworkViewModel(item, connectionManager, imageManager) { DesiredImageHeight = 700 };
+            if (item.ImageTags.ContainsKey(ImageType.Primary)) {
+                PosterArtwork = new ItemArtworkViewModel(item, connectionManager, imageManager) {
+                    DesiredImageHeight = PosterHeight,
+                    PreferredImageTypes = new[] { ImageType.Primary }
+                };
 
-            if (item.Type == "Episode")
-                PosterArtwork.PreferredImageTypes = new[] { ImageType.Screenshot, ImageType.Art, ImageType.Primary };
-
-            PosterArtwork.PropertyChanged += (s, e) => {
-                if (e.PropertyName == "Size") {
-                    OnPropertyChanged("Size");
-                }
-            };
+                PosterArtwork.PropertyChanged += (s, e) => {
+                    if (e.PropertyName == "Size") {
+                        OnPropertyChanged("Size");
+                    }
+                };
+            }
 
             BackgroundArtwork = new ItemArtworkViewModel(item, connectionManager, imageManager) {
-                DesiredImageWidth = 800,
+                DesiredImageWidth = DetailsWidth,
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Art, ImageType.Banner, ImageType.Screenshot, ImageType.Primary }
             };
 
@@ -108,11 +126,12 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         {
             get
             {
-                if (ShowInfo)
-                    return new Size(800 + 20 + 250, 700);
+//                if (ShowInfo)
+//                    return new Size(800 + 20 + 250, 700);
 
-                var artWidth = Math.Min(1200, PosterArtwork.ActualWidth);
-                return new Size(artWidth + 20 + 250, 700);
+                var artWidth = Math.Min(1200, PosterArtwork != null ? PosterArtwork.ActualWidth : 0);
+//                return new Size(artWidth + 20 + 250, 700);
+                return new Size(artWidth + DetailsWidth + 4, PosterHeight);
             }
         }
     }

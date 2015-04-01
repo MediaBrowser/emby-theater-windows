@@ -57,7 +57,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
             //Binder.Bind<ItemPath, ItemDetailsContext>((path, context) => context.Item = path.Parameter);
 
             Binder.Bind<ItemPath>(async path => {
-                if (path.Parameter.IsFolder && !path.Parameter.IsType("series") && !path.Parameter.IsType("season")) {
+                if ((path.Parameter.IsFolder || path.Parameter.IsGenre) && !path.Parameter.IsType("series") && !path.Parameter.IsType("season")) {
                     var context = appHost.TryResolve<ItemListContext>();
                     context.Parameters = new ItemListParameters {
                         Title = path.Parameter.Name,
@@ -65,7 +65,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
                     };
 
                     return context;
-                } else {
+                }
+                else {
                     var context = appHost.TryResolve<ItemDetailsContext>();
                     context.Item = path.Parameter;
 

@@ -81,7 +81,7 @@ namespace MediaBrowser.Theater.Api.Library
 
                 return FilterResult(parameters, result);
             }
-
+            
             return await apiClient.GetItemsAsync(new ItemQuery {
                 ParentId = item.IsType("Person") ? null : item.Id,
                 PersonIds = item.IsType("Person") ? new[] { item.Id } : null,

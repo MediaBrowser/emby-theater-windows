@@ -17,7 +17,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <controls1:ContentPage>
         <controls1:ContentPage.Header>
-            <TextBlock Text="{Binding Title}" Style="{StaticResource TitleTextBlockStyle}"/>
+            <TextBlock Text="{Binding Title}" Style="{StaticResource TitleTextBlockStyle}" Margin="50,0,0,0"/>
         </controls1:ContentPage.Header>
 
         <Grid>
@@ -27,7 +27,7 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <controls:IndexedItemsControl x:Name="Panorama" Margin="0,80,0,0" Grid.Row="0"
+            <controls:IndexedItemsControl x:Name="Panorama" Grid.Row="0"
                                           ItemsSource="{Binding Items}"
                                           SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                           IndexSelector="{Binding IndexSelector}"

@@ -475,6 +475,7 @@
     <Compile Include="Controls\TileButton.cs" />
     <Compile Include="Core\Commands\ExitMenuCommand.cs" />
     <Compile Include="Core\Commands\HomeCommand.cs" />
+    <Compile Include="Core\ViewModels\PlayButtonViewModel.cs" />
     <Compile Include="Core\Views\ButtonNotificationView.xaml.cs">
       <DependentUpon>ButtonNotificationView.xaml</DependentUpon>
     </Compile>

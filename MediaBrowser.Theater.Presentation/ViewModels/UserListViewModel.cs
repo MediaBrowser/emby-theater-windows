@@ -139,7 +139,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 list.Add(new UserDto
                 {
-                    Name = "Sign in with Media Browser Connect",
+                    Name = "Sign in with Emby Connect",
                     Id = "Connect"
                 });
             }

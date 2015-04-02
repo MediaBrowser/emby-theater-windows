@@ -149,8 +149,7 @@
                             </Style>
                         </StackPanel.Style>
 
-                        <TextBlock Style="{StaticResource TextBlockStyle}" Text="MEDIA"></TextBlock>
-                        <TextBlock Style="{StaticResource TextBlockStyle}" Text="BROWSER" Foreground="{StaticResource MediaBrowserAccent}"></TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockStyle}" Text="EMBY"></TextBlock>
                     </StackPanel>
 
                     <Image Source="{Binding LogoImage}" Margin="0 10 0 0" MaxHeight="70" MaxWidth="550" VerticalAlignment="Top" HorizontalAlignment="Left" Stretch="Uniform">

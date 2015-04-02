@@ -17,10 +17,10 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Grid.Row="0">Welcome to Media Browser</TextBlock>
-        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="1" Margin="0 40 0 0">With Media Browser you can easily stream videos, music and photos to Media Browser Theater and other devices from your Media Browser Server.</TextBlock>
+        <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Grid.Row="0">Welcome to Emby</TextBlock>
+        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="1" Margin="0 40 0 0">With Emby you can easily stream videos, music and photos to Emby Theater and other devices from your Emby Server.</TextBlock>
 
-        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="2" Margin="0 40 0 0">To download and install Media Browser Server visit http://mediabrowser.tv</TextBlock>
+        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="2" Margin="0 40 0 0">To download and install Emby Server visit http://emby.media</TextBlock>
 
         <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0 100 0 0" HorizontalAlignment="Right">
             <Button x:Name="BtnNext">

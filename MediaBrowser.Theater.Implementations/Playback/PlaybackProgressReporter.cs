@@ -119,10 +119,11 @@ namespace MediaBrowser.Theater.Implementations.Playback
                     await apiClient.ReportPlaybackStoppedAsync(stopInfo);
                 }
             }
-            
-            if (_timer != null)
+
+            var timer = _timer;
+            if (timer != null)
             {
-                _timer.Dispose();
+                timer.Dispose();
                 _timer = null;
             }
         }
@@ -200,8 +201,6 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 return;
             }
 
-            var currentStreamInfo = _mediaPlayer.CurrentStreamInfo;
-
             var info = new PlaybackProgressInfo
             {
                 ItemId = item.Id,
@@ -211,11 +210,12 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 CanSeek = _mediaPlayer.CanSeek,
                 AudioStreamIndex = _mediaPlayer.CurrentAudioStreamIndex,
                 SubtitleStreamIndex = _mediaPlayer.CurrentSubtitleStreamIndex,
-                VolumeLevel = (_mediaPlayer.PlayState != PlayState.Idle) ? (int?) _internalPlaybackManager.Volume : null,
-                PlayMethod = currentStreamInfo.PlayMethod
+                VolumeLevel = (_mediaPlayer.PlayState != PlayState.Idle) ? (int?) _internalPlaybackManager.Volume : null
             };
 
             var apiClient = _connectionManager.GetApiClient(item);
+
+            var currentStreamInfo = _mediaPlayer.CurrentStreamInfo;
 
             try
             {
@@ -224,6 +224,8 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 // Remove when implemented
                 if (currentStreamInfo != null)
                 {
+                    info.PlayMethod = currentStreamInfo.PlayMethod;
+
                     info.MediaSourceId = currentStreamInfo.MediaSourceId;
 
                     await _apiPlaybackManager.ReportPlaybackProgress(info, currentStreamInfo, false, apiClient);

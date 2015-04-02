@@ -8,7 +8,7 @@ using System.Windows;
 [assembly: AssemblyTitle("MediaBrowser.UI")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Media Browser Team")]
+[assembly: AssemblyCompany("Emby Team")]
 [assembly: AssemblyProduct("MediaBrowser.UI")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]

@@ -248,9 +248,9 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
                 PresentationManager.ShowMessage(new MessageBoxInfo
                 {
                     Button = MessageBoxButton.OK,
-                    Caption = "Restart Media Browser Server",
+                    Caption = "Restart Emby Server",
                     Icon = MessageBoxIcon.Information,
-                    Text = "Please logon to Media Browser Server and restart in order to finish applying updates."
+                    Text = "Please logon to Emby Server and restart in order to finish applying updates."
                 });
 
                 return;
@@ -259,9 +259,9 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             var result = PresentationManager.ShowMessage(new MessageBoxInfo
             {
                 Button = MessageBoxButton.OKCancel,
-                Caption = "Restart Media Browser Server",
+                Caption = "Restart Emby Server",
                 Icon = MessageBoxIcon.Information,
-                Text = "Please restart Media Browser Server in order to finish applying updates."
+                Text = "Please restart Emby Server in order to finish applying updates."
             });
 
             if (result != MessageBoxResult.OK) return;
@@ -295,9 +295,9 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             var result = PresentationManager.ShowMessage(new MessageBoxInfo
             {
                 Button = MessageBoxButton.OKCancel,
-                Caption = "Restart Media Browser Theater",
+                Caption = "Restart Emby Theater",
                 Icon = MessageBoxIcon.Information,
-                Text = "Please restart to finish updating Media Browser Theater."
+                Text = "Please restart to finish updating Emby Theater."
             });
 
             if (result != MessageBoxResult.OK) return;

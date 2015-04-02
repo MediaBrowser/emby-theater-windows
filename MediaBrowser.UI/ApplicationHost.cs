@@ -235,7 +235,7 @@ namespace MediaBrowser.UI
                 new CredentialProvider(TheaterConfigurationManager, JsonSerializer, Logger),
                 new NetworkConnection(Logger),
                 new ServerLocator(logger),
-                "Media Browser Theater",
+                "Emby Theater",
                 ApplicationVersion.ToString(),
                 device,
                 capabilities,
@@ -422,7 +422,7 @@ namespace MediaBrowser.UI
 
         public override string Name
         {
-            get { return "Media Browser Theater"; }
+            get { return "Emby Theater"; }
         }
 
         public override bool IsRunningAsService

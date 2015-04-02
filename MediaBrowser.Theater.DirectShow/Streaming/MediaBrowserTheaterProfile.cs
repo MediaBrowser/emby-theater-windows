@@ -8,7 +8,7 @@ namespace MediaBrowser.Theater.DirectShow.Streaming
     {
         public MediaBrowserTheaterProfile()
         {
-            Name = "Media Browser Theater";
+            Name = "Emby Theater";
 
             MaxStreamingBitrate = 8000000;
             MaxStaticBitrate = 80000000;
@@ -39,7 +39,7 @@ namespace MediaBrowser.Theater.DirectShow.Streaming
                 //},
                 new TranscodingProfile
                 {
-                    Container = "ts",
+                    Container = "mp4",
                     Type = DlnaProfileType.Video,
                     VideoCodec = "h264",
                     AudioCodec = "aac,ac3,mp3",
@@ -79,6 +79,15 @@ namespace MediaBrowser.Theater.DirectShow.Streaming
                     Type = DlnaProfileType.Photo,
 
                     Container = "jpeg,png,gif,bmp,tiff"
+                }
+            };
+
+            SubtitleProfiles = new[]
+            {
+                new SubtitleProfile
+                {
+                    Format = "srt",
+                    Method = SubtitleDeliveryMethod.External
                 }
             };
         }

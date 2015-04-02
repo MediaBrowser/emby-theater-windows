@@ -193,7 +193,7 @@
 
                 <Button x:Name="ShutdownAppButton" Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="6" Command="{Binding MasterCommands.ShutdownApplicationCommand}">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Exit Media Browser</TextBlock>
+                        <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Exit Emby</TextBlock>
                     </StackPanel>
                 </Button>
 

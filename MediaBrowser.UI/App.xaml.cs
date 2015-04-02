@@ -513,7 +513,7 @@ namespace MediaBrowser.UI
             {
                 _logger.ErrorException("Error launching application", ex);
 
-                MessageBox.Show("There was an error launching Media Browser: " + ex.Message);
+                MessageBox.Show("There was an error launching Emby: " + ex.Message);
 
                 // Shutdown the app with an error code
                 Shutdown(1);

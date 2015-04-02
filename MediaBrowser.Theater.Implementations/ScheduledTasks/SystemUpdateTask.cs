@@ -111,7 +111,7 @@ namespace MediaBrowser.Theater.Implementations.ScheduledTasks
             }
             else
             {
-                Logger.Info("A new version of Media Browser is available.");
+                Logger.Info("A new version of Emby is available.");
             }
 
             progress.Report(100);

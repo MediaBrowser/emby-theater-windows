@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common.Events;
+﻿using System.Windows;
+using MediaBrowser.Common.Events;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dlna;
@@ -11,6 +12,7 @@ using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Playback;
 using System;
@@ -301,7 +303,41 @@ namespace MediaBrowser.Theater.DirectShow
 
             var options = CurrentPlayOptions;
 
-            var playableItem = await GetPlayableItem(options.Items[index], startPositionTicks, CancellationToken.None);
+            PlayableItem playableItem;
+
+            try
+            {
+                playableItem = await GetPlayableItem(options.Items[index], startPositionTicks, CancellationToken.None);
+            }
+            catch (PlaybackException ex)
+            {
+                string text;
+
+                switch (ex.ErrorCode)
+                {
+                    case PlaybackErrorCode.NoCompatibleStream:
+                        text = "No compatible streams are currently available. Please try again later or contact your system administrator for details.";
+                        break;
+                    case PlaybackErrorCode.NotAllowed:
+                        text = "You do not have access to play this content at this time. Please contact your system administrator for details.";
+                        break;
+                    case PlaybackErrorCode.RateLimitExceeded:
+                        text = "Your playback limit has been exceeded. Please try again later or contact your system administrator for details.";
+                        break;
+                    default:
+                        text = "There was an error processing the request.";
+                        break;
+                }
+                _presentation.ShowMessage(new MessageBoxInfo
+                {
+                    Button = MessageBoxButton.OK,
+                    Icon = MessageBoxIcon.Error,
+                    Caption = "Error",
+                    Text = text
+                });
+
+                return;
+            }
 
             try
             {
@@ -315,10 +351,42 @@ namespace MediaBrowser.Theater.DirectShow
 
                     var apiClient = _connectionManager.GetApiClient(playableItem.OriginalItem);
 
-                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager, apiClient, _zipClient, _httpClient);
+                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle,
+                        _sessionManager, _config, _inputManager, apiClient, _zipClient, _httpClient);
                     _mediaPlayer.Play(playableItem, enableMadVr, false);
 
                 }, true);
+            }
+            catch (PlaybackException ex)
+            {
+                string text;
+
+                switch (ex.ErrorCode)
+                {
+                    case PlaybackErrorCode.NoCompatibleStream:
+                        text = "No compatible streams are currently available. Please try again later or contact your system administrator for details.";
+                        break;
+                    case PlaybackErrorCode.NotAllowed:
+                        text = "You do not have access to play this content at this time. Please contact your system administrator for details.";
+                        break;
+                    case PlaybackErrorCode.RateLimitExceeded:
+                        text = "Your playback limit has been exceeded. Please try again later or contact your system administrator for details.";
+                        break;
+                    default:
+                        text = "There was an error processing the request.";
+                        break;
+                }
+                _presentation.ShowMessage(new MessageBoxInfo
+                {
+                    Button = MessageBoxButton.OK,
+                    Icon = MessageBoxIcon.Error,
+                    Caption = "Error",
+                    Text = text
+                });
+
+                OnPlaybackStopped(playableItem, null, TrackCompletionReason.Failure, null);
+
+                throw;
             }
             catch
             {

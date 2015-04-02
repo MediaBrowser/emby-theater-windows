@@ -84,7 +84,7 @@ namespace MediaBrowser.UI.StartupWizard
                 TxtPin.Visibility = Visibility.Collapsed;
                 PinError.Visibility = Visibility.Visible;
 
-                TxtPinError.Text = "An error has occurred while attempting to communicate with mediabrowser.tv. Click the button below to try again or skip to connect to your server manually.";
+                TxtPinError.Text = "An error has occurred while attempting to communicate with emby.media. Click the button below to try again or skip to connect to your server manually.";
             });
         }
 

@@ -44,7 +44,7 @@
             this.MinimizeBox = false;
             this.Name = "HiddenForm";
             this.ShowIcon = false;
-            this.Text = "Media Browser Theater";
+            this.Text = "Emby Theater";
             this.ResumeLayout(false);
 
         }

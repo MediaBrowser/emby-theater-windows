@@ -19,7 +19,7 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Grid.Row="0">Locate Media Browser Server</TextBlock>
+        <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Grid.Row="0">Locate Emby Server</TextBlock>
         <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="1" Margin="0 40 0 0">Please confirm the location of your server.</TextBlock>
 
         <StackPanel Orientation="Vertical" Grid.Row="2" Margin="0 40 0 0">

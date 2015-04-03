@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Net;
@@ -116,9 +117,9 @@ namespace MediaBrowser.Theater.Core.Appearance
 
                 try
                 {
-                    UserImage.Source = await _imageManager.GetRemoteBitmapAsync(apiClient.GetUserImageUrl(_session.CurrentUser, new ImageOptions
+                    UserImage.Source = await _imageManager.GetRemoteBitmapAsync(apiClient, apiClient.GetUserImageUrl(_session.CurrentUser, new ImageOptions
                     {
-                    }));
+                    }), CancellationToken.None);
 
                     UserDefaultImage.Visibility = Visibility.Collapsed;
                     UserImage.Visibility = Visibility.Visible;

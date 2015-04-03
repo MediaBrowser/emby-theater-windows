@@ -378,7 +378,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             {
                 var token = _logoCancellationTokenSource.Token;
 
-                var img = await _imageManager.GetRemoteBitmapAsync(url, token);
+                var img = await _imageManager.GetRemoteBitmapAsync(_apiClient, url, token);
 
                 token.ThrowIfCancellationRequested();
 

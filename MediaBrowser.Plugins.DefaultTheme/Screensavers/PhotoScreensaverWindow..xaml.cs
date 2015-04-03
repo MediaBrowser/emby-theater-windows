@@ -188,9 +188,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
         {
             CurrentIndex++;
             var imageDownloadCancellationTokenSource = new CancellationTokenSource();
-            var photo = await _imageManager.GetRemoteImageAsync(url, imageDownloadCancellationTokenSource.Token);
+            var photo = await _imageManager.GetRemoteImageAsync(_apiClient, url, imageDownloadCancellationTokenSource.Token);
             imageDownloadCancellationTokenSource.Token.ThrowIfCancellationRequested();
-
+            
             return photo;
         }
 

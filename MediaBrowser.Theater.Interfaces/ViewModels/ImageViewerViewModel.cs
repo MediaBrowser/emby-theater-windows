@@ -239,7 +239,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
                 var token = currentSource.Token;
 
                 var image = _images[index];
-
+                
                 var img = await _imageManager.GetRemoteImageAsync(image.Url, token);
 
                 token.ThrowIfCancellationRequested();

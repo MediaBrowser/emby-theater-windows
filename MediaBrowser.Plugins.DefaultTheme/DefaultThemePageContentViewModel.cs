@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Threading;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces;
@@ -270,7 +271,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
                 try
                 {
-                    LogoImage = await _imageManager.GetRemoteBitmapAsync(url);
+                    LogoImage = await _imageManager.GetRemoteBitmapAsync(apiClient, url, CancellationToken.None);
 
                     ShowDefaultPageTitle = false;
                     PageTitle = string.Empty;

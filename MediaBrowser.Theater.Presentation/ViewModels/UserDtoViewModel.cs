@@ -100,14 +100,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             private set
             {
-                var changed = !Equals(_image, value);
-
                 _image = value;
 
-                if (changed)
-                {
-                    OnPropertyChanged("Image");
-                }
+                OnPropertyChanged("Image");
             }
         }
 
@@ -177,11 +172,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                         ImageType = ImageType.Primary
                     };
 
-                    Image = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetUserImageUrl(User, options), _imageCancellationTokenSource.Token);
+                    Image = await ImageManager.GetRemoteBitmapAsync(ApiClient, ApiClient.GetUserImageUrl(User, options), _imageCancellationTokenSource.Token);
 
                     HasImage = true;
                 }
-                catch
+                catch (Exception ex)
                 {
                     // Logged at lower levels
                     HasImage = false;

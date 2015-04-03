@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Threading;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -110,10 +111,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
                 try
                 {
                     ImgLogo.Source =
-                        await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ConnectionManager.GetApiClient(media).GetLogoImageUrl(media,
+                        await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ConnectionManager.GetApiClient(media), viewModel.ConnectionManager.GetApiClient(media).GetLogoImageUrl(media,
                                 new ImageOptions
                                 {
-                                }));
+                                }), CancellationToken.None);
 
                     ImgLogo.Visibility = Visibility.Visible;
                 }

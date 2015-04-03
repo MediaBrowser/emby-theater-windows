@@ -199,7 +199,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                         Tag = Chapter.ImageTag
                     };
 
-                    Image = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetImageUrl(Item, options),
+                    Image = await _imageManager.GetRemoteBitmapAsync(_apiClient, _apiClient.GetImageUrl(Item, options),
                                                            _imageCancellationTokenSource.Token);
 
                     HasImage = true;

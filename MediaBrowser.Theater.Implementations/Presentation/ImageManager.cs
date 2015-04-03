@@ -85,18 +85,25 @@ namespace MediaBrowser.Theater.Implementations.Presentation
             return bitmap;
         }
 
-        public async Task<BitmapImage> GetRemoteBitmapAsync(string url, CancellationToken cancellationToken)
+        public  Task<BitmapImage> GetRemoteBitmapAsync(string url, CancellationToken cancellationToken)
         {
-            return await Task.Run(() => GetRemoteBitmapAsyncInternal(url, cancellationToken), cancellationToken);
+            return GetRemoteBitmapAsync(_apiClient(), url, cancellationToken);
+        }
+
+        public async Task<BitmapImage> GetRemoteBitmapAsync(IApiClient apiClient, string url, CancellationToken cancellationToken)
+        {
+            return await Task.Run(() => GetRemoteBitmapAsyncInternal(apiClient, url, cancellationToken), cancellationToken);
         }
 
         /// <summary>
         /// Gets the remote bitmap async.
         /// </summary>
+        /// <param name="apiClient">The API client.</param>
         /// <param name="url">The URL.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task{BitmapImage}.</returns>
         /// <exception cref="ArgumentNullException">url</exception>
-        private async Task<BitmapImage> GetRemoteBitmapAsyncInternal(string url, CancellationToken cancellationToken)
+        private async Task<BitmapImage> GetRemoteBitmapAsyncInternal(IApiClient apiClient, string url, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -133,7 +140,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
 
             try
             {
-                using (var httpStream = await _apiClient().GetImageStreamAsync(url, cancellationToken).ConfigureAwait(false))
+                using (var httpStream = await apiClient.GetImageStreamAsync(url, cancellationToken).ConfigureAwait(false))
                 {
                     var parentPath = Path.GetDirectoryName(cachePath);
 
@@ -162,9 +169,21 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         /// <param name="url">The URL.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task{Image}.</returns>
-        public async Task<Image> GetRemoteImageAsync(string url, CancellationToken cancellationToken)
+        public Task<Image> GetRemoteImageAsync(string url, CancellationToken cancellationToken)
         {
-            var bitmap = await GetRemoteBitmapAsync(url, cancellationToken);
+            return GetRemoteImageAsync(_apiClient(), url, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the remote image async.
+        /// </summary>
+        /// <param name="apiClient">The API client.</param>
+        /// <param name="url">The URL.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task{Image}.</returns>
+        public async Task<Image> GetRemoteImageAsync(IApiClient apiClient, string url, CancellationToken cancellationToken)
+        {
+            var bitmap = await GetRemoteBitmapAsync(apiClient, url, cancellationToken);
 
             var image = new Image { Source = bitmap };
 

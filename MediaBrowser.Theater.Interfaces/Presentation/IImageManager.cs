@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using MediaBrowser.Model.ApiClient;
 
 namespace MediaBrowser.Theater.Interfaces.Presentation
 {
@@ -33,33 +34,23 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task{Image}.</returns>
         Task<Image> GetRemoteImageAsync(string url, CancellationToken cancellationToken);
-    }
 
-    /// <summary>
-    /// Class ImageManagerExtensions
-    /// </summary>
-    public static class ImageManagerExtensions
-    {
         /// <summary>
         /// Gets the remote bitmap async.
         /// </summary>
-        /// <param name="imageManager">The image manager.</param>
+        /// <param name="apiClient">The API client.</param>
         /// <param name="url">The URL.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task{BitmapImage}.</returns>
-        public static Task<BitmapImage> GetRemoteBitmapAsync(this IImageManager imageManager, string url)
-        {
-            return imageManager.GetRemoteBitmapAsync(url, CancellationToken.None);
-        }
+        Task<BitmapImage> GetRemoteBitmapAsync(IApiClient apiClient, string url, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the remote image async.
         /// </summary>
-        /// <param name="imageManager">The image manager.</param>
+        /// <param name="apiClient">The API client.</param>
         /// <param name="url">The URL.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task{Image}.</returns>
-        public static Task<Image> GetRemoteImageAsync(this IImageManager imageManager, string url)
-        {
-            return imageManager.GetRemoteImageAsync(url, CancellationToken.None);
-        }
+        Task<Image> GetRemoteImageAsync(IApiClient apiClient, string url, CancellationToken cancellationToken);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using MediaBrowser.Model.Dto;
-using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -98,7 +98,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
                 {
                     ImgLogo.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ConnectionManager.GetApiClient(media).GetLogoImageUrl(media, new ImageOptions
                     {
-                    }));
+                    }), CancellationToken.None);
 
                     ImgLogo.Visibility = Visibility.Visible;
                 }

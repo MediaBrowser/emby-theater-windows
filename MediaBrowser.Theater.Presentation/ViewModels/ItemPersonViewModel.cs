@@ -185,7 +185,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                         Tag = Person.PrimaryImageTag
                     };
 
-                    Image = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetPersonImageUrl(Person, options), _imageCancellationTokenSource.Token);
+                    Image = await _imageManager.GetRemoteBitmapAsync(_apiClient, _apiClient.GetPersonImageUrl(Person, options), _imageCancellationTokenSource.Token);
 
                     DisposeCancellationTokenSource();
 

@@ -1119,7 +1119,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 try
                 {
-                    var img = await _imageManager.GetRemoteBitmapAsync(url, tokenSource.Token);
+                    var img = await _imageManager.GetRemoteBitmapAsync(_apiClient, url, tokenSource.Token);
 
                     tokenSource.Token.ThrowIfCancellationRequested();
 
@@ -1179,7 +1179,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 url = _apiClient.GetImageUrl(Item, options);
             }
 
-            return _imageManager.GetRemoteBitmapAsync(url, cancellationToken);
+            return _imageManager.GetRemoteBitmapAsync(_apiClient, url, cancellationToken);
         }
 
         public async void Play()

@@ -64,7 +64,7 @@ namespace MediaBrowser.Theater.DirectShow.Streaming
             {
                 new DirectPlayProfile
                 {
-                    Container = "avi,mkv,ts,mp4,mov,m4v,asf,wmv,mpg,mpeg,flv,3gp",
+                    Container = "avi,mkv,ts,mp4,mov,m4v,asf,wmv,mpg,mpeg,flv,3gp,mpegts",
                     Type = DlnaProfileType.Video
                 },
 

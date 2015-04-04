@@ -164,13 +164,13 @@ namespace MediaBrowser.UI
             UserInputManager = new UserInputManager(PresentationManager, NavigationService, hiddenWindow, LogManager);
             RegisterSingleInstance(UserInputManager);
 
-            PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ConnectionManager, NavigationService, PresentationManager);
+            PlaybackManager = new PlaybackManager(TheaterConfigurationManager, LogManager.GetLogger("PlaybackManager"), ConnectionManager, NavigationService, PresentationManager);
             RegisterSingleInstance(PlaybackManager);
 
             CommandManager = new CommandManager(PresentationManager, PlaybackManager, NavigationService, UserInputManager, LogManager);
             RegisterSingleInstance(CommandManager);
 
-            SessionManager = new SessionManager(NavigationService, Logger, ThemeManager, TheaterConfigurationManager, PlaybackManager, ConnectionManager);
+            SessionManager = new SessionManager(NavigationService, LogManager.GetLogger("SessionManager"), ThemeManager, TheaterConfigurationManager, PlaybackManager, ConnectionManager);
             RegisterSingleInstance(SessionManager);
 
             ScreensaverManager = new ScreensaverManager(UserInputManager, PresentationManager, PlaybackManager, SessionManager, TheaterConfigurationManager, LogManager);

@@ -137,7 +137,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
         public void RefreshRestartServerNotification()
         {
-            Dispatcher.InvokeAsync(() => ShowRestartServerNotification = _serverHasPendingRestart && SessionManager.LocalUserId != null && SessionManager.CurrentUser.Configuration.IsAdministrator);
+            Dispatcher.InvokeAsync(() => ShowRestartServerNotification = _serverHasPendingRestart && SessionManager.LocalUserId != null && SessionManager.CurrentUser.Policy.IsAdministrator);
         }
 
         public void Dispose()

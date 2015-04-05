@@ -60,60 +60,6 @@
         
         <!--Icons-->
         <StackPanel  Grid.Row="4" Orientation="Horizontal">
-            <Grid x:Name="UserLikeGrid">
-                <Grid Margin="0 0 20 0">
-                    <Grid.Style>
-                        <Style TargetType="{x:Type Grid}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding }" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsLiked}" Value="False">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsFavorite}" Value="True">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
-                    <Image Style="{StaticResource LikeImage}"></Image>
-                </Grid>
-            </Grid>
-
-            <Grid x:Name="UserDislikeGrid">
-                <Grid Margin="0 0 20 0">
-                    <Grid.Style>
-                        <Style TargetType="{x:Type Grid}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding }" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsDisliked}" Value="False">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
-                    <Image Style="{StaticResource DislikeImage}"></Image>
-                </Grid>
-            </Grid>
-
-            <Grid x:Name="UserFavoriteGrid">
-                <Grid Margin="0 0 20 0">
-                    <Grid.Style>
-                        <Style TargetType="{x:Type Grid}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsFavorite}" Value="False">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
-                    <Image Style="{StaticResource FavoriteImage}"></Image>
-                </Grid>
-            </Grid>
-
             <Border Margin="0 0 20 0" Visibility="{Binding HasPlayers, Converter={StaticResource BooleanToVisibility}}">
 
                 <Border.Style>
@@ -182,6 +128,60 @@
 
                 <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding AudioCodec, Converter={StaticResource UppercaseConverter}}" VerticalAlignment="Center"></TextBlock>
             </Border>
+
+            <Grid x:Name="UserLikeGrid">
+                <Grid Margin="0 0 20 0">
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding }" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsLiked}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Image Style="{StaticResource LikeImage}"></Image>
+                </Grid>
+            </Grid>
+
+            <Grid x:Name="UserDislikeGrid">
+                <Grid Margin="0 0 20 0">
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding }" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsDisliked}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Image Style="{StaticResource DislikeImage}"></Image>
+                </Grid>
+            </Grid>
+
+            <Grid x:Name="UserFavoriteGrid">
+                <Grid Margin="0 0 20 0">
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsFavorite}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Image Style="{StaticResource FavoriteImage}"></Image>
+                </Grid>
+            </Grid>
         </StackPanel>
     </Grid>
 </UserControl>

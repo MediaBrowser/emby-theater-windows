@@ -136,7 +136,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 int lastWatched = -1;
                 for (int i = 0; i < children.Length; i++) {
                     var percent = children[i].GetPlayedPercent();
-                    if (percent >= 100) {
+                    if (percent >= 100 || children[i].UserData.Played) {
                         lastWatched = i;
                     } else if (percent > 0) {
                         lastWatched = i - 1;

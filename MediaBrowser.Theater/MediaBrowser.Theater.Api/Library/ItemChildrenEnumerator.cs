@@ -81,10 +81,14 @@ namespace MediaBrowser.Theater.Api.Library
 
                 return FilterResult(parameters, result);
             }
+
+            var searchByParentId = !item.IsPerson && !item.IsGenre && !item.IsStudio;
             
             return await apiClient.GetItemsAsync(new ItemQuery {
-                ParentId = item.IsType("Person") ? null : item.Id,
+                ParentId = searchByParentId ? item.Id : null,
                 PersonIds = item.IsType("Person") ? new[] { item.Id } : null,
+                Genres = item.IsGenre ? new[] { item.Name } : null,
+                StudioIds = item.IsStudio ? new[] { item.Id } : null,
                 UserId = sessionManager.CurrentUser.Id,
                 Recursive = parameters.Recursive,
                 Filters = parameters.Filters,

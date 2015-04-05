@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Core.Views.PlayButtonView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.DefaultTheme.Controls"
+             xmlns:controls1="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance viewModels:PlayButtonViewModel}"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <controls:TileButton x:Name="Button" 
+                          Command="{Binding PlayCommand}"
+                          Width="{Binding Image.ActualWidth}"
+                          Height="{Binding Image.ActualHeight}">
+        <controls:TileButton.Header>
+            <Grid>
+                <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercent, Mode=OneWay}" Visibility="{Binding IsInProgress, Converter={StaticResource BooleanToVisibility}}">
+                    <ProgressBar.Style>
+                        <Style TargetType="{x:Type ProgressBar}" BasedOn="{StaticResource ResumeProgressBar}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Setter Property="Background" Value="{x:Null}" />
+                            <Setter Property="VerticalAlignment" Value="Stretch" />
+                            <Setter Property="HorizontalAlignment" Value="Stretch" />
+                            <Setter Property="Height" Value="NaN" />
+                        </Style>
+                    </ProgressBar.Style>
+                </ProgressBar>
+
+                <StackPanel Margin="15 5 20 10"
+                            Orientation="Vertical">
+                    <TextBlock Text="{Binding DisplayName}" Foreground="{Binding Foreground, ElementName=Button}"/>
+                </StackPanel>
+            </Grid>
+        </controls:TileButton.Header>
+
+        <controls1:ExtendedContentControl Content="{Binding Image}" />
+    </controls:TileButton>
+</UserControl>

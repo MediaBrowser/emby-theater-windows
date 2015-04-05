@@ -156,6 +156,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Core\Views\PlayButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Core\Views\RestartMenuCommandIconView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -478,6 +482,9 @@
     <Compile Include="Core\ViewModels\PlayButtonViewModel.cs" />
     <Compile Include="Core\Views\ButtonNotificationView.xaml.cs">
       <DependentUpon>ButtonNotificationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\PlayButtonView.xaml.cs">
+      <DependentUpon>PlayButtonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Home\ViewModels\Channels\ChannelsListViewModel.cs" />
     <Compile Include="Home\ViewModels\Channels\ChannelListHomePageGenerator.cs" />

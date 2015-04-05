@@ -74,6 +74,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             get { return HomeViewModel.TileHeight * 2 + HomeViewModel.TileMargin * 2; }
         }
 
+        public PlayButtonViewModel PlayButton { get; private set; }
+
         public ItemOverviewViewModel(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager, ISessionManager sessionManager, INavigator navigator)
         {
             _item = item;
@@ -120,6 +122,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 Items = ItemChildren.Get(connectionManager, sessionManager, item, new ChildrenQueryParams { ExpandSingleItems = true }),
                 Title = item.Name
             })));
+            
+            PlayButton = new PlayButtonViewModel(item, playbackManager, connectionManager, imageManager, sessionManager, item.BackdropImageTags.Count > 1 ? 1 : (int?)null);
         }
 
         public Size Size

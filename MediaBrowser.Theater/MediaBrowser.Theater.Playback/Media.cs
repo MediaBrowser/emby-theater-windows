@@ -29,7 +29,7 @@ namespace MediaBrowser.Theater.Playback
         public static Media Resume(BaseItemDto item)
         {
             return Create(item, new MediaPlaybackOptions {
-                StartPositionTicks = item.UserData.PlaybackPositionTicks
+                StartPositionTicks = item.UserData != null ? item.UserData.PlaybackPositionTicks : 0
             });
         }
     }

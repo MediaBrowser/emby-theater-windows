@@ -6,14 +6,15 @@
         xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
         xmlns:controls1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Controls"
         xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels"
+        xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels"
         mc:Ignorable="d"
         d:DesignHeight="300" d:DesignWidth="300"
         HorizontalAlignment="Stretch"
         HorizontalContentAlignment="Stretch"
         VerticalContentAlignment="Stretch"
         Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}"
-        Height="250"
-        Width="167">
+        Height="{x:Static viewModels1:PersonListItemViewModel.Height}"
+        Width="{x:Static viewModels1:PersonListItemViewModel.Width}">
     <controls1:TileButton Command="{Binding NavigateCommand}">
         <controls1:TileButton.Header>
             <StackPanel Grid.Column="1" Margin="10,4,14,4">

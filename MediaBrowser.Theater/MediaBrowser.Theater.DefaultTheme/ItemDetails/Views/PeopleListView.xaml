@@ -14,7 +14,7 @@
              d:DataContext="{d:DesignInstance viewModels:ItemsListViewModel}"
              Focusable="False"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibility}}" Margin="20,0,0,0" MaxWidth="513">
+    <Grid Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibility}}" Margin="20,0,0,0" MaxWidth="810">
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
             <RowDefinition/>
@@ -25,7 +25,7 @@
         <Border Grid.Row="1" Background="{StaticResource BackgroundBrush2}">
             <controls:ExtendedListBox
                                   Background="{x:Null}"
-                                  Height="700"
+                                  Height="{Binding ListHeight}"
                                   BorderBrush="{x:Null}"
                                   BorderThickness="0"
                                   ItemsSource="{Binding People}"

@@ -63,8 +63,13 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
                 int width = Math.Min(People.Count, 3);
 
-                return new Size((167 + 2 * HomeViewModel.TileMargin) * width + 20, 700);
+                return new Size((PersonListItemViewModel.Width + 2 * HomeViewModel.TileMargin) * width + 20, ListHeight + 20);
             }
+        }
+
+        public double ListHeight
+        {
+            get { return 2 * PersonListItemViewModel.Height + 4 * HomeViewModel.TileMargin; }
         }
 
         private void LoadItems()
@@ -146,6 +151,20 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 }
             }
         }
+        
+        public static double Height
+        {
+            get
+            {
+                const double available = 3 * HomeViewModel.TileHeight + 6 * HomeViewModel.TileMargin;
+                return available / 2 - 2 * HomeViewModel.TileMargin;
+            }
+        }
+
+        public static double Width
+        {
+            get { return Height*(167.0/250); }
+        }
 
         public ICommand NavigateCommand { get; private set; }
 
@@ -160,8 +179,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
             if (!string.IsNullOrEmpty(_person.PrimaryImageTag)) {
                 var options = new ImageOptions {
-                    Height = 250,
-                    Width = 167,
+                    Height = (int)Height,
+                    Width = (int)Width,
                     ImageType = ImageType.Primary,
                     Tag = _person.PrimaryImageTag
                 };

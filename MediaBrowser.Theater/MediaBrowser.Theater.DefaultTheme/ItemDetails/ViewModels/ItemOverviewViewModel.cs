@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -31,6 +32,12 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private bool _isLiked;
         private bool _isDisliked;
         private bool _isFavorited;
+        private CroppedBitmap _primaryButtonImage;
+        private CroppedBitmap _secondaryButtonImage;
+        private CroppedBitmap _toggleFavoriteButtonImage;
+        private CroppedBitmap _toggleLikeButtonImage;
+        private CroppedBitmap _toggleDislikeButtonImage;
+        private CroppedBitmap _toggleWatchedButtonImage;
 
         public ItemArtworkViewModel PosterArtwork { get; set; }
         public ItemArtworkViewModel BackgroundArtwork { get; set; }
@@ -54,6 +61,93 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         public ICommand ToggleLikeCommand { get; set; }
         public ICommand ToggleDislikeCommand { get; set; }
         public ICommand ToggleWatchedCommand { get; set; }
+
+        public CroppedBitmap PrimaryButtonImage
+        {
+            get { return _primaryButtonImage; }
+            set
+            {
+                if (Equals(value, _primaryButtonImage)) {
+                    return;
+                }
+                _primaryButtonImage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public CroppedBitmap SecondaryButtonImage
+        {
+            get { return _secondaryButtonImage; }
+            set
+            {
+                if (Equals(value, _secondaryButtonImage)) {
+                    return;
+                }
+                _secondaryButtonImage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public CroppedBitmap ToggleFavoriteButtonImage
+        {
+            get { return _toggleFavoriteButtonImage; }
+            set
+            {
+                if (Equals(value, _toggleFavoriteButtonImage)) {
+                    return;
+                }
+                _toggleFavoriteButtonImage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public CroppedBitmap ToggleLikeButtonImage
+        {
+            get { return _toggleLikeButtonImage; }
+            set
+            {
+                if (Equals(value, _toggleLikeButtonImage)) {
+                    return;
+                }
+                _toggleLikeButtonImage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public CroppedBitmap ToggleDislikeButtonImage
+        {
+            get { return _toggleDislikeButtonImage; }
+            set
+            {
+                if (Equals(value, _toggleDislikeButtonImage)) {
+                    return;
+                }
+                _toggleDislikeButtonImage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public CroppedBitmap ToggleWatchedButtonImage
+        {
+            get { return _toggleWatchedButtonImage; }
+            set
+            {
+                if (Equals(value, _toggleWatchedButtonImage)) {
+                    return;
+                }
+                _toggleWatchedButtonImage = value;
+                OnPropertyChanged();
+            }
+        }
+
+//        public BitmapSource ButtonBackground { get; set; }
+//
+//        public Rect PrimaryButtonSourceRect { get; set; }
+//        public Rect SecondaryButtonSourceRect { get; set; }
+//        public Rect ToggleFavoriateButtonSourceRect { get; set; }
+//        public Rect ToggleLikeButtonSourceRect { get; set; }
+//        public Rect ToggleDislikeButtonSourceRect { get; set; }
+//        public Rect ToggleWatchedButtonSourceRect { get; set; }
 
         public int SortOrder
         {
@@ -174,25 +268,25 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Art, ImageType.Banner, ImageType.Screenshot, ImageType.Primary }
             };
 
-            PlayCommand = new RelayCommand(o => playbackManager.Play(item));
-            ResumeCommand = new RelayCommand(o => playbackManager.Play(Media.Resume(item)));
-            PlayAllCommand = new RelayCommand(async o => {
-                var items = await ItemChildren.Get(connectionManager, sessionManager, item, new ChildrenQueryParams {
-                    Recursive = true,
-                    IncludeItemTypes = new[] { "Movie", "Episode", "Audio" },
-                    SortOrder = MediaBrowser.Model.Entities.SortOrder.Ascending,
-                    SortBy = new[] { "SortName" }
-                });
-                
-                if (items.Items.Length > 0) {
-                    await playbackManager.Play(items.Items.Select(i => (Media)i));
-                }
-            });
-
-            BrowseAllCommand = new RelayCommand(o => navigator.Navigate(Go.To.ItemList(new ItemListParameters {
-                Items = ItemChildren.Get(connectionManager, sessionManager, item, new ChildrenQueryParams { ExpandSingleItems = true }),
-                Title = item.Name
-            })));
+//            PlayCommand = new RelayCommand(o => playbackManager.Play(item));
+//            ResumeCommand = new RelayCommand(o => playbackManager.Play(Media.Resume(item)));
+//            PlayAllCommand = new RelayCommand(async o => {
+//                var items = await ItemChildren.Get(connectionManager, sessionManager, item, new ChildrenQueryParams {
+//                    Recursive = true,
+//                    IncludeItemTypes = new[] { "Movie", "Episode", "Audio" },
+//                    SortOrder = MediaBrowser.Model.Entities.SortOrder.Ascending,
+//                    SortBy = new[] { "SortName" }
+//                });
+//                
+//                if (items.Items.Length > 0) {
+//                    await playbackManager.Play(items.Items.Select(i => (Media)i));
+//                }
+//            });
+//
+//            BrowseAllCommand = new RelayCommand(o => navigator.Navigate(Go.To.ItemList(new ItemListParameters {
+//                Items = ItemChildren.Get(connectionManager, sessionManager, item, new ChildrenQueryParams { ExpandSingleItems = true }),
+//                Title = item.Name
+//            })));
             
             PlayButton = new PlayButtonViewModel(item, playbackManager, connectionManager, imageManager, sessionManager, item.BackdropImageTags.Count > 1 ? 1 : (int?)null);
 
@@ -236,6 +330,34 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 api.UpdateFavoriteStatusAsync(item.Id, sessionManager.CurrentUser.Id, !IsFavorited);
                 IsFavorited = !IsFavorited;
             });
+
+            SetupButtonImage(item, connectionManager, imageManager);
+        }
+
+        private async void SetupButtonImage(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager)
+        {
+            if (item.BackdropCount < 2) {
+                return;
+            }
+
+            var width = (int) (DetailsWidth/2 - 2);
+            var height = (int) HomeViewModel.TileHeight;
+
+            var api = connectionManager.GetApiClient(item);
+            var url = api.GetImageUrl(item, new ImageOptions {
+                ImageType = ImageType.Backdrop,
+                ImageIndex = 2,
+                Width = width,
+                Height = height
+            });
+
+            var bitmap = await imageManager.GetRemoteBitmapAsync(url);
+            PrimaryButtonImage = new CroppedBitmap(bitmap, new Int32Rect(0, 0, width/2 - 2, height*2/3 - 2));
+            SecondaryButtonImage = new CroppedBitmap(bitmap, new Int32Rect(width/2 + 2, 0, width/2 - 2, height*2/3 - 2));
+            ToggleFavoriteButtonImage = new CroppedBitmap(bitmap, new Int32Rect(0, height*2/3 + 2, width/4 - 4, height/3 - 2));
+            ToggleLikeButtonImage = new CroppedBitmap(bitmap, new Int32Rect(width/4 + 2, height*2/3 + 2, width/4 - 4, height/3 - 2));
+            ToggleDislikeButtonImage = new CroppedBitmap(bitmap, new Int32Rect(width*2/4 + 2, height*2/3 + 2, width/4 - 4, height/3 - 2));
+            ToggleWatchedButtonImage = new CroppedBitmap(bitmap, new Int32Rect(width*3/4 + 2, height*2/3 + 2, width/4 - 4, height/3 - 2));
         }
 
         public Size Size

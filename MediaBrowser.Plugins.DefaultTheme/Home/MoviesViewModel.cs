@@ -439,12 +439,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             tabs.Add(new TabItem
             {
-                DisplayName = "Trailers",
-                Name = "Trailers",
-            });
-
-            tabs.Add(new TabItem
-            {
                 DisplayName = "Favorites",
                 Name = "FavoriteMovies"
             });
@@ -453,7 +447,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 tabs.Add(new TabItem
                 {
-                    DisplayName = "Box Sets",
+                    DisplayName = "Collections",
                     Name = "BoxSets",
                 });
             }

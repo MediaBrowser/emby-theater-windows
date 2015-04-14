@@ -1,6 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:viewModelsPresentation="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
                     xmlns:views="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.Views"
                     xmlns:loginViewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.ViewModels"
@@ -29,7 +28,8 @@
                     xmlns:generic="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic"
                     xmlns:generic1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views.Generic"
                     xmlns:channels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Channels"
-                    xmlns:channels1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views.Channels">
+                    xmlns:channels1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views.Channels"
+                    xmlns:userInterface="clr-namespace:MediaBrowser.Theater.Api.UserInterface;assembly=MediaBrowser.Theater.Api.Implementations">
     
     <DataTemplate DataType="{x:Type viewModels:RootViewModel}">
         <views:RootView/>
@@ -51,11 +51,11 @@
         <views:HomeCommandIconView/>
     </DataTemplate>
     
-    <DataTemplate DataType="{x:Type viewModelsPresentation:NotificationViewModel}">
+    <DataTemplate DataType="{x:Type userInterface:NotificationViewModel}">
         <views:NotificationView/>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type viewModelsPresentation:ButtonNotificationViewModel}">
+    <DataTemplate DataType="{x:Type userInterface:ButtonNotificationViewModel}">
         <views:ButtonNotificationView/>
     </DataTemplate>
 

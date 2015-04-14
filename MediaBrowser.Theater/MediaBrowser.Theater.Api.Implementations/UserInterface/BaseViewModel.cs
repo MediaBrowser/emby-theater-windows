@@ -1,15 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using MediaBrowser.Theater.Api.UserInterface;
-using MediaBrowser.Theater.Presentation.Annotations;
-using MediaBrowser.Theater.Presentation.Reflection;
+using MediaBrowser.Theater.Api.Properties;
+using MediaBrowser.Theater.Api.Reflection;
 
-namespace MediaBrowser.Theater.Presentation.ViewModels
+namespace MediaBrowser.Theater.Api.UserInterface
 {
     public sealed class ViewModel
     {

@@ -83,6 +83,7 @@
       <HintPath>..\packages\SimpleInjector.2.7.3\lib\net45\SimpleInjector.Diagnostics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -116,11 +117,18 @@
     <Compile Include="Commands\CommandManager.cs" />
     <Compile Include="Commands\CommandRouter.cs" />
     <Compile Include="Commands\InputToCommand.cs" />
+    <Compile Include="Commands\ItemCommands\BaseItemDtoPlayInfoExtensions.cs" />
+    <Compile Include="Commands\ItemCommands\ItemCommandsManager.cs" />
+    <Compile Include="Commands\ItemCommands\PlayItemCommand.cs" />
+    <Compile Include="Commands\ItemCommands\PlayItemCommandView.cs" />
     <Compile Include="Configuration\ApplicationPaths.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Playback\PlaybackManager.cs" />
     <Compile Include="Playback\PlaybackProgressReporter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reflection\ChainingPropertyDescriptor.cs" />
+    <Compile Include="Reflection\HyperTypeDescriptionProvider.cs" />
+    <Compile Include="Reflection\HyperTypeDescriptor.cs" />
     <Compile Include="ScheduledTasks\PluginUpdateTask.cs" />
     <Compile Include="ScheduledTasks\SystemUpdateTask.cs" />
     <Compile Include="Session\SessionManager.cs" />
@@ -136,7 +144,13 @@
     <Compile Include="UserInput\HookManager.Windows.cs" />
     <Compile Include="UserInput\MouseEventExtArgs.cs" />
     <Compile Include="UserInput\UserInputManager.cs" />
+    <Compile Include="UserInterface\BaseValidatingViewModel.cs" />
+    <Compile Include="UserInterface\BaseViewModel.cs" />
+    <Compile Include="UserInterface\IHasActivityStatus.cs" />
+    <Compile Include="UserInterface\IHasCloseDelay.cs" />
     <Compile Include="UserInterface\ImageManager.cs" />
+    <Compile Include="UserInterface\NotificationViewModel.cs" />
+    <Compile Include="UserInterface\RelayCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

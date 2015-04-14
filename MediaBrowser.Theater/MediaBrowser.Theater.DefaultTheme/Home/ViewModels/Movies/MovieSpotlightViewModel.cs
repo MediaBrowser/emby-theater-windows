@@ -76,7 +76,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
                     Title = "Genres",
                     Items = connectionManager.GetApiClient(movieFolder).GetGenresAsync(new ItemsByNameQuery { ParentId = movieFolder.Id, UserId = sessionManager.CurrentUser.Id }),
                     ViewModelSelector = dto => {
-                        var vm = new ItemTileViewModel(connectionManager, imageManager, navigator, playbackManager, dto) {
+                        var vm = new ItemTileViewModel(connectionManager, imageManager, navigator, playbackManager, sessionManager, dto) {
                             GoToDetailsCommand = new RelayCommand(o => {
                                 var api = connectionManager.GetApiClient(dto);
                                 var p = new ItemListParameters {
@@ -201,7 +201,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
         private ItemTileViewModel CreateMiniSpotlightItem()
         {
-            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator,  _playbackManager, null) {
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator,  _playbackManager, _sessionManager, null) {
                 DesiredImageWidth = _miniSpotlightWidth,
                 DesiredImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb }

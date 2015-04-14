@@ -13,36 +13,10 @@ using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation.ViewModels;
+using MediaBrowser.Theater.Api.Commands.ItemCommands;
 
 namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 {
-    public static class BaseItemDtoPlayInfoExtensions
-    {
-        public static double GetPlayedPercent(this BaseItemDto item)
-        {
-            if (item == null) {
-                return 0;
-            }
-
-            if (item.IsFolder) {
-                return item.UserData.PlayedPercentage ?? 0;
-            }
-
-            if (item.RunTimeTicks.HasValue) {
-                if (item.UserData != null && item.UserData.PlaybackPositionTicks > 0) {
-                    if (item.UserData.PlaybackPositionTicks == item.RunTimeTicks) {
-                        return 100;
-                    }
-
-                    double percent = item.UserData.PlaybackPositionTicks / (double)item.RunTimeTicks.Value;
-                    return percent * 100;
-                }
-            }
-
-            return 0;
-        }
-    }
-
     public class PlayButtonViewModel : BaseViewModel
     {
         private BaseItemDto _firstItem;
@@ -66,7 +40,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         private async Task<IList<Media>> Load(BaseItemDto item, IPlaybackManager playbackManager, IConnectionManager connectionManager, IImageManager imageManager, ISessionManager sessionManager, string defaultBackgroundImage = null)
         {
-            var items = await GetItems(connectionManager, sessionManager, item);
+            var items = await item.GetSmartPlayItems(connectionManager, sessionManager);
             var media = Enumerable.Concat(items.Take(1).Select(Media.Resume),
                                           items.Skip(1).Select(Media.Create))
                                   .ToList();
@@ -120,43 +94,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             return api.GetImageUrl(item, imageOptions);
         }
 
-        private async Task<IList<BaseItemDto>> GetItems(IConnectionManager connectionManager, ISessionManager sessionManager, BaseItemDto item)
-        {
-            var queryParams = new ChildrenQueryParams {
-                Recursive = true,
-                IncludeItemTypes = new[] { "Movie", "Episode", "Audio" },
-                SortOrder = SortOrder.Ascending,
-                SortBy = new[] { "SortName" }
-            };
-
-            if (item.IsType("Series") || item.IsType("Season") || item.IsType("BoxSet")) {
-                var response = (await ItemChildren.Get(connectionManager, sessionManager, item, queryParams));
-                var children = response.Items;
-
-                int lastWatched = -1;
-                for (int i = 0; i < children.Length; i++) {
-                    var percent = children[i].GetPlayedPercent();
-                    if (percent >= 100 || children[i].UserData.Played) {
-                        lastWatched = i;
-                    } else if (percent > 0) {
-                        lastWatched = i - 1;
-                    }
-                }
-
-                var start = lastWatched + 1;
-                if (start > 0 && start < children.Length - 1) {
-                    children = children.Skip(start).ToArray();
-                }
-
-                return children;
-            }
-           
-            if (item.IsFolder || item.IsGenre || item.IsPerson || item.IsStudio) {
-                return (await ItemChildren.Get(connectionManager, sessionManager, item, queryParams)).Items;
-            }
-
-            return new List<BaseItemDto> { item };
-        }
+        
 
         private BaseItemDto FirstItem
         {

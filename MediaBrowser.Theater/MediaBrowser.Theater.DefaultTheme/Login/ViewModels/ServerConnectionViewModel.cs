@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels

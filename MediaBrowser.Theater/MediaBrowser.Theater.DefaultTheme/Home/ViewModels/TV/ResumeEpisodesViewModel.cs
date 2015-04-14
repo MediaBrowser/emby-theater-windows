@@ -114,7 +114,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         private ItemTileViewModel CreateEpisodeItem()
         {
-            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, null) {
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager, null) {
                 DesiredImageWidth = HomeViewModel.TileWidth,
                 DesiredImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Primary, ImageType.Screenshot, ImageType.Thumb, ImageType.Backdrop },

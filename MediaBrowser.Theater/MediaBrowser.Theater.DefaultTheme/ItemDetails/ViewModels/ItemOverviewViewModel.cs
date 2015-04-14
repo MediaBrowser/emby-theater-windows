@@ -9,6 +9,8 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
+using MediaBrowser.Theater.Api.Commands;
+using MediaBrowser.Theater.Api.Commands.ItemCommands;
 using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
@@ -38,29 +40,55 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private CroppedBitmap _toggleLikeButtonImage;
         private CroppedBitmap _toggleDislikeButtonImage;
         private CroppedBitmap _toggleWatchedButtonImage;
+        private IItemCommand _primaryCommand;
+        private IItemCommand _secondaryCommand;
 
         public ItemArtworkViewModel PosterArtwork { get; set; }
         public ItemArtworkViewModel BackgroundArtwork { get; set; }
         public ItemInfoViewModel Info { get; set; }
 
-        public ICommand PlayCommand { get; set; }
-        public ICommand EnqueueCommand { get; set; }
-        public bool CanPlay { get; set; }
+        public IItemCommand PrimaryCommand
+        {
+            get { return _primaryCommand; }
+            set
+            {
+                if (Equals(value, _primaryCommand)) {
+                    return;
+                }
+                _primaryCommand = value;
+                OnPropertyChanged();
+                OnPropertyChanged("HasPrimaryCommand");
+            }
+        }
 
-        public ICommand PlayAllCommand { get; set; }
-        public ICommand EnqueueAllCommand { get; set; }
-        public bool CanPlayAll { get; set; }
+        public IItemCommand SecondaryCommand
+        {
+            get { return _secondaryCommand; }
+            set
+            {
+                if (Equals(value, _secondaryCommand)) {
+                    return;
+                }
+                _secondaryCommand = value;
+                OnPropertyChanged();
+                OnPropertyChanged("HasSecondaryCommand");
+            }
+        }
 
-        public ICommand ResumeCommand { get; set; }
-
-        public ICommand BrowseAllCommand { get; set; }
-
-        public ICommand PrimaryCommand { get; set; }
-        public ICommand SecondaryCommand { get; set; }
         public ICommand ToggleFavoriteCommand { get; set; }
         public ICommand ToggleLikeCommand { get; set; }
         public ICommand ToggleDislikeCommand { get; set; }
         public ICommand ToggleWatchedCommand { get; set; }
+
+        public bool HasPrimaryCommand
+        {
+            get { return PrimaryCommand != null; }
+        }
+
+        public bool HasSecondaryCommand
+        {
+            get { return SecondaryCommand != null; }
+        }
 
         public CroppedBitmap PrimaryButtonImage
         {
@@ -139,16 +167,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 OnPropertyChanged();
             }
         }
-
-//        public BitmapSource ButtonBackground { get; set; }
-//
-//        public Rect PrimaryButtonSourceRect { get; set; }
-//        public Rect SecondaryButtonSourceRect { get; set; }
-//        public Rect ToggleFavoriateButtonSourceRect { get; set; }
-//        public Rect ToggleLikeButtonSourceRect { get; set; }
-//        public Rect ToggleDislikeButtonSourceRect { get; set; }
-//        public Rect ToggleWatchedButtonSourceRect { get; set; }
-
+        
         public int SortOrder
         {
             get { return 0; }
@@ -233,7 +252,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public PlayButtonViewModel PlayButton { get; private set; }
 
-        public ItemOverviewViewModel(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager, ISessionManager sessionManager, INavigator navigator)
+        public ItemOverviewViewModel(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager, ISessionManager sessionManager, IItemCommandsManager commands)
         {
             _item = item;
 
@@ -265,28 +284,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
             BackgroundArtwork = new ItemArtworkViewModel(item, connectionManager, imageManager) {
                 DesiredImageWidth = DetailsWidth,
-                PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Art, ImageType.Banner, ImageType.Screenshot, ImageType.Primary }
+                PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Screenshot }
             };
-
-//            PlayCommand = new RelayCommand(o => playbackManager.Play(item));
-//            ResumeCommand = new RelayCommand(o => playbackManager.Play(Media.Resume(item)));
-//            PlayAllCommand = new RelayCommand(async o => {
-//                var items = await ItemChildren.Get(connectionManager, sessionManager, item, new ChildrenQueryParams {
-//                    Recursive = true,
-//                    IncludeItemTypes = new[] { "Movie", "Episode", "Audio" },
-//                    SortOrder = MediaBrowser.Model.Entities.SortOrder.Ascending,
-//                    SortBy = new[] { "SortName" }
-//                });
-//                
-//                if (items.Items.Length > 0) {
-//                    await playbackManager.Play(items.Items.Select(i => (Media)i));
-//                }
-//            });
-//
-//            BrowseAllCommand = new RelayCommand(o => navigator.Navigate(Go.To.ItemList(new ItemListParameters {
-//                Items = ItemChildren.Get(connectionManager, sessionManager, item, new ChildrenQueryParams { ExpandSingleItems = true }),
-//                Title = item.Name
-//            })));
             
             PlayButton = new PlayButtonViewModel(item, playbackManager, connectionManager, imageManager, sessionManager, item.BackdropImageTags.Count > 1 ? 1 : (int?)null);
 
@@ -334,9 +333,28 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             SetupButtonImage(item, connectionManager, imageManager);
         }
 
+        private async Task SetupCommands(BaseItemDto item, IItemCommandsManager commandManager)
+        {
+            var commands = await commandManager.GetCommands(item);
+            // pick out play/resume, like, dislike, favorite and watched - bind to static buttons
+            // sort rest by sort order
+            // pick top 2, set as primary and secondary actions
+            // swap empty action slots for images
+            // if more than 2 actions, replace watched button with overflow
+
+            var extraActions = commands.Where(c => true).OrderBy(c => c.SortOrder).ToList(); // todo filter item commands
+            
+            PrimaryCommand = extraActions.FirstOrDefault();
+            SecondaryCommand = extraActions.Skip(1).FirstOrDefault();
+            
+            if (extraActions.Count > 2) {
+                
+            }
+        }
+
         private async void SetupButtonImage(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager)
         {
-            if (item.BackdropCount < 2) {
+            if (item.BackdropCount < 3) {
                 return;
             }
 
@@ -399,7 +417,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
-            IItemDetailSection section = new ItemOverviewViewModel(item, _connectionManager, _imageManager, _playbackManager, _sessionManager, _navigator);
+            IItemDetailSection section = new ItemOverviewViewModel(item, _connectionManager, _imageManager, _playbackManager, _sessionManager, null);
             return Task.FromResult<IEnumerable<IItemDetailSection>>(new[] { section });
         }
     }

@@ -6,9 +6,11 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Events;
 using MediaBrowser.Model.Session;
+using MediaBrowser.Theater.Api.Commands.ItemCommands;
 using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
+using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
 using MediaBrowser.Theater.Playback;
@@ -30,7 +32,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private ICommand _playTrailerCommand;
 
         public ItemTileViewModel(IConnectionManager connectionManager, IImageManager imageManager,
-                                 INavigator navigator, IPlaybackManager playbackManager, BaseItemDto item)
+                                 INavigator navigator, IPlaybackManager playbackManager, ISessionManager sessionManager,
+                                 BaseItemDto item)
         {
             _connectionManager = connectionManager;
             _playbackManager = playbackManager;
@@ -47,7 +50,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
             DisplayNameGenerator = i => i.GetDisplayName(new DisplayNameFormat(true, true));
             GoToDetailsCommand = new RelayCommand(o => navigator.Navigate(Go.To.Item(Item)));
-            PlayCommand = new RelayCommand(o => _playbackManager.Play(Media.Resume(item)));
+            PlayCommand = new RelayCommand(async o => {
+                var media = await item.GetSmartPlayMedia(connectionManager, sessionManager);
+                await _playbackManager.Play(media);
+            });
         }
 
         public BaseItemDto Item

@@ -5,6 +5,7 @@ using System.Linq;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Api.Library;
+using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 

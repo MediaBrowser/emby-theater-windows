@@ -20,11 +20,12 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList
         private readonly INavigator _navigator;
         private readonly IPresenter _presenter;
         private readonly IPlaybackManager _playbackManager;
+        private readonly ISessionManager _sessionManager;
 
         private ItemListViewModel _viewModel;
 
         public ItemListContext(IApplicationHost appHost, IConnectionManager connectionManager, IImageManager imageManager,
-                               INavigator navigator, IPresenter presenter, IPlaybackManager playbackManager)
+                               INavigator navigator, IPresenter presenter, IPlaybackManager playbackManager, ISessionManager sessionManager)
             : base(appHost)
         {
             _connectionManager = connectionManager;
@@ -32,6 +33,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList
             _navigator = navigator;
             _presenter = presenter;
             _playbackManager = playbackManager;
+            _sessionManager = sessionManager;
 
             Binder.Bind<SortModeMenuPath>(async path => {
                 var context = appHost.CreateInstance(typeof (SortModeMenuContext)) as SortModeMenuContext;
@@ -46,7 +48,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList
         public override async Task Activate()
         {
             if (_viewModel == null || !_viewModel.IsActive) {
-                _viewModel = new ItemListViewModel(Parameters, _connectionManager, _imageManager, _navigator, _playbackManager);
+                _viewModel = new ItemListViewModel(Parameters, _connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager);
             }
 
             await _presenter.ShowPage(_viewModel);

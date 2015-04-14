@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
 
-namespace MediaBrowser.Theater.Presentation.Reflection
+namespace MediaBrowser.Theater.Api.Reflection
 {
     public abstract class ChainingPropertyDescriptor : PropertyDescriptor
     {

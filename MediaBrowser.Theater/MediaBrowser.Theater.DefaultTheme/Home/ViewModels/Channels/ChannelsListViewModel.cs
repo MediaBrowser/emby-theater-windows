@@ -125,7 +125,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Channels
 
         private ItemTileViewModel CreateChannelItem()
         {
-            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, null)
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager, null)
             {
                 DesiredImageWidth = HomeViewModel.TileWidth,
                 DesiredImageHeight = HomeViewModel.TileHeight,

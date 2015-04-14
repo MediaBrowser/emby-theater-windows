@@ -129,7 +129,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
         private ItemTileViewModel CreateMovieItem()
         {
-            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, null) {
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager, null) {
                 DesiredImageWidth = PosterWidth,
                 DesiredImageHeight = PosterHeight,
                 ShowCaptionBar = false,

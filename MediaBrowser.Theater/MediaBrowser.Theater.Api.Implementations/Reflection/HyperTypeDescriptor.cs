@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
 
-namespace MediaBrowser.Theater.Presentation.Reflection
+namespace MediaBrowser.Theater.Api.Reflection
 {
     internal sealed class HyperTypeDescriptor : CustomTypeDescriptor
     {

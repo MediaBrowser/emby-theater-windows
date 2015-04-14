@@ -814,6 +814,10 @@
     <Resource Include="Resources\Fonts\SourceSansPro-Semibold.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MediaBrowser.Theater.Api.Implementations\MediaBrowser.Theater.Api.Implementations.csproj">
+      <Project>{4b8f5bcc-d1d8-4ef1-9f03-91634b233ed0}</Project>
+      <Name>MediaBrowser.Theater.Api.Implementations</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MediaBrowser.Theater.Api\MediaBrowser.Theater.Api.csproj">
       <Project>{76a1834d-1be3-4361-bac2-711cdd74eb3f}</Project>
       <Name>MediaBrowser.Theater.Api</Name>

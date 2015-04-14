@@ -6,10 +6,10 @@
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
-             xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:userInterface="clr-namespace:MediaBrowser.Theater.Api.UserInterface;assembly=MediaBrowser.Theater.Api.Implementations"
              mc:Ignorable="d"
-             viewModels1:ViewModel.CloseDelay="0:0:0.3"
+             userInterface:ViewModel.CloseDelay="0:0:0.3"
              d:DataContext="{d:DesignInstance viewModels:SideMenuViewModel}"
              d:DesignHeight="300" d:DesignWidth="1280">
     <Grid x:Name="Sidebar" Background="{StaticResource BackgroundBrush2}" MinWidth="400" HorizontalAlignment="Right" IsHitTestVisible="True">

@@ -3,13 +3,14 @@
  *                              Assert ReflectionPermission for main creation
  *                                  (thanks/credit to Josh Smith for feedback/hints)
  */
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Security;
 using System.Security.Permissions;
 
-namespace MediaBrowser.Theater.Presentation.Reflection
+namespace MediaBrowser.Theater.Api.Reflection
 {
     public sealed class HyperTypeDescriptionProvider : TypeDescriptionProvider
     {

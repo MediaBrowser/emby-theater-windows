@@ -64,10 +64,10 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             }
 
             if (listCondition(itemsResult)) {
-                return new ItemsListViewModel(itemsResult, _connectionManager, _imageManager, _navigator, _playbackManager);
+                return new ItemsListViewModel(itemsResult, _connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager);
             }
 
-            return new ItemsGridViewModel(itemsResult, _connectionManager, _imageManager, _navigator, _playbackManager);
+            return new ItemsGridViewModel(itemsResult, _connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager);
         }
     }
 }

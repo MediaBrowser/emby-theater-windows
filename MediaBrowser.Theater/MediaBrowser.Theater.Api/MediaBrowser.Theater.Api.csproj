@@ -68,6 +68,7 @@
     <Compile Include="AsyncLock.cs" />
     <Compile Include="Commands\Commands.cs" />
     <Compile Include="Commands\ICommandManager.cs" />
+    <Compile Include="Commands\ItemCommands\IItemCommand.cs" />
     <Compile Include="Commands\IMenuCommand.cs" />
     <Compile Include="Configuration\ApplicationConfiguration.cs" />
     <Compile Include="Configuration\InternalPlayerConfiguration.cs" />

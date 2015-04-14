@@ -148,7 +148,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         private ItemTileViewModel CreateItem()
         {
-            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, null)
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager, null)
             {
                 DesiredImageHeight = PosterHeight,
                 PreferredImageTypes = new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb }

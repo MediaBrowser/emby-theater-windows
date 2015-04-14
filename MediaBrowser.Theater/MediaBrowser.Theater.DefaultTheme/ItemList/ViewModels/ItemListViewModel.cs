@@ -8,6 +8,7 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.Playback;
@@ -155,6 +156,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         private readonly Task<ItemsResult> _items;
         private readonly INavigator _navigator;
         private readonly IPlaybackManager _playbackManager;
+        private readonly ISessionManager _sessionManager;
 
         private string _itemType;
         private IItemListSortMode _sortMode;
@@ -163,7 +165,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         private IEnumerable<IItemListSortMode> _availableSortModes;
         private SortDirection _sortDirection;
 
-        public ItemListViewModel(ItemListParameters parameters, IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, IPlaybackManager playbackManager)
+        public ItemListViewModel(ItemListParameters parameters, IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, IPlaybackManager playbackManager, ISessionManager sessionManager)
         {
             _items = parameters.Items;
             _parameters = parameters;
@@ -171,6 +173,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             _imageManager = imageManager;
             _navigator = navigator;
             _playbackManager = playbackManager;
+            _sessionManager = sessionManager;
             _availableSortModes = new IItemListSortMode[] { new IndexSortMode(), new ItemNameSortMode(), new ItemYearSortMode(), new ItemCommunityReviewSortMode() };
 
             Items = new RangeObservableCollection<ItemTileViewModel>();
@@ -310,7 +313,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
 
         private ItemTileViewModel CreateItemViewModel(BaseItemDto dto)
         {
-            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, dto);
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager, dto);
         }
 
         private async Task LoadItems(Task<ItemsResult> itemsTask)

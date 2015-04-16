@@ -222,7 +222,9 @@ namespace MediaBrowser.UI
                 SupportedCommands = Enum.GetNames(typeof(GeneralCommandType)).ToList(),
 
                 SupportsMediaControl = true,
-                DeviceProfile = new MediaBrowserTheaterProfile()
+                DeviceProfile = new MediaBrowserTheaterProfile(),
+                Url = "http://emby.media",
+                ImageUrl = "https://raw.githubusercontent.com/MediaBrowser/MediaBrowser.Theater/master/logo.png"
             };
 
             var device = new Device

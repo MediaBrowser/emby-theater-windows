@@ -38,20 +38,20 @@
       <HintPath>..\ThirdParty\CoreAudioApi\CoreAudioApi.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.ApiInteraction">
-      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.614\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.615\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MediaBrowser.Common">
-      <HintPath>..\packages\MediaBrowser.Common.3.0.620\lib\net45\MediaBrowser.Common.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="MediaBrowser.Common, Version=3.0.5585.22974, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.621\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.Common.Implementations">
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.620\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.621\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MediaBrowser.Model">
-      <HintPath>..\packages\MediaBrowser.Common.3.0.620\lib\net45\MediaBrowser.Model.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="MediaBrowser.Model, Version=3.0.5585.22976, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.621\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -62,7 +62,7 @@
       <HintPath>..\packages\NLog.3.2.0.0\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Text">
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.620\lib\net45\ServiceStack.Text.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.621\lib\net45\ServiceStack.Text.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SimpleInjector">

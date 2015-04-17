@@ -65,7 +65,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 ShowLoadingAnimation = true,
 
                 PlayAllFromHereOnPlayCommand = playAllFromHere,
-                PlayAllFromHereOnNavigateCommand = playAllFromHere
+                PlayAllFromHereOnNavigateCommand = playAllFromHere,
+
+                OnItemCreated = v =>
+                {
+                    v.DisplayNameVisibility = Visibility.Visible;
+                }
             };
 
             _viewModel.AddIndexOptions(options.IndexOptions);

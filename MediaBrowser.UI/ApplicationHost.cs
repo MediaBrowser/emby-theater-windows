@@ -223,8 +223,8 @@ namespace MediaBrowser.UI
 
                 SupportsMediaControl = true,
                 DeviceProfile = new MediaBrowserTheaterProfile(),
-                Url = "http://emby.media",
-                ImageUrl = "https://raw.githubusercontent.com/MediaBrowser/MediaBrowser.Theater/master/logo.png"
+                AppStoreUrl = "http://emby.media",
+                IconUrl = "https://raw.githubusercontent.com/MediaBrowser/MediaBrowser.Theater/master/logo.png"
             };
 
             var device = new Device

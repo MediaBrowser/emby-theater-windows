@@ -51,7 +51,7 @@ namespace MediaBrowser.Theater.Api.Commands.ItemCommands
             }
 
             ExecuteCommand = new RelayCommand(o => _playbackManager.Play(media));
-            IconViewModel = new PlayItemCommandView();
+            IconViewModel = new PlayItemCommandViewModel();
 
             IsEnabled = true;
         }

@@ -14,27 +14,22 @@ namespace MediaBrowser.Theater.Api.Commands.ItemCommands
     {
         public static double GetPlayedPercent(this BaseItemDto item)
         {
-            if (item == null)
-            {
+            if (item == null) {
                 return 0;
             }
 
-            if (item.IsFolder)
-            {
+            if (item.IsFolder) {
                 return item.UserData.PlayedPercentage ?? 0;
             }
 
-            if (item.RunTimeTicks.HasValue)
-            {
-                if (item.UserData != null && item.UserData.PlaybackPositionTicks > 0)
-                {
-                    if (item.UserData.PlaybackPositionTicks == item.RunTimeTicks)
-                    {
+            if (item.RunTimeTicks.HasValue) {
+                if (item.UserData != null && item.UserData.PlaybackPositionTicks > 0) {
+                    if (item.UserData.PlaybackPositionTicks == item.RunTimeTicks) {
                         return 100;
                     }
 
-                    double percent = item.UserData.PlaybackPositionTicks / (double)item.RunTimeTicks.Value;
-                    return percent * 100;
+                    double percent = item.UserData.PlaybackPositionTicks/(double) item.RunTimeTicks.Value;
+                    return percent*100;
                 }
             }
 
@@ -43,44 +38,36 @@ namespace MediaBrowser.Theater.Api.Commands.ItemCommands
 
         public static async Task<SmartPlayResult<BaseItemDto>> GetSmartPlayItems(this BaseItemDto item, IConnectionManager connectionManager, ISessionManager sessionManager)
         {
-            var queryParams = new ChildrenQueryParams
-            {
+            var queryParams = new ChildrenQueryParams {
                 Recursive = true,
                 IncludeItemTypes = new[] { "Movie", "Episode", "Audio" },
                 SortOrder = SortOrder.Ascending,
                 SortBy = new[] { "SortName" }
             };
 
-            if (item.IsType("Series") || item.IsType("Season") || item.IsType("BoxSet"))
-            {
+            if (item.IsType("Series") || item.IsType("Season") || item.IsType("BoxSet")) {
                 var response = (await ItemChildren.Get(connectionManager, sessionManager, item, queryParams));
                 var children = response.Items;
 
                 int lastWatched = -1;
-                for (int i = 0; i < children.Length; i++)
-                {
+                for (int i = 0; i < children.Length; i++) {
                     var percent = children[i].GetPlayedPercent();
-                    if (percent >= 100 || children[i].UserData.Played)
-                    {
+                    if (percent >= 100 || children[i].UserData.Played) {
                         lastWatched = i;
-                    }
-                    else if (percent > 0)
-                    {
+                    } else if (percent > 0) {
                         lastWatched = i - 1;
                     }
                 }
 
                 var start = lastWatched + 1;
-                if (start > 0 && start < children.Length - 1)
-                {
+                if (start > 0 && start < children.Length - 1) {
                     children = children.Skip(start).ToArray();
                 }
 
                 return new SmartPlayResult<BaseItemDto>(children, start == -1);
             }
 
-            if (item.IsFolder || item.IsGenre || item.IsPerson || item.IsStudio)
-            {
+            if (item.IsFolder || item.IsGenre || item.IsPerson || item.IsStudio) {
                 return new SmartPlayResult<BaseItemDto>((await ItemChildren.Get(connectionManager, sessionManager, item, queryParams)).Items);
             }
 
@@ -89,16 +76,14 @@ namespace MediaBrowser.Theater.Api.Commands.ItemCommands
 
         public static async Task<SmartPlayResult<BaseItemDto>> GetPlayableItems(this BaseItemDto item, IConnectionManager connectionManager, ISessionManager sessionManager)
         {
-            var queryParams = new ChildrenQueryParams
-            {
+            var queryParams = new ChildrenQueryParams {
                 Recursive = true,
                 IncludeItemTypes = new[] { "Movie", "Episode", "Audio" },
                 SortOrder = SortOrder.Ascending,
                 SortBy = new[] { "SortName" }
             };
 
-            if (item.IsFolder || item.IsGenre || item.IsPerson || item.IsStudio || item.IsType("Series") || item.IsType("Season") || item.IsType("BoxSet"))
-            {
+            if (item.IsFolder || item.IsGenre || item.IsPerson || item.IsStudio || item.IsType("Series") || item.IsType("Season") || item.IsType("BoxSet")) {
                 return new SmartPlayResult<BaseItemDto>((await ItemChildren.Get(connectionManager, sessionManager, item, queryParams)).Items);
             }
 

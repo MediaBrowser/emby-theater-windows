@@ -46,7 +46,7 @@ namespace MediaBrowser.Theater.Api.Commands.ItemCommands
 
             DisplayName = "Play from Start";
             ExecuteCommand = new RelayCommand(o => _playbackManager.Play(media));
-            IconViewModel = new PlayFromStartItemCommandView();
+            IconViewModel = new PlayFromStartItemCommandViewModel();
 
             IsEnabled = true;
         }

@@ -2,46 +2,42 @@
 using System.Windows.Input;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.Theater.Api.Library;
-using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.Api.Commands.ItemCommands
 {
-    public class BrowseItemCommand : IItemCommand
+    public class PlayTrailerItemCommand : IItemCommand
     {
         private readonly IConnectionManager _connectionManager;
-        private readonly INavigator _navigator;
+        private readonly IPlaybackManager _playbackManager;
         private readonly ISessionManager _sessionManager;
 
-        public BrowseItemCommand(INavigator navigator, IConnectionManager connectionManager, ISessionManager sessionManager)
+        public PlayTrailerItemCommand(IPlaybackManager playbackManager, IConnectionManager connectionManager, ISessionManager sessionManager)
         {
-            _navigator = navigator;
+            _playbackManager = playbackManager;
             _connectionManager = connectionManager;
             _sessionManager = sessionManager;
         }
 
         public async Task Initialize(BaseItemDto item)
         {
-            bool isFolter = item.IsFolder || item.IsGenre || item.IsPerson || item.IsStudio;
-
-            if (!isFolter) {
+            if (item.LocalTrailerCount == 0) {
                 IsEnabled = false;
                 return;
             }
 
-            DisplayName = "Browse";
-            IconViewModel = new BrowseItemCommandViewModel();
+            IApiClient api = _connectionManager.GetApiClient(item);
+            DisplayName = "Trailer";
+            IconViewModel = new PlayTrailerItemCommandViewModel();
             ExecuteCommand = new RelayCommand(async o => {
-                await _navigator.Navigate(Go.To.ItemList(new ItemListParameters {
-                    Items = ItemChildren.Get(_connectionManager, _sessionManager, item),
-                    Title = item.GetDisplayName()
-                }));
+                BaseItemDto[] trailers = await api.GetLocalTrailersAsync(_sessionManager.CurrentUser.Id, item.Id);
+                if (trailers.Length > 0) {
+                    await _playbackManager.Play(trailers[0]);
+                }
             });
-
-            IsEnabled = true;
         }
 
         public bool IsEnabled { get; private set; }
@@ -51,7 +47,7 @@ namespace MediaBrowser.Theater.Api.Commands.ItemCommands
 
         public int SortOrder
         {
-            get { return 30; }
+            get { return 40; }
         }
     }
 }

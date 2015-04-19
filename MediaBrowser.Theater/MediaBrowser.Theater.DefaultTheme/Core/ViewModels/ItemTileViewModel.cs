@@ -20,7 +20,7 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 {
     public class ItemTileViewModel
-        : BaseViewModel, IKnownSize
+        : BaseViewModel, IKnownSize, IItemViewModel
     {
         private BaseItemDto _item;
         private readonly IConnectionManager _connectionManager;

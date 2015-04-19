@@ -117,8 +117,12 @@
     <Compile Include="Commands\CommandManager.cs" />
     <Compile Include="Commands\CommandRouter.cs" />
     <Compile Include="Commands\InputToCommand.cs" />
+    <Compile Include="Commands\ItemCommands\BrowseItemCommandViewModel.cs" />
     <Compile Include="Commands\ItemCommands\BaseItemDtoPlayInfoExtensions.cs" />
+    <Compile Include="Commands\ItemCommands\BrowseItemCommand.cs" />
     <Compile Include="Commands\ItemCommands\ItemCommandsManager.cs" />
+    <Compile Include="Commands\ItemCommands\PlayFromStartItemCommand.cs" />
+    <Compile Include="Commands\ItemCommands\PlayFromStartItemCommandView.cs" />
     <Compile Include="Commands\ItemCommands\PlayItemCommand.cs" />
     <Compile Include="Commands\ItemCommands\PlayItemCommandView.cs" />
     <Compile Include="Configuration\ApplicationPaths.cs" />

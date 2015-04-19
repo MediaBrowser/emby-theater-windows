@@ -41,7 +41,7 @@ namespace MediaBrowser.Theater.Api.Commands.ItemCommands
             return 0;
         }
 
-        public static async Task<IList<BaseItemDto>> GetSmartPlayItems(this BaseItemDto item, IConnectionManager connectionManager, ISessionManager sessionManager)
+        public static async Task<SmartPlayResult<BaseItemDto>> GetSmartPlayItems(this BaseItemDto item, IConnectionManager connectionManager, ISessionManager sessionManager)
         {
             var queryParams = new ChildrenQueryParams
             {
@@ -76,26 +76,62 @@ namespace MediaBrowser.Theater.Api.Commands.ItemCommands
                     children = children.Skip(start).ToArray();
                 }
 
-                return children;
+                return new SmartPlayResult<BaseItemDto>(children, start == -1);
             }
 
             if (item.IsFolder || item.IsGenre || item.IsPerson || item.IsStudio)
             {
-                return (await ItemChildren.Get(connectionManager, sessionManager, item, queryParams)).Items;
+                return new SmartPlayResult<BaseItemDto>((await ItemChildren.Get(connectionManager, sessionManager, item, queryParams)).Items);
             }
 
-            return new List<BaseItemDto> { item };
+            return new SmartPlayResult<BaseItemDto> { item };
         }
 
-        public static async Task<IList<Media>> GetSmartPlayMedia(this BaseItemDto item, IConnectionManager connectionManager, ISessionManager sessionManager)
+        public static async Task<SmartPlayResult<BaseItemDto>> GetPlayableItems(this BaseItemDto item, IConnectionManager connectionManager, ISessionManager sessionManager)
+        {
+            var queryParams = new ChildrenQueryParams
+            {
+                Recursive = true,
+                IncludeItemTypes = new[] { "Movie", "Episode", "Audio" },
+                SortOrder = SortOrder.Ascending,
+                SortBy = new[] { "SortName" }
+            };
+
+            if (item.IsFolder || item.IsGenre || item.IsPerson || item.IsStudio || item.IsType("Series") || item.IsType("Season") || item.IsType("BoxSet"))
+            {
+                return new SmartPlayResult<BaseItemDto>((await ItemChildren.Get(connectionManager, sessionManager, item, queryParams)).Items);
+            }
+
+            return new SmartPlayResult<BaseItemDto> { item };
+        }
+
+        public static async Task<SmartPlayResult<Media>> GetSmartPlayMedia(this BaseItemDto item, IConnectionManager connectionManager, ISessionManager sessionManager)
         {
             var items = await item.GetSmartPlayItems(connectionManager, sessionManager);
-            return items.Take(1).Select(Media.Resume).Concat(items.Skip(1).Select(Media.Create)).ToList();
+            return new SmartPlayResult<Media>(items.Take(1).Select(Media.Resume).Concat(items.Skip(1).Select(Media.Create))) {
+                IncludesAllChildren = items.IncludesAllChildren
+            };
         }
 
         public static bool IsPlayable(this BaseItemDto item)
         {
             return !item.IsFolder && !item.IsGenre && !item.IsPerson && !item.IsStudio;
+        }
+    }
+
+    public class SmartPlayResult<T> : List<T>
+    {
+        public bool IncludesAllChildren { get; set; }
+
+        public SmartPlayResult(bool includesAll = true)
+        {
+            IncludesAllChildren = includesAll;
+        }
+
+        public SmartPlayResult(IEnumerable<T> items, bool includesAll = true)
+            : base(items)
+        {
+            IncludesAllChildren = includesAll;
         }
     }
 }

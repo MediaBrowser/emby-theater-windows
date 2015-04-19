@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Querying;
+using MediaBrowser.Theater.Api.UserInterface;
 
 namespace MediaBrowser.Theater.Api.Navigation
 {
@@ -66,12 +70,25 @@ namespace MediaBrowser.Theater.Api.Navigation
     /// </summary>
     public class FullScreenPlaybackPath : NavigationPath { }
 
+    /// <summary>
+    ///     The path to a page for displaying the results of an items query.
+    /// </summary>
+    public class ItemListPath : NavigationPathArg<ItemListParameters> { }
+
     #region Path Arguements
 
     public class ServerSelectionArguements
     {
         public IEnumerable<ServerInfo> Servers { get; set; }
         public bool IsConnectUser { get; set; }
+    }
+
+    public class ItemListParameters
+    {
+        public Task<ItemsResult> Items { get; set; }
+        public string Title { get; set; }
+        public bool ForceShowItemNames { get; set; }
+        public Func<BaseItemDto, IItemViewModel> ViewModelSelector { get; set; }
     }
 
     #endregion
@@ -194,6 +211,17 @@ namespace MediaBrowser.Theater.Api.Navigation
         public static FullScreenPlaybackPath FullScreenPlayback(this Go go)
         {
             return new FullScreenPlaybackPath();
+        }
+
+        /// <summary>
+        ///     Gets a path to the a page to display the specified items result.
+        /// </summary>
+        /// <param name="go"></param>
+        /// <param name="parameters">The items to display.</param>
+        /// <returns>A path to the a page to display the specified items result.</returns>
+        public static ItemListPath ItemList(this Go go, ItemListParameters parameters)
+        {
+            return new ItemListPath { Parameter = parameters };
         }
     }
 

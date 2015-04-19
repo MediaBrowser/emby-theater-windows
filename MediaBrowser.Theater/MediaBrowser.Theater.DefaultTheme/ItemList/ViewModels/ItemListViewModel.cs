@@ -176,7 +176,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             _sessionManager = sessionManager;
             _availableSortModes = new IItemListSortMode[] { new IndexSortMode(), new ItemNameSortMode(), new ItemYearSortMode(), new ItemCommunityReviewSortMode() };
 
-            Items = new RangeObservableCollection<ItemTileViewModel>();
+            Items = new RangeObservableCollection<IItemViewModel>();
             Title = parameters.Title;
 
             PresentationOptions = new RootPresentationOptions {
@@ -245,14 +245,14 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             Items.AddRange(sorted);
         }
 
-        private IEnumerable<ItemTileViewModel> SortItems(IEnumerable<ItemTileViewModel> items)
+        private IEnumerable<IItemViewModel> SortItems(IEnumerable<IItemViewModel> items)
         {
             return (SortDirection == SortDirection.Ascending) ?
                        items.OrderBy(vm => SortMode.GetSortKey(vm.Item)).ToList() :
                        items.OrderByDescending(vm => SortMode.GetSortKey(vm.Item)).ToList();
         }
 
-        public RangeObservableCollection<ItemTileViewModel> Items { get; private set; }
+        public RangeObservableCollection<IItemViewModel> Items { get; private set; }
 
         public ItemTileViewModel SelectedItem
         {
@@ -319,12 +319,16 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         private async Task LoadItems(Task<ItemsResult> itemsTask)
         {
             ItemsResult result = await itemsTask;
-            IEnumerable<ItemTileViewModel> viewModels = result.Items.Select(dto => {
+            IEnumerable<IItemViewModel> viewModels = result.Items.Select(dto => {
                 var vm = (_parameters.ViewModelSelector ?? CreateItemViewModel)(dto);
-                vm.DesiredImageHeight = ItemHeight;
 
-                if (_parameters.ForceShowItemNames) {
-                    vm.ShowCaptionBar = true;
+                var itemView = vm as ItemTileViewModel;
+                if (itemView != null) {
+                    itemView.DesiredImageHeight = ItemHeight;
+
+                    if (_parameters.ForceShowItemNames) {
+                        itemView.ShowCaptionBar = true;
+                    }
                 }
 
                 return vm;

@@ -122,6 +122,8 @@
     <Compile Include="Commands\ItemCommands\BrowseItemCommand.cs" />
     <Compile Include="Commands\ItemCommands\DislikeItemCommand.cs" />
     <Compile Include="Commands\ItemCommands\DislikeItemCommandViewModel.cs" />
+    <Compile Include="Commands\ItemCommands\FavoriteItemCommand.cs" />
+    <Compile Include="Commands\ItemCommands\FavoriteItemCommandViewModel.cs" />
     <Compile Include="Commands\ItemCommands\ItemCommandsManager.cs" />
     <Compile Include="Commands\ItemCommands\LikeItemCommand.cs" />
     <Compile Include="Commands\ItemCommands\LikeItemCommandViewModel.cs" />
@@ -131,6 +133,8 @@
     <Compile Include="Commands\ItemCommands\PlayItemCommandViewModel.cs" />
     <Compile Include="Commands\ItemCommands\PlayTrailerItemCommandViewModel.cs" />
     <Compile Include="Commands\ItemCommands\PlayTrailerItemCommand.cs" />
+    <Compile Include="Commands\ItemCommands\WatchedItemCommand.cs" />
+    <Compile Include="Commands\ItemCommands\WatchedItemCommandViewModel.cs" />
     <Compile Include="Configuration\ApplicationPaths.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Playback\PlaybackManager.cs" />

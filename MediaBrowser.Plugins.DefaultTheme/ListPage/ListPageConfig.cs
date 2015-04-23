@@ -28,7 +28,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         public ViewType Context;
 
         public Func<ItemListViewModel, DisplayPreferences, Task<ItemsResult>> CustomItemQuery;
-        
+        public bool ShowTitle { get; set; }
+
         public ListPageConfig()
         {
             IndexOptions = new List<TabItem>();

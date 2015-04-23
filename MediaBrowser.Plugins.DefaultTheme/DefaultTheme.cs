@@ -145,6 +145,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             if (context == ViewType.Folders || !_folderTypesWithDetailPages.Contains(item.Type, StringComparer.OrdinalIgnoreCase))
             {
                 var options = GetListPageConfig(item, context);
+                options.ShowTitle = true;
 
                 return new FolderPage(item, displayPreferences, apiClient, _imageManager, _presentationManager,
                     _navService, _playbackManager, _logger, options);

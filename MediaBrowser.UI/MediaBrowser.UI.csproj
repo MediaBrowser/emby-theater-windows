@@ -193,6 +193,7 @@
     <Compile Include="EntryPoints\CommandActions\CommandActionMap.cs" />
     <Compile Include="EntryPoints\CommandActions\CommandActionsEntryPoint.cs" />
     <Compile Include="EntryPoints\CommandActions\ScreenDump.cs" />
+    <Compile Include="EntryPoints\SocketListener.cs" />
     <Compile Include="EntryPoints\ThemeSongEntryPoint.cs" />
     <Compile Include="EntryPoints\WebSocketEntryPoint.cs" />
     <Compile Include="HiddenForm.cs">

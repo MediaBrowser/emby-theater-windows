@@ -437,7 +437,8 @@ namespace MediaBrowser.UI.Implementations
                 IndexOptions = indexOptions.ToList(),
                 IndexValue = selectedGenre,
                 PageTitle = pageTitle,
-                CustomItemQuery = query
+                CustomItemQuery = query,
+                ShowTitle = true
             };
 
             options.DefaultViewType = ListViewTypes.PosterStrip;

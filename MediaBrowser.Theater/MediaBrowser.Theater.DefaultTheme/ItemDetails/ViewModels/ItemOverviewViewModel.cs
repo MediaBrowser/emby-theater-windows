@@ -30,10 +30,6 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         : BaseViewModel, IItemDetailSection, IKnownSize
     {
         private readonly BaseItemDto _item;
-        private bool _isWatched;
-        private bool _isLiked;
-        private bool _isDisliked;
-        private bool _isFavorited;
         private CroppedBitmap _primaryButtonImage;
         private CroppedBitmap _secondaryButtonImage;
         private CroppedBitmap _toggleFavoriteButtonImage;
@@ -46,7 +42,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         public ItemArtworkViewModel PosterArtwork { get; set; }
         public ItemArtworkViewModel BackgroundArtwork { get; set; }
         public ItemInfoViewModel Info { get; set; }
-
+        
         public IItemCommand PrimaryCommand
         {
             get { return _primaryCommand; }
@@ -75,10 +71,9 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             }
         }
 
-        public ICommand ToggleFavoriteCommand { get; set; }
-        public ICommand ToggleLikeCommand { get; set; }
-        public ICommand ToggleDislikeCommand { get; set; }
-        public ICommand ToggleWatchedCommand { get; set; }
+        public IItemCommand ToggleFavoriteCommand { get; set; }
+        public IItemCommand ToggleLikeCommand { get; set; }
+        public IItemCommand ToggleDislikeCommand { get; set; }
 
         public bool HasPrimaryCommand
         {
@@ -198,70 +193,11 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             get { return HomeViewModel.TileHeight * 2 + HomeViewModel.TileMargin * 2; }
         }
 
-        public bool IsWatched
-        {
-            get { return _isWatched; }
-            private set
-            {
-                if (value.Equals(_isWatched)) {
-                    return;
-                }
-                _isWatched = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool IsLiked
-        {
-            get { return _isLiked; }
-            private set
-            {
-                if (value.Equals(_isLiked)) {
-                    return;
-                }
-                _isLiked = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool IsDisliked
-        {
-            get { return _isDisliked; }
-            private set
-            {
-                if (value.Equals(_isDisliked)) {
-                    return;
-                }
-                _isDisliked = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool IsFavorited
-        {
-            get { return _isFavorited; }
-            private set
-            {
-                if (value.Equals(_isFavorited)) {
-                    return;
-                }
-                _isFavorited = value;
-                OnPropertyChanged();
-            }
-        }
-
         public PlayButtonViewModel PlayButton { get; private set; }
 
         public ItemOverviewViewModel(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager, ISessionManager sessionManager, IItemCommandsManager commands)
         {
             _item = item;
-
-            if (item.UserData != null) {
-                IsWatched = item.UserData.Played;
-                IsLiked = item.UserData.Likes ?? false;
-                IsDisliked = !(item.UserData.Likes ?? true);
-                IsFavorited = item.UserData.IsFavorite;
-            }
 
             Info = new ItemInfoViewModel(item) {
                 ShowDisplayName = true,
@@ -289,66 +225,43 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             
             PlayButton = new PlayButtonViewModel(item, playbackManager, connectionManager, imageManager, sessionManager, item.BackdropImageTags.Count > 1 ? 1 : (int?)null);
 
-            var api = connectionManager.GetApiClient(item);
-            
-            ToggleWatchedCommand = new RelayCommand(o => {
-                if (IsWatched) {
-                    api.MarkPlayedAsync(item.Id, sessionManager.CurrentUser.Id, null);
-                } else {
-                    api.MarkUnplayedAsync(item.Id, sessionManager.CurrentUser.Id);
-                }
-
-                IsWatched = !IsWatched;
-            });
-
-            ToggleLikeCommand = new RelayCommand(o => {
-                if (IsLiked || IsDisliked) {
-                    api.ClearUserItemRatingAsync(item.Id, sessionManager.CurrentUser.Id);
-                    IsLiked = false;
-                    IsDisliked = false;
-                } else if (!IsLiked) {
-                    api.UpdateUserItemRatingAsync(item.Id, sessionManager.CurrentUser.Id, true);
-                    IsLiked = true;
-                    IsDisliked = false;
-                }
-            });
-
-            ToggleDislikeCommand = new RelayCommand(o => {
-                if (IsLiked || IsDisliked) {
-                    api.ClearUserItemRatingAsync(item.Id, sessionManager.CurrentUser.Id);
-                    IsLiked = false;
-                    IsDisliked = false;
-                } else if (!IsDisliked) {
-                    api.UpdateUserItemRatingAsync(item.Id, sessionManager.CurrentUser.Id, false);
-                    IsLiked = false;
-                    IsDisliked = true;
-                }
-            });
-
-            ToggleFavoriteCommand = new RelayCommand(o => {
-                api.UpdateFavoriteStatusAsync(item.Id, sessionManager.CurrentUser.Id, !IsFavorited);
-                IsFavorited = !IsFavorited;
-            });
-
+            SetupCommands(item, commands);
             SetupButtonImage(item, connectionManager, imageManager);
+            
         }
 
-        private async Task SetupCommands(BaseItemDto item, IItemCommandsManager commandManager)
+        private async void SetupCommands(BaseItemDto item, IItemCommandsManager commandManager)
         {
-            var commands = await commandManager.GetCommands(item);
+            var commands = (await commandManager.GetCommands(item)).ToList();
             // pick out play/resume, like, dislike, favorite and watched - bind to static buttons
             // sort rest by sort order
             // pick top 2, set as primary and secondary actions
             // swap empty action slots for images
             // if more than 2 actions, replace watched button with overflow
 
-            var extraActions = commands.Where(c => true).OrderBy(c => c.SortOrder).ToList(); // todo filter item commands
-            
-            PrimaryCommand = extraActions.FirstOrDefault();
-            SecondaryCommand = extraActions.Skip(1).FirstOrDefault();
+            //var playCommand = commands.FirstOrDefault(c => c is PlayItemCommand);
+            ToggleLikeCommand = commands.FirstOrDefault(c => c is LikeItemCommand);
+            ToggleDislikeCommand = commands.FirstOrDefault(c => c is DislikeItemCommand);
+            ToggleFavoriteCommand = commands.FirstOrDefault(c => c is FavoriteItemCommand);
+
+            var extraActions = commands.Where(c => !(c is PlayItemCommand) &&
+                                                   !(c is LikeItemCommand) &&
+                                                   !(c is DislikeItemCommand) &&
+                                                   !(c is FavoriteItemCommand) &&
+                                                   !(c is WatchedItemCommand))
+                                       .OrderBy(c => c.SortOrder)
+                                       .ToList();
+
+            if (extraActions.Count > 0) {
+                PrimaryCommand = extraActions[0];
+            }
+
+            if (extraActions.Count > 1) {
+                SecondaryCommand = extraActions[1];
+            }
             
             if (extraActions.Count > 2) {
-                
+                // todo item commands popup
             }
         }
 
@@ -399,15 +312,15 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private readonly IImageManager _imageManager;
         private readonly IPlaybackManager _playbackManager;
         private readonly ISessionManager _sessionManager;
-        private readonly INavigator _navigator;
+        private readonly IItemCommandsManager _commands;
 
-        public ItemOverviewSectionGenerator(IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager, ISessionManager sessionManager, INavigator navigator)
+        public ItemOverviewSectionGenerator(IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager, ISessionManager sessionManager, IItemCommandsManager commands)
         {
             _connectionManager = connectionManager;
             _imageManager = imageManager;
             _playbackManager = playbackManager;
             _sessionManager = sessionManager;
-            _navigator = navigator;
+            _commands = commands;
         }
 
         public bool HasSection(BaseItemDto item)
@@ -417,7 +330,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
-            IItemDetailSection section = new ItemOverviewViewModel(item, _connectionManager, _imageManager, _playbackManager, _sessionManager, null);
+            IItemDetailSection section = new ItemOverviewViewModel(item, _connectionManager, _imageManager, _playbackManager, _sessionManager, _commands);
             return Task.FromResult<IEnumerable<IItemDetailSection>>(new[] { section });
         }
     }

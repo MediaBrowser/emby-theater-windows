@@ -8,7 +8,7 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.Api.Commands.ItemCommands
 {
-    public class FavoriteItemCommand : BaseViewModel
+    public class FavoriteItemCommand : BaseViewModel, IItemCommand
     {
         private readonly IConnectionManager _connectionManager;
         private readonly ISessionManager _sessionManager;
@@ -33,7 +33,7 @@ namespace MediaBrowser.Theater.Api.Commands.ItemCommands
         {
             IsEnabled = true;
             DisplayName = "Favorite";
-            IconViewModel = new DislikeItemCommandViewModel(item);
+            IconViewModel = new FavoriteItemCommandViewModel(item);
             ExecuteCommand = new RelayCommand(o => {
                 IApiClient api = _connectionManager.GetApiClient(item);
 

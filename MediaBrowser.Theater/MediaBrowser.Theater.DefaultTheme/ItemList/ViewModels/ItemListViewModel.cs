@@ -266,7 +266,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
                 OnPropertyChanged();
 
                 if (_selectedItem != null) {
-                    SelectedItemDetails = new ItemInfoViewModel(_selectedItem.Item);
+                    SelectedItemDetails = new ItemInfoViewModel(_selectedItem.Item) { ShowOverview = false };
                 } else {
                     SelectedItemDetails = null;
                 }
@@ -289,7 +289,13 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
                 _selectedItemDetails = value;
                 OnPropertyChanged();
                 OnPropertyChanged("HasSelectedItemDetails");
+                OnPropertyChanged("SelectedItemOverview");
             }
+        }
+
+        public string SelectedItemOverview
+        {
+            get { return _selectedItemDetails == null ? null : _selectedItemDetails.Overview; }
         }
 
         public Func<object, object> IndexSelector

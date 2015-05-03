@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.ItemCommands.FavoriteItemCommandView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Path HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform"
+              RenderTransformOrigin="0.5,0.5"
+              Data="F1 M 52.2716,27.8072C 48.9356,24.164 42.0671,25.7204 38.0992,31.3618C 33.0737,25.3024 27.0713,24.164 23.7257,27.8072C 14.4142,37.9485 34.3451,52.5246 37.9599,54.1634L 38.0438,54.2109L 38.0438,54.1634C 41.6554,52.5246 61.5832,37.9485 52.2716,27.8072 Z ">
+            <Path.Style>
+                <Style TargetType="{x:Type Path}">
+                    <Setter Property="Fill" Value="{StaticResource ForegroundBrush}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                            <Setter Property="Fill" Value="#CC3333" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Path.Style>
+        </Path>
+    </Grid>
+</UserControl>

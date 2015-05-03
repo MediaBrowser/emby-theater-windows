@@ -175,6 +175,7 @@
                 <Button Grid.Row="2" Grid.Column="7" Margin="2,2,0,0" Style="{StaticResource ThumbButton}" Command="{Binding ToggleWatchedCommand}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                     <Grid>
                         <Image Source="{Binding ToggleWatchedButtonImage}" Stretch="Fill" Opacity="0.2"/>
+                        <TextBlock Text="..." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42"/>
 <!--                        <Path Margin="24" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" RenderTransformOrigin="0.5,0.5" Data="F1 M 38,33.1538C 40.6765,33.1538 42.8462,35.3235 42.8462,38C 42.8462,40.6765 40.6765,42.8461 38,42.8461C 35.3235,42.8461 33.1539,40.6765 33.1539,38C 33.1539,35.3235 35.3236,33.1538 38,33.1538 Z M 38,25.0769C 49.3077,25.0769 59,33.1538 59,38C 59,42.8461 49.3077,50.9231 38,50.9231C 26.6923,50.9231 17,42.8461 17,38C 17,33.1538 26.6923,25.0769 38,25.0769 Z M 38,29.1154C 33.0932,29.1154 29.1154,33.0932 29.1154,38C 29.1154,42.9068 33.0932,46.8846 38,46.8846C 42.9068,46.8846 46.8846,42.9068 46.8846,38C 46.8846,33.0932 42.9068,29.1154 38,29.1154 Z ">-->
 <!--                            <Path.Style>-->
 <!--                                <Style TargetType="{x:Type Path}">-->

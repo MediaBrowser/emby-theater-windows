@@ -90,9 +90,19 @@
                 </ListBox.ItemContainerStyle>
             </controls:ExtendedListBox>
 
-            <controls:ExtendedContentControl Grid.Row="2" Margin="50" Content="{Binding SelectedItemDetails}"
+            <Grid Grid.Row="2" Margin="50">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                
+                <controls:ExtendedContentControl Grid.Column="0" Content="{Binding SelectedItemDetails}"
                                              Visibility="{Binding HasSelectedItemDetails, Converter={StaticResource BooleanToVisibility}}"
                                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+                <TextBlock Grid.Column="1" Text="{Binding SelectedItemOverview}" HorizontalAlignment="Right"/>
+            </Grid>
+            
         </Grid>
     </controls1:ContentPage>
 </UserControl>

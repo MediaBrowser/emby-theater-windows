@@ -180,6 +180,38 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="ItemCommands\BrowseItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\DislikeItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\FavoriteItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\LikeItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\PlayFromStartItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\PlayItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\PlayTrailerItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\WatchedItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Login\Views\ConnectLoginButtonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -496,6 +528,30 @@
     </Compile>
     <Compile Include="Home\Views\Generic\GenericFolderSpotlightView.xaml.cs">
       <DependentUpon>GenericFolderSpotlightView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\BrowseItemCommandView.xaml.cs">
+      <DependentUpon>BrowseItemCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\DislikeItemCommandView.xaml.cs">
+      <DependentUpon>DislikeItemCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\FavoriteItemCommandView.xaml.cs">
+      <DependentUpon>FavoriteItemCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\LikeItemCommandView.xaml.cs">
+      <DependentUpon>LikeItemCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\PlayFromStartItemCommandView.xaml.cs">
+      <DependentUpon>PlayFromStartItemCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\PlayItemCommandView.xaml.cs">
+      <DependentUpon>PlayItemCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\PlayTrailerItemCommandView.xaml.cs">
+      <DependentUpon>PlayTrailerItemCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\WatchedItemCommandView.xaml.cs">
+      <DependentUpon>WatchedItemCommandView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Login\ManualConnectionContext.cs" />
     <Compile Include="Login\ServerSelectionContext.cs" />

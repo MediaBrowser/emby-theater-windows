@@ -7,7 +7,6 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation;
-using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 {
@@ -26,6 +25,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private bool? _showReview;
         private bool? _showGenres;
         private bool? _showUserRatings;
+        private bool? _showOverview;
 
         public ItemInfoViewModel(BaseItemDto item)
         {
@@ -346,6 +346,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         public bool HasOverview
         {
             get { return !string.IsNullOrEmpty(Overview); }
+        }
+
+        public bool ShowOverview
+        {
+            get { return _showOverview ?? HasOverview; }
+            set { _showOverview = value; }
         }
 
         public bool HasRuntime

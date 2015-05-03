@@ -10,7 +10,7 @@ namespace MediaBrowser.Theater.Api.Commands.ItemCommands
         private readonly BaseItemDto _item;
         private readonly PropertyChangedEventHandler _userDataChanged;
         private UserItemDataDto _data;
-        private bool _isLiked;
+        private bool _isDisliked;
 
         public DislikeItemCommandViewModel(BaseItemDto item)
         {
@@ -39,16 +39,16 @@ namespace MediaBrowser.Theater.Api.Commands.ItemCommands
             UpdateIsLiked(item);
         }
 
-        public bool IsLiked
+        public bool IsDisliked
         {
-            get { return _isLiked; }
+            get { return _isDisliked; }
             private set
             {
-                if (Equals(_isLiked, value)) {
+                if (Equals(_isDisliked, value)) {
                     return;
                 }
 
-                _isLiked = value;
+                _isDisliked = value;
                 OnPropertyChanged();
             }
         }
@@ -63,7 +63,7 @@ namespace MediaBrowser.Theater.Api.Commands.ItemCommands
 
         private void UpdateIsLiked(BaseItemDto item)
         {
-            IsLiked = item.UserData.Likes == false;
+            IsDisliked = item.UserData.Likes == false;
         }
     }
 }

@@ -38,6 +38,9 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private CroppedBitmap _toggleWatchedButtonImage;
         private IItemCommand _primaryCommand;
         private IItemCommand _secondaryCommand;
+        private IItemCommand _toggleFavoriteCommand;
+        private IItemCommand _toggleLikeCommand;
+        private IItemCommand _toggleDislikeCommand;
 
         public ItemArtworkViewModel PosterArtwork { get; set; }
         public ItemArtworkViewModel BackgroundArtwork { get; set; }
@@ -71,9 +74,47 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             }
         }
 
-        public IItemCommand ToggleFavoriteCommand { get; set; }
-        public IItemCommand ToggleLikeCommand { get; set; }
-        public IItemCommand ToggleDislikeCommand { get; set; }
+        public IItemCommand ToggleFavoriteCommand
+        {
+            get { return _toggleFavoriteCommand; }
+            set
+            {
+                if (Equals(value, _toggleFavoriteCommand)) {
+                    return;
+                }
+                
+                _toggleFavoriteCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public IItemCommand ToggleLikeCommand
+        {
+            get { return _toggleLikeCommand; }
+            set
+            {
+                if (Equals(value, _toggleLikeCommand)) {
+                    return;
+                }
+
+                _toggleLikeCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public IItemCommand ToggleDislikeCommand
+        {
+            get { return _toggleDislikeCommand; }
+            set
+            {
+                if (Equals(value, _toggleDislikeCommand)) {
+                    return;
+                }
+
+                _toggleDislikeCommand = value;
+                OnPropertyChanged();
+            }
+        }
 
         public bool HasPrimaryCommand
         {

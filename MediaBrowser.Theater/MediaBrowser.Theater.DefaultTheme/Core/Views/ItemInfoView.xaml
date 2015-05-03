@@ -56,7 +56,7 @@
         </WrapPanel>
         
         <!--Overview-->
-        <TextBlock  Grid.Row="3" Text="{Binding Overview}" Visibility="{Binding HasOverview, Converter={StaticResource BooleanToVisibility}}" Margin="0,0,0,10"/>
+        <TextBlock  Grid.Row="3" Text="{Binding Overview}" Visibility="{Binding ShowOverview, Converter={StaticResource BooleanToVisibility}}" Margin="0,0,0,10"/>
         
         <!--Icons-->
         <StackPanel  Grid.Row="4" Orientation="Horizontal">

@@ -29,7 +29,9 @@
                     xmlns:generic1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views.Generic"
                     xmlns:channels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Channels"
                     xmlns:channels1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views.Channels"
-                    xmlns:userInterface="clr-namespace:MediaBrowser.Theater.Api.UserInterface;assembly=MediaBrowser.Theater.Api.Implementations">
+                    xmlns:userInterface="clr-namespace:MediaBrowser.Theater.Api.UserInterface;assembly=MediaBrowser.Theater.Api.Implementations"
+                    xmlns:itemCommands="clr-namespace:MediaBrowser.Theater.Api.Commands.ItemCommands;assembly=MediaBrowser.Theater.Api.Implementations"
+                    xmlns:itemCommands1="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemCommands">
     
     <DataTemplate DataType="{x:Type viewModels:RootViewModel}">
         <views:RootView/>
@@ -297,6 +299,38 @@
     
     <DataTemplate DataType="{x:Type viewModels6:OsdChapterViewModel}">
         <views6:OsdChapterView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type itemCommands:PlayItemCommandViewModel}">
+        <itemCommands1:PlayItemCommandView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type itemCommands:PlayFromStartItemCommandViewModel}">
+        <itemCommands1:PlayFromStartItemCommandView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type itemCommands:PlayTrailerItemCommandViewModel}">
+        <itemCommands1:PlayTrailerItemCommandView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type itemCommands:LikeItemCommandViewModel}">
+        <itemCommands1:LikeItemCommandView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type itemCommands:DislikeItemCommandViewModel}">
+        <itemCommands1:DislikeItemCommandView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type itemCommands:FavoriteItemCommandViewModel}">
+        <itemCommands1:FavoriteItemCommandView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type itemCommands:WatchedItemCommandViewModel}">
+        <itemCommands1:WatchedItemCommandView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type itemCommands:BrowseItemCommandViewModel}">
+        <itemCommands1:BrowseItemCommandView/>
     </DataTemplate>
 
 </ResourceDictionary>

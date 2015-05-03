@@ -40,6 +40,7 @@
 
             <Path StrokeThickness="1"
                   Stroke="White"
+                  Fill="White"
                   HorizontalAlignment="Center"
                   VerticalAlignment="Center"
                   Stretch="Uniform"

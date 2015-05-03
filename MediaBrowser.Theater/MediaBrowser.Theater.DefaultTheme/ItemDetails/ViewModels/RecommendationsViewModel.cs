@@ -23,7 +23,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class RecommendationsViewModel
         : BaseViewModel, IItemDetailSection, IKnownSize
     {
-        private const double PosterHeight = 350 - HomeViewModel.TileMargin * 0.5;
+        private static readonly double PosterHeight = PersonListItemViewModel.Height;
 
         private readonly BaseItemDto _item;
         private readonly IConnectionManager _connectionManager;
@@ -71,8 +71,9 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 }
 
                 var width = (int)Math.Ceiling(Items.Count / 2.0);
+                var itemSize = Items.First().Size;
 
-                return new Size(width * (Items.First().Size.Width + 2 * HomeViewModel.TileMargin) + 20, 900);
+                return new Size(width * (itemSize.Width + 2 * HomeViewModel.TileMargin) + 20, itemSize.Height + 2 * HomeViewModel.TileMargin);
             }
         }
 

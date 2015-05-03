@@ -7,6 +7,7 @@
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels"
              xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
+             xmlns:myWinCollection="clr-namespace:MyWinCollection;assembly=MediaBrowser.Theater.Presentation"
              lex:LocalizeDictionary.DesignCulture="en"
              lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
              lex:ResxLocalizationProvider.DefaultDictionary="Strings"
@@ -47,8 +48,11 @@
                                                                PanningMode="VerticalOnly"
                                                                CanContentScroll="True"
                                                                VerticalAlignment="Top">
-                                    <!--                                        <VirtualizingStackPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" IsItemsHost="True"/>-->
                                     <WrapPanel IsItemsHost="True" />
+<!--                                    <myWinCollection:VirtualizingWrapPanel Orientation="Horizontal" -->
+<!--                                                                           IsItemsHost="true" -->
+<!--                                                                           Width="{Binding ListWidth}"-->
+<!--                                                                           Height="{Binding ListHeight}"/>-->
                                 </controls:ExtendedScrollViewer>
                             </ControlTemplate>
                         </Setter.Value>

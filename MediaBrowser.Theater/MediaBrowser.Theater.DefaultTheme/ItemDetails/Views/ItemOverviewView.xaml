@@ -96,10 +96,14 @@
                 <Border Grid.Row="0" Grid.Column="4" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="2,0,2,2" Background="{StaticResource BackgroundBrush2}">
                     <Image Source="{Binding PrimaryButtonImage}" Stretch="Fill" Opacity="0.2"/>
                 </Border>
-                <controls1:TileButton Grid.Row="0" Grid.Column="4" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="2,0,2,2" Command="{Binding PrimaryCommand.ExecuteCommand}" Background="{StaticResource BackgroundBrush2}" 
+                <controls1:TileButton Grid.Row="0" Grid.Column="4" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="2,0,2,2" Background="{StaticResource BackgroundBrush2}"
+                                      Command="{Binding PrimaryCommand.ExecuteCommand}" 
+                                      AutoHideHeading="True"
                                       Visibility="{Binding HasPrimaryCommand, Converter={StaticResource BooleanToVisibility}}">
+                    <controls1:TileButton.Header>
+                        <TextBlock Text="{Binding PrimaryCommand.DisplayName}" Margin="15 5 20 10"/>
+                    </controls1:TileButton.Header>
                     <Grid>
-                        <Image Source="{Binding PrimaryButtonImage}" Stretch="Fill" Opacity="0.2"/>
                         <ContentPresenter Content="{Binding PrimaryCommand.IconViewModel}" Margin="40" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Grid>
                 </controls1:TileButton>
@@ -107,10 +111,14 @@
                 <Border Grid.Row="0" Grid.Column="6" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="2,0,0,2" Background="{StaticResource BackgroundBrush2}">
                     <Image Source="{Binding SecondaryButtonImage}" Stretch="Fill" Opacity="0.2"/>
                 </Border>
-                <controls1:TileButton Grid.Row="0" Grid.Column="6" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="2,0,0,2" Command="{Binding SecondaryCommand.ExecuteCommand}" Background="{StaticResource BackgroundBrush2}"
+                <controls1:TileButton Grid.Row="0" Grid.Column="6" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="2,0,0,2" Background="{StaticResource BackgroundBrush2}"
+                                      Command="{Binding SecondaryCommand.ExecuteCommand}"
+                                      AutoHideHeading="True"
                                       Visibility="{Binding HasSecondaryCommand, Converter={StaticResource BooleanToVisibility}}">
+                    <controls1:TileButton.Header>
+                        <TextBlock Text="{Binding SecondaryCommand.DisplayName}" Margin="15 5 20 10"/>
+                    </controls1:TileButton.Header>
                     <Grid>
-                        <Image Source="{Binding SecondaryButtonImage}" Stretch="Fill" Opacity="0.2"/>
                         <ContentPresenter Content="{Binding SecondaryCommand.IconViewModel}" Margin="40" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Grid>
                 </controls1:TileButton>

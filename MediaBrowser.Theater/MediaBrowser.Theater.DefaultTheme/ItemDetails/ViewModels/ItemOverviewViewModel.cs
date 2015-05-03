@@ -356,7 +356,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
                 var artWidth = Math.Min(1200, PosterArtwork != null ? PosterArtwork.ActualWidth : 0);
 //                return new Size(artWidth + 20 + 250, 700);
-                return new Size(artWidth + DetailsWidth + 4, PosterHeight);
+                return new Size(artWidth + DetailsWidth + 4 + 50, PosterHeight);
             }
         }
     }

@@ -168,6 +168,7 @@
     <Compile Include="Controls\PanoramaPanel.cs" />
     <Compile Include="Controls\RatingStar.cs" />
     <Compile Include="Controls\ScrollingPanel.cs" />
+    <Compile Include="Controls\VirtualizingWrapPanel.cs" />
     <Compile Include="Controls\WindowCommands.cs" />
     <Compile Include="Converters\BooleanInverter.cs" />
     <Compile Include="Converters\BooleanOrConverter.cs" />

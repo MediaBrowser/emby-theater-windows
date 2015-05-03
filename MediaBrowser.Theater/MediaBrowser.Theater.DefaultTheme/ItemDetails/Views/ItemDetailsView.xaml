@@ -31,7 +31,7 @@
                                                                CanContentScroll="True"
                                                                VerticalAlignment="Top">
                                         <controls:ScrollingPanel CanHorizontallyScroll="True"
-                                                             CanVerticallyScroll="False">
+                                                                 CanVerticallyScroll="False">
                                             <StackPanel Orientation="Horizontal" IsItemsHost="True" />
                                         </controls:ScrollingPanel>
                                     </controls:ExtendedScrollViewer>
@@ -62,7 +62,7 @@
                                       VirtualizingPanel.VirtualizationMode="Recycling">
             <controls:IndexedItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <controls:PanoramaPanel StartScrollPadding="50" EndScrollPadding="50"/>
+                    <controls:PanoramaPanel EndScrollPadding="50"/>
                 </ItemsPanelTemplate>
             </controls:IndexedItemsControl.ItemsPanel>
         </controls:IndexedItemsControl>

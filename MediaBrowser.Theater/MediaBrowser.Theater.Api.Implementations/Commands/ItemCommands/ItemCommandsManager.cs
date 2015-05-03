@@ -24,7 +24,7 @@ namespace MediaBrowser.Theater.Api.Commands.ItemCommands
                 await c.Initialize(item);
             }
 
-            return commands.Where(c => c.IsEnabled);
+            return commands.Where(c => c.IsEnabled).OrderBy(c => c.SortOrder);
         }
 
         public void ShowItemCommandsMenu(BaseItemDto item)

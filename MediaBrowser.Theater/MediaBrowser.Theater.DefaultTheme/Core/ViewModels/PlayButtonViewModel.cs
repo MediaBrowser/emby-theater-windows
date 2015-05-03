@@ -24,6 +24,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private string _displayName;
         private ImageViewerViewModel _image;
 
+        public bool AutoFocus { get; set; }
+
         public PlayButtonViewModel(BaseItemDto item, IPlaybackManager playbackManager, IConnectionManager connectionManager, IImageManager imageManager, ISessionManager sessionManager, int? defaultBackgroundImageIndex = null)
             : this(item, playbackManager, connectionManager, imageManager, sessionManager, defaultBackgroundImageIndex != null ? GetImage(item, defaultBackgroundImageIndex.Value, ImageType.Backdrop, connectionManager.GetApiClient(item)) : null)
         {
@@ -31,6 +33,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         public PlayButtonViewModel(BaseItemDto item, IPlaybackManager playbackManager, IConnectionManager connectionManager, IImageManager imageManager, ISessionManager sessionManager, string defaultBackgroundImage = null)
         {
+            AutoFocus = true;
             var loading = Load(item, playbackManager, connectionManager, imageManager, sessionManager, defaultBackgroundImage);
             _play = new RelayCommand(async o => {
                 var media = await loading;

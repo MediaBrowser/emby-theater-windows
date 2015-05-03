@@ -184,11 +184,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ItemCommands\CommandsPopupView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ItemCommands\DislikeItemCommandView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ItemCommands\FavoriteItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\ItemCommandListItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -532,11 +540,18 @@
     <Compile Include="ItemCommands\BrowseItemCommandView.xaml.cs">
       <DependentUpon>BrowseItemCommandView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ItemCommands\CommandsPopupView.xaml.cs">
+      <DependentUpon>CommandsPopupView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\CommandsPopupViewModel.cs" />
     <Compile Include="ItemCommands\DislikeItemCommandView.xaml.cs">
       <DependentUpon>DislikeItemCommandView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ItemCommands\FavoriteItemCommandView.xaml.cs">
       <DependentUpon>FavoriteItemCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\ItemCommandListItemView.xaml.cs">
+      <DependentUpon>ItemCommandListItemView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ItemCommands\LikeItemCommandView.xaml.cs">
       <DependentUpon>LikeItemCommandView.xaml</DependentUpon>

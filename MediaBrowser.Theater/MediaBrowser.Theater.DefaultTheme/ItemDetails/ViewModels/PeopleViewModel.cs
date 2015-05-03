@@ -61,15 +61,24 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                     return new Size(0, 0);
                 }
 
-                int width = Math.Min(People.Count, 3);
+                
 
-                return new Size((PersonListItemViewModel.Width + 2 * HomeViewModel.TileMargin) * width + 20, ListHeight + 20);
+                return new Size(ListWidth + 20, ListHeight + 20);
             }
         }
 
         public double ListHeight
         {
             get { return 2 * PersonListItemViewModel.Height + 4 * HomeViewModel.TileMargin; }
+        }
+
+        public double ListWidth
+        {
+            get
+            {
+                int width = Math.Min(People.Count, 3);
+                return (PersonListItemViewModel.Width + 2*HomeViewModel.TileMargin)*width;
+            }
         }
 
         private void LoadItems()

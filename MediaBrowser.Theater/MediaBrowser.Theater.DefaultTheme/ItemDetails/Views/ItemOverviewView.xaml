@@ -45,7 +45,7 @@
         </Style>
     </UserControl.Resources>
     
-    <Grid>
+    <Grid Margin="50, 0, 0, 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
             <RowDefinition/>
@@ -172,7 +172,7 @@
                     </Grid>
                 </Button>
 
-                <Button Grid.Row="2" Grid.Column="7" Margin="2,2,0,0" Style="{StaticResource ThumbButton}" Command="{Binding ToggleWatchedCommand}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                <Button Grid.Row="2" Grid.Column="7" Margin="2,2,0,0" Style="{StaticResource ThumbButton}" Command="{Binding ShowCommands}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                     <Grid>
                         <Image Source="{Binding ToggleWatchedButtonImage}" Stretch="Fill" Opacity="0.2"/>
                         <TextBlock Text="..." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42"/>

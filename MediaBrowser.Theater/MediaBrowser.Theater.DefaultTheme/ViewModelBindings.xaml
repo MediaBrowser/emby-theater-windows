@@ -332,5 +332,13 @@
     <DataTemplate DataType="{x:Type itemCommands:BrowseItemCommandViewModel}">
         <itemCommands1:BrowseItemCommandView/>
     </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type itemCommands1:ItemCommandListItemViewModel}">
+        <itemCommands1:ItemCommandListItemView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type itemCommands1:CommandsPopupViewModel}">
+        <itemCommands1:CommandsPopupView/>
+    </DataTemplate>
 
 </ResourceDictionary>

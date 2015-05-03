@@ -18,6 +18,7 @@ using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
+using MediaBrowser.Theater.DefaultTheme.ItemCommands;
 using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
@@ -30,6 +31,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         : BaseViewModel, IItemDetailSection, IKnownSize
     {
         private readonly BaseItemDto _item;
+        private readonly IPresenter _presenter;
         private CroppedBitmap _primaryButtonImage;
         private CroppedBitmap _secondaryButtonImage;
         private CroppedBitmap _toggleFavoriteButtonImage;
@@ -41,11 +43,26 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private IItemCommand _toggleFavoriteCommand;
         private IItemCommand _toggleLikeCommand;
         private IItemCommand _toggleDislikeCommand;
+        private ICommand _showCommands;
 
         public ItemArtworkViewModel PosterArtwork { get; set; }
         public ItemArtworkViewModel BackgroundArtwork { get; set; }
         public ItemInfoViewModel Info { get; set; }
         
+        public ICommand ShowCommands
+        {
+            get { return _showCommands; }
+            private set
+            {
+                if (Equals(value, _showCommands)) {
+                    return;
+                }
+                
+                _showCommands = value;
+                OnPropertyChanged();
+            }
+        }
+
         public IItemCommand PrimaryCommand
         {
             get { return _primaryCommand; }
@@ -236,9 +253,10 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public PlayButtonViewModel PlayButton { get; private set; }
 
-        public ItemOverviewViewModel(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager, ISessionManager sessionManager, IItemCommandsManager commands)
+        public ItemOverviewViewModel(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager, ISessionManager sessionManager, IItemCommandsManager commands, IPresenter presenter)
         {
             _item = item;
+            _presenter = presenter;
 
             Info = new ItemInfoViewModel(item) {
                 ShowDisplayName = true,
@@ -290,7 +308,6 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                                                    !(c is DislikeItemCommand) &&
                                                    !(c is FavoriteItemCommand) &&
                                                    !(c is WatchedItemCommand))
-                                       .OrderBy(c => c.SortOrder)
                                        .ToList();
 
             if (extraActions.Count > 0) {
@@ -300,10 +317,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             if (extraActions.Count > 1) {
                 SecondaryCommand = extraActions[1];
             }
-            
-            if (extraActions.Count > 2) {
-                // todo item commands popup
-            }
+
+            ShowCommands = new RelayCommand(o => _presenter.ShowPopup(new CommandsPopupViewModel(commands), true, false));
         }
 
         private async void SetupButtonImage(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager)
@@ -354,14 +369,16 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private readonly IPlaybackManager _playbackManager;
         private readonly ISessionManager _sessionManager;
         private readonly IItemCommandsManager _commands;
+        private readonly IPresenter _presenter;
 
-        public ItemOverviewSectionGenerator(IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager, ISessionManager sessionManager, IItemCommandsManager commands)
+        public ItemOverviewSectionGenerator(IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager, ISessionManager sessionManager, IItemCommandsManager commands, IPresenter presenter)
         {
             _connectionManager = connectionManager;
             _imageManager = imageManager;
             _playbackManager = playbackManager;
             _sessionManager = sessionManager;
             _commands = commands;
+            _presenter = presenter;
         }
 
         public bool HasSection(BaseItemDto item)
@@ -371,7 +388,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
-            IItemDetailSection section = new ItemOverviewViewModel(item, _connectionManager, _imageManager, _playbackManager, _sessionManager, _commands);
+            IItemDetailSection section = new ItemOverviewViewModel(item, _connectionManager, _imageManager, _playbackManager, _sessionManager, _commands, _presenter);
             return Task.FromResult<IEnumerable<IItemDetailSection>>(new[] { section });
         }
     }

@@ -1,22 +1,21 @@
 ﻿using System.Windows;
-using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 
-namespace MediaBrowser.Theater.DefaultTheme.Core.Views
+namespace MediaBrowser.Theater.DefaultTheme.ItemCommands
 {
     /// <summary>
-    /// Interaction logic for PlayButtonView.xaml
+    ///     Interaction logic for ItemCommandListItemView.xaml
     /// </summary>
-    public partial class PlayButtonView
+    public partial class ItemCommandListItemView
     {
-        public PlayButtonView()
+        public ItemCommandListItemView()
         {
             InitializeComponent();
-            Loaded += PlayButtonView_Loaded;
+            Loaded += ItemCommandListItemView_Loaded;
         }
 
-        void PlayButtonView_Loaded(object sender, RoutedEventArgs e)
+        private void ItemCommandListItemView_Loaded(object sender, RoutedEventArgs e)
         {
-            var vm = DataContext as PlayButtonViewModel;
+            var vm = DataContext as ItemCommandListItemViewModel;
             if (vm != null && vm.AutoFocus) {
                 if (Button.IsLoaded) {
                     Button.Focus();

@@ -32,11 +32,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MediaBrowser.ApiInteraction">
+      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.593\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MediaBrowser.Common">
-      <HintPath>..\packages\MediaBrowser.Common.3.0.540\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.603\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="MediaBrowser.Model">
-      <HintPath>..\packages\MediaBrowser.Common.3.0.540\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.603\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="ParallelExtensionsExtras">
       <HintPath>..\packages\ParallelExtensionsExtras.1.2.0.0\lib\net40\ParallelExtensionsExtras.dll</HintPath>
@@ -60,6 +70,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WebSocket4Net">
+      <HintPath>..\packages\WebSocket4Net.0.12\lib\net45\WebSocket4Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioSettings.cs" />
@@ -77,6 +91,7 @@
     <Compile Include="NavigationDirection.cs" />
     <Compile Include="PlayableFilteredPlaySequence.cs" />
     <Compile Include="PlayableMedia.cs" />
+    <Compile Include="PlayableMediaBuilder.cs" />
     <Compile Include="PlaybackCapabilities.cs" />
     <Compile Include="PlaybackManager.cs" />
     <Compile Include="PlaybackManagerExtensions.cs" />

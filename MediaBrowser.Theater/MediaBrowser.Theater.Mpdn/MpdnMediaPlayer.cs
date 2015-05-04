@@ -25,6 +25,7 @@ namespace MediaBrowser.Theater.Mpdn
         private readonly IEventAggregator _events;
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterApplicationPaths _appPaths;
+        private readonly IPlayableMediaBuilder _playableMediaBuilder;
 
         private IDisposable _player;
         private RemoteClient _api;
@@ -45,21 +46,27 @@ namespace MediaBrowser.Theater.Mpdn
                    media.Item.MediaSources.Any(s => s.Protocol == Model.MediaInfo.MediaProtocol.File && File.Exists(s.Path));
         }
 
+        public Task<PlayableMedia> GetPlayable(Media media)
+        {
+            return _playableMediaBuilder.GetPlayableMedia(media, new MpdnDeviceProfile(), true, CancellationToken.None);
+        }
+
         public bool PrefersBackgroundPlayback
         {
             get { return false; }
         }
 
-        public MpdnMediaPlayer(ILogManager logManager, IWindowManager windowManager, IEventAggregator events, IPlaybackManager playbackManager, ITheaterApplicationPaths appPaths)
+        public MpdnMediaPlayer(ILogManager logManager, IWindowManager windowManager, IEventAggregator events, IPlaybackManager playbackManager, ITheaterApplicationPaths appPaths, IPlayableMediaBuilder playableMediaBuilder)
         {
             _logManager = logManager;
             _windowManager = windowManager;
             _events = events;
             _playbackManager = playbackManager;
             _appPaths = appPaths;
+            _playableMediaBuilder = playableMediaBuilder;
         }
 
-        public Task<IPreparedSessions> Prepare(IPlaySequence sequence, CancellationToken cancellationToken)
+        public Task<IPreparedSessions> Prepare(IPlaySequence<PlayableMedia> sequence, CancellationToken cancellationToken)
         {
             var sessions = new SessionSequence(sequence, _api, cancellationToken, _windowManager, _logManager.GetLogger("MPDN"), _playbackManager);
             return Task.FromResult<IPreparedSessions>(sessions);
@@ -99,7 +106,7 @@ namespace MediaBrowser.Theater.Mpdn
                                  (int)(window.Top * window.DpiScale),
                                  (int)(window.Width * window.DpiScale),
                                  (int)(window.Height * window.DpiScale),
-                                 window.State);
+                                 window.State).ConfigureAwait(false);
         }
 
         private async Task Handshake()
@@ -127,9 +134,9 @@ namespace MediaBrowser.Theater.Mpdn
                 Directory.CreateDirectory(configDirectory);
             }
 
-            var configLocation = Path.Combine(configDirectory, "Application.32.config");
-            
-            File.Copy(Path.Combine(programDirectory ?? "", @"MPDN\Application.32.config"), configLocation, true);
+            CopyMpdnConfigurationFile(configDirectory, programDirectory);
+            CopyRemoteControlConfigurationFile(configDirectory, programDirectory);
+
             EnsureRemoteClientAuthentication();
 
             return Task.Run(() => {
@@ -142,6 +149,18 @@ namespace MediaBrowser.Theater.Mpdn
                 //process.WaitForInputIdle();
                 return process;
             });
+        }
+
+        private static void CopyMpdnConfigurationFile(string configDirectory, string programDirectory)
+        {
+            var configLocation = Path.Combine(configDirectory, "Application.32.config");
+            File.Copy(Path.Combine(programDirectory ?? "", @"MPDN\Application.32.config"), configLocation, true);
+        }
+
+        private static void CopyRemoteControlConfigurationFile(string configDirectory, string programDirectory)
+        {
+            var configLocation = Path.Combine(configDirectory, "PlayerExtensions.32", "Example.RemoteSettings.config");
+            File.Copy(Path.Combine(programDirectory ?? "", @"MPDN\Example.RemoteSettings.config"), configLocation, true);
         }
 
         private void EnsureRemoteClientAuthentication()

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Mpdn;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using MediaBrowser.Theater.StartupWizard.Prerequisites;

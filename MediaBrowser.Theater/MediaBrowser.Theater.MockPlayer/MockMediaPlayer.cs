@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Events;
@@ -27,9 +28,16 @@ namespace MediaBrowser.Theater.MockPlayer
             get { return "Mock Player"; }
         }
 
-        public bool CanPlay(Media media)
+        public Task<PlayableMedia> GetPlayable(Media media)
         {
-            return true;
+            // real players should call IPlayableMediaBuilder.GetPlayableMedia
+
+            var playable = new PlayableMedia {
+                Media = media,
+                Source = media.Item.MediaSources.FirstOrDefault()
+            };
+
+            return Task.FromResult(playable);
         }
 
         public bool PrefersBackgroundPlayback
@@ -44,7 +52,7 @@ namespace MediaBrowser.Theater.MockPlayer
             _events = events;
         }
 
-        public Task<IPreparedSessions> Prepare(IPlaySequence sequence, CancellationToken cancellationToken)
+        public Task<IPreparedSessions> Prepare(IPlaySequence<PlayableMedia> sequence, CancellationToken cancellationToken)
         {
             return Task.FromResult<IPreparedSessions>(new SessionSequence(sequence, cancellationToken, _logManager, _windowManager, _events));
         }

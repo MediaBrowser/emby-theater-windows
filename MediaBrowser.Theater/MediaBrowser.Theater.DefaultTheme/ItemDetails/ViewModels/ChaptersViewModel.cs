@@ -236,29 +236,29 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         }
     }
 
-    public class ChapterSectionGenerator
-        : IItemDetailSectionGenerator
-    {
-        private readonly IConnectionManager _connectionManager;
-        private readonly IImageManager _imageManager;
-        private readonly IPlaybackManager _playbackManager;
-
-        public ChapterSectionGenerator(IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager)
-        {
-            _connectionManager = connectionManager;
-            _imageManager = imageManager;
-            _playbackManager = playbackManager;
-        }
-
-        public bool HasSection(BaseItemDto item)
-        {
-            return item.Chapters != null && item.Chapters.Count > 1;
-        }
-
-        public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
-        {
-            var section = new ChaptersViewModel(item, _connectionManager, _imageManager, _playbackManager);
-            return Task.FromResult<IEnumerable<IItemDetailSection>>(new[] { section });
-        }
-    }
+//    public class ChapterSectionGenerator
+//        : IItemDetailSectionGenerator
+//    {
+//        private readonly IConnectionManager _connectionManager;
+//        private readonly IImageManager _imageManager;
+//        private readonly IPlaybackManager _playbackManager;
+//
+//        public ChapterSectionGenerator(IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager)
+//        {
+//            _connectionManager = connectionManager;
+//            _imageManager = imageManager;
+//            _playbackManager = playbackManager;
+//        }
+//
+//        public bool HasSection(BaseItemDto item)
+//        {
+//            return item.Chapters != null && item.Chapters.Count > 1;
+//        }
+//
+//        public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
+//        {
+//            var section = new ChaptersViewModel(item, _connectionManager, _imageManager, _playbackManager);
+//            return Task.FromResult<IEnumerable<IItemDetailSection>>(new[] { section });
+//        }
+//    }
 }

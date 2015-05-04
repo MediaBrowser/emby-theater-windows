@@ -13,7 +13,7 @@
              d:DataContext="{d:DesignInstance viewModels:ItemsListViewModel}"
              Focusable="False"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibility}}" Margin="20,0,0,0">
+    <Grid Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibility}}" Margin="20,0,0,0" Height="{Binding Size.Height}">
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
             <RowDefinition/>
@@ -21,12 +21,12 @@
 
         <TextBlock Text="{Binding Title, Converter={StaticResource UppercaseConverter}}" Margin="2,0,0,0" Style="{StaticResource PanoramaTitleTextBlockStyle}" Height="20"/>
 
-        <Border Grid.Row="1" Background="{StaticResource BackgroundBrush2}">
+        <Border Grid.Row="1">
             <controls:ExtendedListBox
                                   Background="{x:Null}"
-                                  Height="700"
                                   BorderBrush="{x:Null}"
                                   BorderThickness="0"
+                                  Height="{Binding ListHeight}"
                                   ItemsSource="{Binding Items}"
                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                   ScrollViewer.VerticalScrollBarVisibility="Hidden"

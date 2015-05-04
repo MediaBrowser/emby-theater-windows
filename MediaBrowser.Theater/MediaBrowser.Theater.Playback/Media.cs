@@ -13,7 +13,12 @@ namespace MediaBrowser.Theater.Playback
             return Create(item);
         }
 
-        public static Media Create(BaseItemDto item, MediaPlaybackOptions? options = null)
+        public static Media Create(BaseItemDto item)
+        {
+            return Create(item, null);
+        }
+
+        public static Media Create(BaseItemDto item, MediaPlaybackOptions? options)
         {
             return new Media {
                 Item = item,
@@ -24,7 +29,7 @@ namespace MediaBrowser.Theater.Playback
         public static Media Resume(BaseItemDto item)
         {
             return Create(item, new MediaPlaybackOptions {
-                StartPositionTicks = item.UserData.PlaybackPositionTicks
+                StartPositionTicks = item.UserData != null ? item.UserData.PlaybackPositionTicks : 0
             });
         }
     }

@@ -5,8 +5,8 @@ using System.Linq;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Api.Library;
+using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation;
-using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 {
@@ -24,6 +24,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private bool? _showRuntime;
         private bool? _showReview;
         private bool? _showGenres;
+        private bool? _showUserRatings;
+        private bool? _showOverview;
 
         public ItemInfoViewModel(BaseItemDto item)
         {
@@ -100,6 +102,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         {
             get { return _showGenres ?? HasGenres; }
             set { _showGenres = value; }
+        }
+
+        public bool ShowUserRatings
+        {
+            get { return _showUserRatings ?? ShowStats; }
+            set { _showUserRatings = value; }
         }
 
         public string Overview
@@ -340,6 +348,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             get { return !string.IsNullOrEmpty(Overview); }
         }
 
+        public bool ShowOverview
+        {
+            get { return _showOverview ?? HasOverview; }
+            set { _showOverview = value; }
+        }
+
         public bool HasRuntime
         {
             get { return !string.IsNullOrEmpty(Runtime); }
@@ -347,17 +361,17 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         public bool IsLiked
         {
-            get { return _item.UserData != null && (_item.UserData.Likes ?? false); }
+            get { return ShowUserRatings && _item.UserData != null && (_item.UserData.Likes ?? false); }
         }
 
         public bool IsFavorite
         {
-            get { return _item.UserData != null && _item.UserData.IsFavorite; }
+            get { return ShowUserRatings && _item.UserData != null && _item.UserData.IsFavorite; }
         }
 
         public bool IsDisliked
         {
-            get { return _item.UserData != null && _item.UserData.Likes.HasValue && !_item.UserData.Likes.Value; }
+            get { return ShowUserRatings && _item.UserData != null && _item.UserData.Likes.HasValue && !_item.UserData.Likes.Value; }
         }
 
         public string OfficialRating

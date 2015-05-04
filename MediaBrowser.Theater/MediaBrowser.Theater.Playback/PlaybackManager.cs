@@ -149,7 +149,7 @@ namespace MediaBrowser.Theater.Playback
             _log.Info("[{1}] Beginning playback at {0}", startIndex, id);
 
             using (PlayLock playbackLock = await CancelPlaybackAndLock().ConfigureAwait(false)) {
-                using (IPlaySequence sequence = Queue.GetPlayOrder()) {
+                using (IPlaySequence<Media> sequence = Queue.GetPlayOrder()) {
                     try {
                         sequence.SkipTo(startIndex);
 
@@ -190,9 +190,20 @@ namespace MediaBrowser.Theater.Playback
             }
         }
 
-        private IMediaPlayer FindSuitablePlayer(Media media)
+        private async Task<ItemPlayerPair?> FindSuitablePlayer(Media media)
         {
-            return _players.OrderBy(p => p.Priority).FirstOrDefault(p => p.CanPlay(media));
+            foreach (var player in _players.OrderBy(p => p.Priority)) {
+                var playable = await player.GetPlayable(media).ConfigureAwait(false);
+
+                if (playable != null) {
+                    return new ItemPlayerPair {
+                        Player = player,
+                        Media = playable
+                    };
+                }
+            }
+
+            return null;
         }
 
         private async Task<PlayLock> CancelPlaybackAndLock()
@@ -210,14 +221,16 @@ namespace MediaBrowser.Theater.Playback
             }
         }
 
-        private Task BeginPlayback(IPlaySequence sequence, CancellationToken cancellationToken)
+        private Task BeginPlayback(IPlaySequence<Media> sequence, CancellationToken cancellationToken)
         {
             return Task.Run(async () => {
                 var firstItem = true;
 
-                Media media;
-                IMediaPlayer player;
-                while (MoveToNextPlayableItem(sequence, out media, out player)) {
+                ItemPlayerPair? pair;
+                while ((pair = await MoveToNextPlayableItem(sequence)) != null) {
+                    var player = pair.Value.Player;
+                    var media = pair.Value.Media;
+
                     if (firstItem && !player.PrefersBackgroundPlayback) {
                         firstItem = false;
                         await _navigator.Navigate(Go.To.FullScreenPlayback()).ConfigureAwait(false);
@@ -269,7 +282,7 @@ namespace MediaBrowser.Theater.Playback
             return status.Subscribe(e => _events.OnNext(e));
         }
 
-        private bool MoveToNextPlayableItem(IPlaySequence sequence, out Media media, out IMediaPlayer player)
+        private async Task<ItemPlayerPair?> MoveToNextPlayableItem(IPlaySequence<Media> sequence)
         {
             var searched = new HashSet<Media>();
             do {
@@ -277,21 +290,18 @@ namespace MediaBrowser.Theater.Playback
                     continue;
                 }
 
-                player = FindSuitablePlayer(sequence.Current);
-                if (player != null) {
-                    media = sequence.Current;
-                    return true;
+                var pair = await FindSuitablePlayer(sequence.Current).ConfigureAwait(false);
+                if (pair != null) {
+                    return pair;
                 }
 
                 searched.Add(sequence.Current);
                 if (searched.Count >= Queue.Count && Queue.All(searched.Contains)) {
                     break;
                 }
-            } while (sequence.Next());
+            } while (await sequence.Next());
 
-            media = null;
-            player = null;
-            return false;
+            return null;
         }
 
         private async Task<IDisposable> Lock(AsyncSemaphore semaphore)
@@ -320,6 +330,12 @@ namespace MediaBrowser.Theater.Playback
             {
                 _semaphore.Release();
             }
+        }
+
+        private struct ItemPlayerPair
+        {
+            public IMediaPlayer Player { get; set; }
+            public PlayableMedia Media { get; set; }
         }
     }
 }

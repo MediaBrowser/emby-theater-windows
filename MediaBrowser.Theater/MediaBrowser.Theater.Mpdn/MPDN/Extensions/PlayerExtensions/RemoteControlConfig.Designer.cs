@@ -1,4 +1,20 @@
-﻿namespace Mpdn.PlayerExtensions
+// This file is a part of MPDN Extensions.
+// https://github.com/zachsaw/MPDN_Extensions
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3.0 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.
+// 
+namespace Mpdn.PlayerExtensions
 {
     partial class RemoteControlConfig
     {
@@ -33,12 +49,13 @@
             this.label1 = new System.Windows.Forms.Label();
             this.txbPort = new System.Windows.Forms.TextBox();
             this.cbRequireValidation = new System.Windows.Forms.CheckBox();
+            this.cbIsOnline = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnOK
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(47, 55);
+            this.btnOK.Location = new System.Drawing.Point(47, 78);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 0;
@@ -48,7 +65,7 @@
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(128, 55);
+            this.btnCancel.Location = new System.Drawing.Point(128, 78);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 1;
@@ -75,12 +92,22 @@
             // cbRequireValidation
             // 
             this.cbRequireValidation.AutoSize = true;
-            this.cbRequireValidation.Location = new System.Drawing.Point(12, 32);
+            this.cbRequireValidation.Location = new System.Drawing.Point(15, 55);
             this.cbRequireValidation.Name = "cbRequireValidation";
             this.cbRequireValidation.Size = new System.Drawing.Size(98, 17);
             this.cbRequireValidation.TabIndex = 5;
             this.cbRequireValidation.Text = "Validate Clients";
             this.cbRequireValidation.UseVisualStyleBackColor = true;
+            // 
+            // cbIsOnline
+            // 
+            this.cbIsOnline.AutoSize = true;
+            this.cbIsOnline.Location = new System.Drawing.Point(15, 32);
+            this.cbIsOnline.Name = "cbIsOnline";
+            this.cbIsOnline.Size = new System.Drawing.Size(137, 17);
+            this.cbIsOnline.TabIndex = 6;
+            this.cbIsOnline.Text = "Activate Remote Plugin";
+            this.cbIsOnline.UseVisualStyleBackColor = true;
             // 
             // RemoteControlConfig
             // 
@@ -88,7 +115,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(215, 95);
+            this.ClientSize = new System.Drawing.Size(215, 114);
+            this.Controls.Add(this.cbIsOnline);
             this.Controls.Add(this.cbRequireValidation);
             this.Controls.Add(this.txbPort);
             this.Controls.Add(this.label1);
@@ -113,5 +141,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txbPort;
         private System.Windows.Forms.CheckBox cbRequireValidation;
+        private System.Windows.Forms.CheckBox cbIsOnline;
     }
 }

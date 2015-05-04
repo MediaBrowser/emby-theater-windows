@@ -6,10 +6,10 @@
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
-             xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:userInterface="clr-namespace:MediaBrowser.Theater.Api.UserInterface;assembly=MediaBrowser.Theater.Api.Implementations"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance viewModels:GlobalCommandViewModel}"
-             viewModels1:ViewModel.CloseDelay="0:0:0.2"
+             userInterface:ViewModel.CloseDelay="0:0:0.2"
              Margin="10,0,0,0">
     <Grid x:Name="Grid" MinWidth="38" Height="38">
         <Grid.RenderTransform>

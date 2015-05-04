@@ -36,14 +36,16 @@
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.Common">
-      <HintPath>..\packages\MediaBrowser.Common.3.0.540\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.603\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.5480.20825, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model">
+      <HintPath>..\packages\MediaBrowser.Common.3.0.603\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Octokit, Version=0.8.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.540\lib\net45\MediaBrowser.Model.dll</HintPath>
-    </Reference>
-    <Reference Include="Octokit">
-      <HintPath>..\packages\Octokit.0.7.2\lib\net45\Octokit.dll</HintPath>
+      <HintPath>..\packages\Octokit.0.8.0\lib\net45\Octokit.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -70,6 +72,7 @@
     <Compile Include="FilterInstallation.cs" />
     <Compile Include="IUpdate.cs" />
     <Compile Include="LavFiltersInstaller.cs" />
+    <Compile Include="MpdnDeviceProfile.cs" />
     <Compile Include="MpdnMediaPlayer.cs" />
     <Content Include="MPDN\Extensions\CustomLinearScalers\Gaussian.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -208,7 +211,37 @@
       <DependentUpon>ViewMediaInfoForm.cs</DependentUpon>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Common\ColourProcessing.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Common\GammaToLab.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Common\GammaToLinear.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Common\LabToGamma.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Common\LabToLinear.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Common\LinearToGamma.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Common\LinearToLab.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="MPDN\Extensions\RenderScripts\Custom.MyRenderScript.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Deband\DebandOld.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Deband\Subtract.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Deband\SubtractLimited.hlsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="MPDN\Extensions\RenderScripts\Mpdn.ImageProcessor.ConfigDialog.cs">
@@ -251,14 +284,16 @@
     <Content Include="MPDN\Extensions\RenderScripts\Mpdn.Resizer.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.ScriptChain.ConfigDialog.cs">
+    <Content Include="MPDN\Extensions\RenderScripts\NEDI\NEDI-Common.hlsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.ScriptChain.ConfigDialog.Designer.cs">
-      <DependentUpon>Mpdn.ScriptChain.ConfigDialog.cs</DependentUpon>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\Combine.hlsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.ScriptChain.cs">
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\Interleave.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3.hlsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="MPDN\Extensions\RenderScripts\Shiandow.Chroma.ChromaScaler.cs">
@@ -311,6 +346,49 @@
     <Content Include="MPDN\Extensions\RenderScripts\Shiandow.SuperRes.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\OpenSubtitles.ConfigDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\OpenSubtitles.ConfigDialog.designer.cs">
+      <DependentUpon>OpenSubtitles.ConfigDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\OpenSubtitles.Downloader.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\OpenSubtitles.PlayerExtension.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\OpenSubtitles.Subtitles.Form.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\OpenSubtitles.Subtitles.Form.Designer.cs">
+      <DependentUpon>OpenSubtitles.Subtitles.Form.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\RendererControl.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.Presets.PresetGroupDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.Presets.PresetGroupDialog.Designer.cs">
+      <DependentUpon>Mpdn.Presets.PresetGroupDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.Nnedi3.ConfigDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.Nnedi3.ConfigDialog.Designer.cs">
+      <DependentUpon>Shiandow.Nnedi3.ConfigDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.Nnedi3.Filters.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.Nnedi3.Scaler.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteClient.cs" />
     <Compile Include="Session.cs" />
@@ -333,13 +411,94 @@
     <Content Include="MPDN\MediaPlayerDotNet.exe.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="MPDN\MediaPlayerDotNet_2.22.1.2987.nrmap">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="MPDN\Mpdn.Shaders.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="MPDN\Native\x86\CallbackFilter.ax">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\MediaPlayerDotNet_2.25.14.3081.nrmap">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\BuildShaders.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_128_A.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_128_B.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_128_C.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_128_D.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_128_E.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_16_A.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_16_B.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_16_C.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_16_D.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_16_E.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_256_A.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_256_B.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_256_C.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_256_D.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_256_E.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_32_A.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_32_B.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_32_C.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_32_D.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_32_E.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_64_A.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_64_B.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_64_C.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_64_D.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NNEDI3\nnedi3_64_E.cso">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Example.RemoteSettings.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
@@ -515,24 +674,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="MPDN\Extensions\RenderScripts\SuperRes\Diff.hlsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\GammaToLab.hlsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\GammaToLinear.hlsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\LabToGamma.hlsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\LabToLinear.hlsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\LinearToGamma.hlsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\LinearToLab.hlsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="MPDN\Extensions\RenderScripts\SuperRes\SuperChromaRes\CopyChroma.hlsl">

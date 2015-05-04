@@ -4,11 +4,8 @@ using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
-using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
-using MediaBrowser.Theater.Api.UserInterface;
-using MediaBrowser.Theater.Playback;
+using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 {
@@ -18,8 +15,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private readonly IConnectionManager _connectionManager;
         private readonly ISessionManager _sessionManager;
 
-        public PersonWorkSectionGenerator(IConnectionManager connectionManager, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator, IPlaybackManager playbackManager) 
-            : base(connectionManager, sessionManager, imageManager, navigator, playbackManager)
+        public PersonWorkSectionGenerator(IConnectionManager connectionManager, ISessionManager sessionManager, ItemTileFactory itemFactory)
+            : base(connectionManager, sessionManager, itemFactory)
         {
             _connectionManager = connectionManager;
             _sessionManager = sessionManager;
@@ -40,15 +37,15 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         private async Task<IItemDetailSection> GetMovies(BaseItemDto person)
         {
-            var query = new ItemQuery { Person = person.Name, IncludeItemTypes = new[] { "Movie" }, UserId = _sessionManager.CurrentUser.Id, Recursive = true };
-            var apiClient = _connectionManager.GetApiClient(person);
+            var query = new ItemQuery { PersonIds = new[] { person.Id }, IncludeItemTypes = new[] { "Movie" }, UserId = _sessionManager.CurrentUser.Id, Recursive = true };
+            IApiClient apiClient = _connectionManager.GetApiClient(person);
             return await GetItemsSection(await apiClient.GetItemsAsync(query));
         }
 
         private async Task<IItemDetailSection> GetSeries(BaseItemDto person)
         {
-            var query = new ItemQuery { Person = person.Name, IncludeItemTypes = new[] { "Series" }, UserId = _sessionManager.CurrentUser.Id, Recursive = true };
-            var apiClient = _connectionManager.GetApiClient(person);
+            var query = new ItemQuery { PersonIds = new[] { person.Id }, IncludeItemTypes = new[] { "Series" }, UserId = _sessionManager.CurrentUser.Id, Recursive = true };
+            IApiClient apiClient = _connectionManager.GetApiClient(person);
             return await GetItemsSection(await apiClient.GetItemsAsync(query));
         }
     }

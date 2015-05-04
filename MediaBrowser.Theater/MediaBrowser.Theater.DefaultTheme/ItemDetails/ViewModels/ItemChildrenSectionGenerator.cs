@@ -5,11 +5,8 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Library;
-using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
-using MediaBrowser.Theater.Api.UserInterface;
-using MediaBrowser.Theater.Playback;
+using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 {
@@ -19,8 +16,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private readonly IConnectionManager _connectionManager;
         private readonly ISessionManager _sessionManager;
 
-        public ItemChildrenSectionGenerator(IConnectionManager connectionManager, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator, IPlaybackManager playbackManager)
-            : base(connectionManager, sessionManager, imageManager, navigator, playbackManager)
+        public ItemChildrenSectionGenerator(IConnectionManager connectionManager, ISessionManager sessionManager, ItemTileFactory itemFactory)
+            : base(connectionManager, sessionManager, itemFactory)
         {
             _connectionManager = connectionManager;
             _sessionManager = sessionManager;

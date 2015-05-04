@@ -2,12 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
 using MediaBrowser.Model.Dto;
 
 namespace MediaBrowser.Theater.Playback
 {
-    class PlaySequence : IPlaySequence
+    class PlaySequence : IPlaySequence<Media>
     {
+        private static readonly Task<bool> True = Task.FromResult(true);
+        private static readonly Task<bool> False = Task.FromResult(false);
+
         private readonly Random _rnd;
         private readonly IPlayQueue _queue;
         private readonly object _lock;
@@ -51,7 +55,7 @@ namespace MediaBrowser.Theater.Playback
             get { return _indices != null ? _indices[(int) _currentIndex] : (int) _currentIndex; }
         }
 
-        public bool Next()
+        public Task<bool> Next()
         {
             lock (_lock) {
                 bool complete = !IncrementIndex();
@@ -61,7 +65,7 @@ namespace MediaBrowser.Theater.Playback
                     Current = GetCurrent();
                 }
 
-                return !complete;
+                return complete ? False : True;
             }
         }
 
@@ -145,7 +149,7 @@ namespace MediaBrowser.Theater.Playback
             }
         }
 
-        public bool Previous()
+        public Task<bool> Previous()
         {
             lock (_lock) {
                 bool complete = !DecrementIndex();
@@ -155,21 +159,21 @@ namespace MediaBrowser.Theater.Playback
                     Current = GetCurrent();
                 }
 
-                return !complete;
+                return complete ? False : True;
             }
         }
 
-        public bool SkipTo(int index)
+        public Task<bool> SkipTo(int index)
         {
             lock (_lock) {
                 if (index < 0 || index >= _queue.Count) {
                     Current = null;
-                    return false;
+                    return False;
                 }
 
                 _currentIndex = index;
                 Current = GetCurrent();
-                return true;
+                return True;
             }
         }
 

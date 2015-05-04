@@ -6,67 +6,199 @@
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels"
              xmlns:controls1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Controls"
+             xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance viewModels:ItemOverviewViewModel}"
              d:DesignHeight="300" d:DesignWidth="800">
-    <StackPanel Margin="0,20,0,0" Orientation="Horizontal" Height="{Binding Size.Height}">
+    <UserControl.Resources>
+        <Style x:Key="ThumbButton" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="{StaticResource BackgroundBrush2}"/>
+            <Setter Property="SnapsToDevicePixels" Value="true"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid x:Name="Border" Background="{TemplateBinding Background}">
+                            <ContentPresenter  x:Name="contentPresenter" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="true">
+                                <Setter TargetName="Border" Property="Background" Value="{StaticResource InputHighlightBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="Border" Property="Background" Value="{StaticResource InputHighlightBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter TargetName="Border" Property="Background" Value="{StaticResource InputHighlightBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="Border" Property="Opacity" Value=".2" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid Margin="50, 0, 0, 0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
 
-        <controls:ExtendedContentControl Content="{Binding PosterArtwork}" MaxWidth="1200" Visibility="{Binding ShowInfo, Converter={StaticResource InverseBooleanToVisibility}}"/>
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding Title, Converter={StaticResource UppercaseConverter}}" Margin="2,0,0,0" Style="{StaticResource PanoramaTitleTextBlockStyle}" Height="20"/>
 
-        <Grid Width="800" Visibility="{Binding ShowInfo, Converter={StaticResource BooleanToVisibility}}">
+        <controls:ExtendedContentControl Grid.Row="1" Grid.Column="0" Content="{Binding PosterArtwork}" Height="{Binding PosterHeight}" Margin="{x:Static viewModels1:HomeViewModel.TileMarginThickness}"/>
+
+        <Grid Grid.Row="1" Grid.Column="1" Width="{Binding DetailsWidth}">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" Background="{StaticResource BackgroundBrush2}">
+            <Grid Grid.Row="0" Height="{Binding DetailsHeight}" Background="{StaticResource BackgroundBrush2}" Margin="{x:Static viewModels1:HomeViewModel.TileMarginThickness}">
+                <controls:ExtendedContentControl Content="{Binding BackgroundArtwork}" Opacity="0.2"/>
                 <controls:ExtendedContentControl Content="{Binding Info}" Margin="10"/>
-            </Border>
+            </Grid>
 
-            <controls:ExtendedContentControl Grid.Row="1" Content="{Binding BackgroundArtwork}"/>
-        </Grid>
+            <Grid Grid.Row="1" Height="{x:Static viewModels1:HomeViewModel.TileHeight}" Margin="{x:Static viewModels1:HomeViewModel.TileMarginThickness}">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
 
-        <StackPanel Margin="20,0,0,0">
-            <controls1:TileButton x:Name="PlayButton" Command="{Binding PlayCommand}" Width="250" Height="250" AutoHideHeading="True" Visibility="{Binding Info.IsFolder, Converter={StaticResource InverseBooleanToVisibility}}">
-                <controls1:TileButton.Header>
-                    <TextBlock Text="Play" Margin="15, 5, 20, 10"/>
-                </controls1:TileButton.Header>
-
-                <Border Background="{StaticResource BackgroundBrush2}">
-                    <Path Margin="80" Stretch="Fill" Fill="{StaticResource ForegroundBrush}" Data="F1 M 30.0833,22.1667L 50.6665,37.6043L 50.6665,38.7918L 30.0833,53.8333L 30.0833,22.1667 Z "/>
-                </Border>
-            </controls1:TileButton>
-
-            <controls1:TileButton x:Name="ResumeButton" Command="{Binding ResumeCommand}" Width="250" Height="250" Margin="0,20,0,0" AutoHideHeading="True" Visibility="{Binding Info.IsResumable, Converter={StaticResource BooleanToVisibility}}">
-                <controls1:TileButton.Header>
-                    <TextBlock Text="Resume" Margin="15 5 20 10"/>
-                </controls1:TileButton.Header>
-
-                <Grid Background="{StaticResource BackgroundBrush2}">
-                    <Path Margin="80"  Stretch="Fill" Fill="{StaticResource ForegroundBrush}" Data="F1 M 38,22.1667L 58.5832,37.6043L 58.5832,38.7918L 38,53.8333L 38,22.1667 Z M 33.25,22.1667L 33.25,53.8333L 26.9167,53.8333L 26.9167,22.1667L 33.25,22.1667 Z "/>
-                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding Info.PlayedPercentage, Mode=OneWay}" BorderThickness="0" Background="Transparent" Foreground="{StaticResource ForegroundBrush}" Opacity="0.1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="4"  Margin="0,0,2,0" Background="{StaticResource BackgroundBrush2}">
+                    <controls:ExtendedContentControl Content="{Binding PlayButton}"/>
                 </Grid>
-            </controls1:TileButton>
 
-            <controls1:TileButton Command="{Binding PlayAllCommand}" Width="250" Height="250" AutoHideHeading="True" Visibility="{Binding Info.IsFolder, Converter={StaticResource BooleanToVisibility}}" Background="{StaticResource BackgroundBrush2}">
-                <controls1:TileButton.Header>
-                    <TextBlock Text="Play All" Margin="15, 5, 20, 10"/>
-                </controls1:TileButton.Header>
-
-                <Border Background="{StaticResource BackgroundBrush2}">
-                    <Path Margin="80" Stretch="Fill" Fill="{StaticResource ForegroundBrush}" Data="F1 M 30.0833,22.1667L 50.6665,37.6043L 50.6665,38.7918L 30.0833,53.8333L 30.0833,22.1667 Z "/>
+                <Border Grid.Row="0" Grid.Column="4" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="2,0,2,2" Background="{StaticResource BackgroundBrush2}">
+                    <Image Source="{Binding PrimaryButtonImage}" Stretch="Fill" Opacity="0.2"/>
                 </Border>
-            </controls1:TileButton>
+                <controls1:TileButton Grid.Row="0" Grid.Column="4" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="2,0,2,2" Background="{StaticResource BackgroundBrush2}"
+                                      Command="{Binding PrimaryCommand.ExecuteCommand}" 
+                                      AutoHideHeading="True"
+                                      Visibility="{Binding HasPrimaryCommand, Converter={StaticResource BooleanToVisibility}}">
+                    <controls1:TileButton.Header>
+                        <TextBlock Text="{Binding PrimaryCommand.DisplayName}" Margin="15 5 20 10"/>
+                    </controls1:TileButton.Header>
+                    <Grid>
+                        <ContentPresenter Content="{Binding PrimaryCommand.IconViewModel}" Margin="40" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                </controls1:TileButton>
 
-            <controls1:TileButton Command="{Binding BrowseAllCommand}" Width="250" Height="250" Margin="0,20,0,0" AutoHideHeading="True" Visibility="{Binding Info.IsFolder, Converter={StaticResource BooleanToVisibility}}" Background="{StaticResource BackgroundBrush2}">
-                <controls1:TileButton.Header>
-                    <TextBlock Text="Browse All" Margin="15, 5, 20, 10"/>
-                </controls1:TileButton.Header>
-
-                <Border Background="{StaticResource BackgroundBrush2}">
-                    <Path Margin="80" Stretch="Fill" Fill="{StaticResource ForegroundBrush}" Data="F1 M 19,50L 28,34L 63,34L 54,50L 19,50 Z M 19,28.0001L 35,28C 36,25 37.4999,24.0001 37.4999,24.0001L 48.75,24C 49.3023,24 50,24.6977 50,25.25L 50,28L 53.9999,28.0001L 53.9999,32L 27,32L 19,46.4L 19,28.0001 Z "/>
+                <Border Grid.Row="0" Grid.Column="6" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="2,0,0,2" Background="{StaticResource BackgroundBrush2}">
+                    <Image Source="{Binding SecondaryButtonImage}" Stretch="Fill" Opacity="0.2"/>
                 </Border>
-            </controls1:TileButton>
-        </StackPanel>
-    </StackPanel>
+                <controls1:TileButton Grid.Row="0" Grid.Column="6" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="2,0,0,2" Background="{StaticResource BackgroundBrush2}"
+                                      Command="{Binding SecondaryCommand.ExecuteCommand}"
+                                      AutoHideHeading="True"
+                                      Visibility="{Binding HasSecondaryCommand, Converter={StaticResource BooleanToVisibility}}">
+                    <controls1:TileButton.Header>
+                        <TextBlock Text="{Binding SecondaryCommand.DisplayName}" Margin="15 5 20 10"/>
+                    </controls1:TileButton.Header>
+                    <Grid>
+                        <ContentPresenter Content="{Binding SecondaryCommand.IconViewModel}" Margin="40" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                </controls1:TileButton>
+
+                <Button Grid.Row="2" Grid.Column="4" Margin="2,2,2,0" Style="{StaticResource ThumbButton}" Command="{Binding ToggleFavoriteCommand.ExecuteCommand}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                    <Grid>
+                        <Image Source="{Binding ToggleFavoriteButtonImage}" Stretch="Fill" Opacity="0.2"/>
+                        <ContentPresenter Content="{Binding ToggleFavoriteCommand.IconViewModel}" Margin="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+<!--                        <Path Margin="24" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" RenderTransformOrigin="0.5,0.5" Data="F1 M 52.2716,27.8072C 48.9356,24.164 42.0671,25.7204 38.0992,31.3618C 33.0737,25.3024 27.0713,24.164 23.7257,27.8072C 14.4142,37.9485 34.3451,52.5246 37.9599,54.1634L 38.0438,54.2109L 38.0438,54.1634C 41.6554,52.5246 61.5832,37.9485 52.2716,27.8072 Z ">-->
+<!--                            <Path.Style>-->
+<!--                                <Style TargetType="{x:Type Path}">-->
+<!--                                    <Setter Property="Fill" Value="{StaticResource ForegroundBrush}"/>-->
+<!--                                    <Style.Triggers>-->
+<!--                                        <DataTrigger Binding="{Binding IsFavorited}" Value="True">-->
+<!--                                            <Setter Property="Fill" Value="#CC3333"/>-->
+<!--                                        </DataTrigger>-->
+<!--                                    </Style.Triggers>-->
+<!--                                </Style>-->
+<!--                            </Path.Style>-->
+<!--                        </Path>-->
+                    </Grid>
+                </Button>
+                
+                <Button Grid.Row="2" Grid.Column="5" Margin="2,2,2,0" Style="{StaticResource ThumbButton}" Command="{Binding ToggleLikeCommand.ExecuteCommand}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                    <Grid>
+                        <Image Source="{Binding ToggleLikeButtonImage}" Stretch="Fill" Opacity="0.2"/>
+                        <ContentPresenter Content="{Binding ToggleLikeCommand.IconViewModel}" Margin="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+<!--                        <Path Margin="24" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" RenderTransformOrigin="0.5,0.5" Data="F1 M 36.8125,14.4232C 36.8125,20.7565 34.0416,26.694 34.0416,25.1107C 34.0416,23.5274 30.875,29.8607 29.2916,33.0274C 27.7083,36.194 26.125,40.5482 26.125,40.5482L 19.7917,40.1524C 19.7917,40.1524 18.2083,54.0065 21.375,55.5899C 24.5417,57.1732 27.8391,54.9558 30.875,56.7774C 38.7916,61.5274 51.4583,58.3607 49.875,55.194C 49.875,55.194 56.2083,52.0274 54.625,50.444C 54.625,50.444 56.2083,48.069 54.2292,45.694C 56.2083,43.319 55.4167,40.944 54.2292,39.3607C 55.4167,36.9857 56.2083,34.6107 51.4583,33.0274C 48.4542,32.026 40.375,35.7982 40.375,31.444C 40.375,29.8607 43.5416,25.1107 43.5416,21.944C 43.5416,15.6107 36.8125,14.4232 36.8125,14.4232 Z ">-->
+<!--                            <Path.Style>-->
+<!--                                <Style TargetType="{x:Type Path}">-->
+<!--                                    <Setter Property="Fill" Value="{StaticResource ForegroundBrush}"/>-->
+<!--                                    <Style.Triggers>-->
+<!--                                        <DataTrigger Binding="{Binding IsLiked}" Value="True">-->
+<!--                                            <Setter Property="Fill" Value="{StaticResource AccentBrush}"/>-->
+<!--                                        </DataTrigger>-->
+<!--                                    </Style.Triggers>-->
+<!--                                </Style>-->
+<!--                            </Path.Style>-->
+<!--                        </Path>-->
+                    </Grid>
+                </Button>
+
+                <Button Grid.Row="2" Grid.Column="6" Margin="2,2,2,0" Style="{StaticResource ThumbButton}" Command="{Binding ToggleDislikeCommand.ExecuteCommand}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                    <Grid>
+                        <Image Source="{Binding ToggleDislikeButtonImage}" Stretch="Fill" Opacity="0.2"/>
+                        <ContentPresenter Content="{Binding ToggleDislikeCommand.IconViewModel}" Margin="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+<!--                        <Path Margin="24" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" RenderTransformOrigin="0.5,0.5" Data="F1 M 38.3958,62.1458C 38.3958,55.8125 41.1667,49.875 41.1667,51.4583C 41.1667,53.0417 44.3333,46.7083 45.9167,43.5417C 47.5,40.375 49.0833,36.0208 49.0833,36.0208L 55.4167,36.4167C 55.4167,36.4167 57,22.5625 53.8333,20.9792C 50.6667,19.3958 47.3692,21.6132 44.3333,19.7917C 36.4167,15.0417 23.75,18.2083 25.3333,21.375C 25.3333,21.375 19,24.5417 20.5833,26.125C 20.5833,26.125 19,28.5 20.9792,30.875C 19,33.25 19.7917,35.625 20.9792,37.2083C 19.7917,39.5833 19,41.9583 23.75,43.5417C 26.7542,44.5431 34.8333,40.7708 34.8333,45.125C 34.8333,46.7083 31.6667,51.4583 31.6667,54.625C 31.6667,60.9583 38.3958,62.1458 38.3958,62.1458 Z ">-->
+<!--                            <Path.Style>-->
+<!--                                <Style TargetType="{x:Type Path}">-->
+<!--                                    <Setter Property="Fill" Value="{StaticResource ForegroundBrush}"/>-->
+<!--                                    <Style.Triggers>-->
+<!--                                        <DataTrigger Binding="{Binding IsDisliked}" Value="True">-->
+<!--                                            <Setter Property="Fill" Value="{StaticResource AccentBrush}"/>-->
+<!--                                        </DataTrigger>-->
+<!--                                    </Style.Triggers>-->
+<!--                                </Style>-->
+<!--                            </Path.Style>-->
+<!--                        </Path>-->
+                    </Grid>
+                </Button>
+
+                <Button Grid.Row="2" Grid.Column="7" Margin="2,2,0,0" Style="{StaticResource ThumbButton}" Command="{Binding ShowCommands}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                    <Grid>
+                        <Image Source="{Binding ToggleWatchedButtonImage}" Stretch="Fill" Opacity="0.2"/>
+                        <TextBlock Text="..." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42"/>
+<!--                        <Path Margin="24" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" RenderTransformOrigin="0.5,0.5" Data="F1 M 38,33.1538C 40.6765,33.1538 42.8462,35.3235 42.8462,38C 42.8462,40.6765 40.6765,42.8461 38,42.8461C 35.3235,42.8461 33.1539,40.6765 33.1539,38C 33.1539,35.3235 35.3236,33.1538 38,33.1538 Z M 38,25.0769C 49.3077,25.0769 59,33.1538 59,38C 59,42.8461 49.3077,50.9231 38,50.9231C 26.6923,50.9231 17,42.8461 17,38C 17,33.1538 26.6923,25.0769 38,25.0769 Z M 38,29.1154C 33.0932,29.1154 29.1154,33.0932 29.1154,38C 29.1154,42.9068 33.0932,46.8846 38,46.8846C 42.9068,46.8846 46.8846,42.9068 46.8846,38C 46.8846,33.0932 42.9068,29.1154 38,29.1154 Z ">-->
+<!--                            <Path.Style>-->
+<!--                                <Style TargetType="{x:Type Path}">-->
+<!--                                    <Setter Property="Fill" Value="{StaticResource ForegroundBrush}"/>-->
+<!--                                    <Style.Triggers>-->
+<!--                                        <DataTrigger Binding="{Binding IsWatched}" Value="True">-->
+<!--                                            <Setter Property="Fill" Value="{StaticResource AccentBrush}"/>-->
+<!--                                        </DataTrigger>-->
+<!--                                    </Style.Triggers>-->
+<!--                                </Style>-->
+<!--                            </Path.Style>-->
+<!--                        </Path>-->
+                    </Grid>
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
 </UserControl>

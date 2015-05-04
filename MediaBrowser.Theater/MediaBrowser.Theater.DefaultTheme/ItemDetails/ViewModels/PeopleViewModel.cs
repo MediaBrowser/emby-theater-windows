@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -25,14 +24,12 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     {
         private readonly IImageManager _imageManager;
         private readonly BaseItemDto _item;
-        private readonly IConnectionManager _connectionManager;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
 
-        public PeopleListViewModel(BaseItemDto item, IConnectionManager connectionManager, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator)
+        public PeopleListViewModel(BaseItemDto item, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator)
         {
             _item = item;
-            _connectionManager = connectionManager;
             _sessionManager = sessionManager;
             _imageManager = imageManager;
             _navigator = navigator;
@@ -61,9 +58,29 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                     return new Size(0, 0);
                 }
 
-                int width = Math.Min(People.Count, 3);
+                return new Size(ListWidth + 20, ListHeight + 20);
+            }
+        }
 
-                return new Size((167 + 2 * HomeViewModel.TileMargin) * width + 20, 700);
+        public double ListHeight
+        {
+            get { return 2 * PersonListItemViewModel.Height + 4 * HomeViewModel.TileMargin; }
+        }
+
+        public double ListWidth
+        {
+            get
+            {
+                int width;
+                if (People.Count <= 2) {
+                    width = 1;
+                } else if (People.Count <= 4) {
+                    width = 2;
+                } else {
+                    width = 3;
+                }
+
+                return (PersonListItemViewModel.Width + 2*HomeViewModel.TileMargin)*width;
             }
         }
 
@@ -146,6 +163,20 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 }
             }
         }
+        
+        public static double Height
+        {
+            get
+            {
+                const double available = 3 * HomeViewModel.TileHeight + 6 * HomeViewModel.TileMargin;
+                return available / 2 - 2 * HomeViewModel.TileMargin;
+            }
+        }
+
+        public static double Width
+        {
+            get { return Height*(167.0/250); }
+        }
 
         public ICommand NavigateCommand { get; private set; }
 
@@ -160,8 +191,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
             if (!string.IsNullOrEmpty(_person.PrimaryImageTag)) {
                 var options = new ImageOptions {
-                    Height = 250,
-                    Width = 167,
+                    Height = (int)Height,
+                    Width = (int)Width,
                     ImageType = ImageType.Primary,
                     Tag = _person.PrimaryImageTag
                 };
@@ -184,14 +215,12 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class PeopleListSectionGenerator
         : IItemDetailSectionGenerator
     {
-        private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
 
-        public PeopleListSectionGenerator(IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, ISessionManager sessionManager)
+        public PeopleListSectionGenerator(IImageManager imageManager, INavigator navigator, ISessionManager sessionManager)
         {
-            _connectionManager = connectionManager;
             _imageManager = imageManager;
             _navigator = navigator;
             _sessionManager = sessionManager;
@@ -204,7 +233,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
-            IItemDetailSection section = new PeopleListViewModel(item, _connectionManager, _sessionManager, _imageManager, _navigator);
+            IItemDetailSection section = new PeopleListViewModel(item, _sessionManager, _imageManager, _navigator);
             return Task.FromResult<IEnumerable<IItemDetailSection>>(new[] { section });
         }
     }

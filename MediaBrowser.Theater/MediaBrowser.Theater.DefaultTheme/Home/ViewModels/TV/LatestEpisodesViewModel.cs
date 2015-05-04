@@ -23,20 +23,16 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         : BaseViewModel, IKnownSize, IHomePage
     {
         private readonly IConnectionManager _connectionManager;
-        private readonly IImageManager _imageManager;
-        private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
-        private readonly IPlaybackManager _playbackManager;
+        private readonly ItemTileFactory _itemFactory;
 
         private bool _isVisible;
 
-        public LatestEpisodesViewModel(BaseItemDto tvFolder, IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
+        public LatestEpisodesViewModel(BaseItemDto tvFolder, IConnectionManager connectionManager, ISessionManager sessionManager, ItemTileFactory itemFactory)
         {
             _connectionManager = connectionManager;
-            _imageManager = imageManager;
-            _navigator = navigator;
             _sessionManager = sessionManager;
-            _playbackManager = playbackManager;
+            _itemFactory = itemFactory;
 
             SectionTitle = tvFolder.Name;
             Title = "MediaBrowser.Theater.DefaultTheme:Strings:Home_LatestEpisodes_Title".Localize();
@@ -120,12 +116,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         private ItemTileViewModel CreateEpisodeItem()
         {
-            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, null) {
-                DesiredImageWidth = HomeViewModel.TileWidth,
-                DesiredImageHeight = HomeViewModel.TileHeight,
-                PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Screenshot, ImageType.Thumb, ImageType.Primary },
-                DisplayNameGenerator = i => i.GetDisplayName(new DisplayNameFormat(true, true))
-            };
+            var vm = _itemFactory.Create(null);
+            vm.DesiredImageWidth = HomeViewModel.TileWidth;
+            vm.DesiredImageHeight = HomeViewModel.TileHeight;
+            vm.PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Screenshot, ImageType.Thumb, ImageType.Primary };
+            vm.DisplayNameGenerator = i => i.GetDisplayName(new DisplayNameFormat(true, true));
+            return vm;
         }
     }
 }

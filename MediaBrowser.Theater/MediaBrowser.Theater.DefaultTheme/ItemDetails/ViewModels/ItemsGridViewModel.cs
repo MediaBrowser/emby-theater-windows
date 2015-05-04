@@ -1,16 +1,12 @@
 using System;
 using System.Linq;
 using System.Windows;
-using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
-using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
-using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
@@ -19,32 +15,18 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class ItemsGridViewModel
         : BaseViewModel, IItemDetailSection, IKnownSize
     {
-        private const double PosterHeight = 350 - HomeViewModel.TileMargin * 0.5;
-
+        private readonly ItemTileFactory _itemFactory;
         private readonly ItemsResult _itemsResult;
-        private readonly IConnectionManager _connectionManager;
-        private readonly IImageManager _imageManager;
-        private readonly INavigator _navigator;
-        private readonly IPlaybackManager _playbackManager;
         private readonly ImageType[] _preferredImageTypes;
 
         private bool _isVisible;
 
-        public int SortOrder { get { return 2; } }
-
-        public string SectionTitle { get; private set; }
-
-        public RangeObservableCollection<ItemTileViewModel> Items { get; private set; }
-
-        public ItemsGridViewModel(ItemsResult itemsResult, IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, IPlaybackManager playbackManager)
+        public ItemsGridViewModel(ItemsResult itemsResult, ItemTileFactory itemFactory)
         {
             _itemsResult = itemsResult;
-            _connectionManager = connectionManager;
-            _imageManager = imageManager;
-            _navigator = navigator;
-            _playbackManager = playbackManager;
+            _itemFactory = itemFactory;
 
-            var itemType = itemsResult.Items.Length > 0 ? itemsResult.Items.First().Type : null;
+            string itemType = itemsResult.Items.Length > 0 ? itemsResult.Items.First().Type : null;
 
             if (itemType == "Episode") {
                 _preferredImageTypes = new[] { ImageType.Screenshot, ImageType.Thumb, ImageType.Art, ImageType.Primary };
@@ -58,35 +40,43 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             LoadItems();
         }
 
-        public string Title { get; set; }
+        public string SectionTitle { get; private set; }
 
-        public Size Size
-        {
-            get
-            {
-                if (Items.Count == 0)
-                {
-                    return new Size();
-                }
-
-                var width = (int)Math.Ceiling(Items.Count / 2.0);
-
-                return new Size(width * (Items.First().Size.Width + 2 * HomeViewModel.TileMargin) + 20, 900);
-            }
-        }
+        public RangeObservableCollection<ItemTileViewModel> Items { get; private set; }
 
         public bool IsVisible
         {
             get { return _isVisible; }
             private set
             {
-                if (Equals(_isVisible, value))
-                {
+                if (Equals(_isVisible, value)) {
                     return;
                 }
 
                 _isVisible = value;
                 OnPropertyChanged();
+            }
+        }
+
+        public int SortOrder
+        {
+            get { return 2; }
+        }
+
+        public string Title { get; set; }
+
+        public Size Size
+        {
+            get
+            {
+                if (Items.Count == 0) {
+                    return new Size(0, 0);
+                }
+
+                var width = (int) Math.Ceiling(Items.Count/2.0);
+                Size itemSize = Items.First().Size;
+
+                return new Size(width*(itemSize.Width + 2*HomeViewModel.TileMargin) + 20, 2*itemSize.Height + 4*HomeViewModel.TileMargin + 20);
             }
         }
 
@@ -101,8 +91,9 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 Items.Add(vm);
 
                 Items[i].PropertyChanged += (s, e) => {
-                    if (e.PropertyName == "Size")
+                    if (e.PropertyName == "Size") {
                         OnPropertyChanged("Size");
+                    }
                 };
             }
 
@@ -112,11 +103,10 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         private ItemTileViewModel CreateItem()
         {
-            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, null)
-            {
-                DesiredImageHeight = PosterHeight,
-                PreferredImageTypes = _preferredImageTypes
-            };
+            ItemTileViewModel vm = _itemFactory.Create(null);
+            vm.DesiredImageHeight = PersonListItemViewModel.Height;
+            vm.PreferredImageTypes = _preferredImageTypes;
+            return vm;
         }
     }
 }

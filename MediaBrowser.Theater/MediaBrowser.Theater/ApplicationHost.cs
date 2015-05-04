@@ -29,6 +29,7 @@ using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
 using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Commands;
+using MediaBrowser.Theater.Api.Commands.ItemCommands;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
@@ -154,9 +155,11 @@ namespace MediaBrowser.Theater
             Container.RegisterSingle(typeof (IImageManager), typeof (ImageManager));
             //Container.RegisterSingle(typeof (IInternalPlayerWindowManager), typeof (InternalPlayerWindowManager));
             Container.RegisterSingle(typeof (IPlaybackManager), typeof (PlaybackManager));
+            Container.RegisterSingle(typeof (IPlayableMediaBuilder), typeof (PlayableMediaBuilder));
             Container.RegisterSingle(typeof (IUserInputManager), typeof (UserInputManager));
             Container.RegisterSingle(typeof (ICommandManager), typeof (CommandManager));
             Container.RegisterSingle(typeof (ICommandRouter), typeof (CommandRouter));
+            Container.RegisterSingle(typeof (IItemCommandsManager), typeof (ItemCommandsManager));
 
             // temp bindings until it is possible for the theme to bind these
             Container.RegisterSingle(typeof (IPresenter), typeof (Presenter));
@@ -358,6 +361,9 @@ namespace MediaBrowser.Theater
 
             // Default theme
             yield return typeof (Theme).Assembly;
+            
+            // Api.Implementations
+            yield return typeof(PlayItemCommand).Assembly;
 
             // Include composable parts in the running assembly
             yield return GetType().Assembly;

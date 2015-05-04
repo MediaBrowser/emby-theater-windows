@@ -43,13 +43,13 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.Common, Version=3.0.5480.20823, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.540\lib\net45\MediaBrowser.Common.dll</HintPath>
+    <Reference Include="MediaBrowser.Common">
+      <HintPath>..\packages\MediaBrowser.Common.3.0.603\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.5480.20825, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.540\lib\net45\MediaBrowser.Model.dll</HintPath>
+    <Reference Include="MediaBrowser.Model">
+      <HintPath>..\packages\MediaBrowser.Common.3.0.603\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -81,12 +81,13 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="WPFLocalizeExtension, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="WPFLocalizeExtension, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WpfLocalizeExtension.2.2.1\lib\net35\WPFLocalizeExtension.dll</HintPath>
+      <HintPath>..\packages\WpfLocalizeExtension.2.3\lib\net35\WPFLocalizeExtension.dll</HintPath>
     </Reference>
-    <Reference Include="XAMLMarkupExtensions">
-      <HintPath>..\packages\XAMLMarkupExtensions.1.1.6.3\lib\net40\XAMLMarkupExtensions.dll</HintPath>
+    <Reference Include="XAMLMarkupExtensions, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\XAMLMarkupExtensions.1.2\lib\net40\XAMLMarkupExtensions.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +168,7 @@
     <Compile Include="Controls\PanoramaPanel.cs" />
     <Compile Include="Controls\RatingStar.cs" />
     <Compile Include="Controls\ScrollingPanel.cs" />
+    <Compile Include="Controls\VirtualizingWrapPanel.cs" />
     <Compile Include="Controls\WindowCommands.cs" />
     <Compile Include="Converters\BooleanInverter.cs" />
     <Compile Include="Converters\BooleanOrConverter.cs" />
@@ -192,21 +194,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Reflection\ChainingPropertyDescriptor.cs" />
-    <Compile Include="Reflection\HyperTypeDescriptionProvider.cs" />
-    <Compile Include="Reflection\HyperTypeDescriptor.cs" />
     <Compile Include="Resources\Localization\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\BaseValidatingViewModel.cs" />
-    <Compile Include="ViewModels\BaseViewModel.cs" />
-    <Compile Include="ViewModels\IHasActivityStatus.cs" />
-    <Compile Include="ViewModels\IHasCloseDelay.cs" />
-    <Compile Include="ViewModels\NotificationViewModel.cs" />
     <Compile Include="ViewModels\RangeObservableCollection.cs" />
-    <Compile Include="ViewModels\RelayCommand.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -224,6 +217,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MediaBrowser.Theater.Api.Implementations\MediaBrowser.Theater.Api.Implementations.csproj">
+      <Project>{4b8f5bcc-d1d8-4ef1-9f03-91634b233ed0}</Project>
+      <Name>MediaBrowser.Theater.Api.Implementations</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MediaBrowser.Theater.Api\MediaBrowser.Theater.Api.csproj">
       <Project>{76a1834d-1be3-4361-bac2-711cdd74eb3f}</Project>
       <Name>MediaBrowser.Theater.Api</Name>

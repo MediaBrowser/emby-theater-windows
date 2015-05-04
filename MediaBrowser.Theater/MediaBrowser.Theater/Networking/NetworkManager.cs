@@ -154,7 +154,7 @@ namespace MediaBrowser.Theater.Networking
                 Type = FileSystemEntryType.NetworkComputer
             });
         }
-
+        
         /// <summary>
         /// Gets the network prefix.
         /// </summary>
@@ -166,6 +166,11 @@ namespace MediaBrowser.Theater.Networking
                 var separator = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
                 return separator + separator;
             }
+        }
+
+        public void GenerateSelfSignedSslCertificate(string certificatePath, string hostname)
+        {
+            throw new NotImplementedException();
         }
     }
 }

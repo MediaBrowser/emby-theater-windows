@@ -10,7 +10,7 @@ namespace MediaBrowser.Theater.Playback
         event Action<SortMode> SortModeChanged;
         RepeatMode RepeatMode { get; set; }
         SortMode SortMode { get; set; }
-        IPlaySequence GetPlayOrder();
+        IPlaySequence<Media> GetPlayOrder();
         void AddRange(IEnumerable<Media> items);
     }
 }

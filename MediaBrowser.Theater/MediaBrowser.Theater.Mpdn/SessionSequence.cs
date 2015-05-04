@@ -22,7 +22,7 @@ namespace MediaBrowser.Theater.Mpdn
         private static int _counter = 0;
 
         private readonly int _id;
-        private readonly IPlaySequence _sequence;
+        private readonly IPlaySequence<PlayableMedia> _sequence;
         private readonly RemoteClient _api;
         private readonly CancellationToken _cancellationToken;
         private readonly IWindowManager _windowManager;
@@ -31,7 +31,7 @@ namespace MediaBrowser.Theater.Mpdn
         private readonly Subject<IPlaybackSession> _sessions;
         private readonly Subject<PlaybackStatus> _status;
         
-        public SessionSequence(IPlaySequence sequence, RemoteClient api, CancellationToken cancellationToken, IWindowManager windowManager, ILogger log, IPlaybackManager playbackManager)
+        public SessionSequence(IPlaySequence<PlayableMedia> sequence, RemoteClient api, CancellationToken cancellationToken, IWindowManager windowManager, ILogger log, IPlaybackManager playbackManager)
         {
             _id = Interlocked.Increment(ref _counter);
             _sequence = sequence;
@@ -66,18 +66,17 @@ namespace MediaBrowser.Theater.Mpdn
 
                 try {
                     // keep moving to the next media until the sequence is complete
-                    while (MoveNext(nextAction)) {
+                    while (await _sequence.MoveNext(nextAction)) {
 
                         // don't start a new item if cancellation has been requested
                         if (_cancellationToken.IsCancellationRequested) {
                             break;
                         }
 
-                        _log.Debug("Moving to next item: {0}", _sequence.Current.Item.Path);
+                        _log.Debug("Moving to next item: {0}", _sequence.Current.Media.Item.Path);
 
                         // create a session for the media
-                        PlayableMedia item = GetPlayableMedia(_sequence.Current);
-                        var session = new Session(item, api, _cancellationToken, _log, _playbackManager, _windowManager);
+                        var session = new Session(_sequence.Current, api, _cancellationToken, _log, _playbackManager, _windowManager);
 
                         // forward playback events to our own event observable
                         using (session.Events.Subscribe(status => _status.OnNext(status))) {
@@ -110,21 +109,6 @@ namespace MediaBrowser.Theater.Mpdn
             });
         }
 
-        private bool MoveNext(SessionCompletionAction action)
-        {
-            switch (action.Direction)
-            {
-                case NavigationDirection.Forward:
-                    return _sequence.Next();
-                case NavigationDirection.Backward:
-                    return _sequence.Previous();
-                case NavigationDirection.Skip:
-                    return _sequence.SkipTo(action.Index);
-            }
-
-            return false;
-        }
-
         public IObservable<IPlaybackSession> Sessions
         {
             get { return _sessions; }
@@ -133,21 +117,6 @@ namespace MediaBrowser.Theater.Mpdn
         public IObservable<PlaybackStatus> Status
         {
             get { return _status; }
-        }
-
-        private PlayableMedia GetPlayableMedia(Media media)
-        {
-            var source = media.Item.MediaSources.FirstOrDefault(s => s.Protocol == Model.MediaInfo.MediaProtocol.File && File.Exists(s.Path));
-            if (source == null) {
-                throw new InvalidOperationException(string.Format("MPDN cannot play {0}, as it has no file accessible source.", media.Item.Name));
-            }
-            
-            return new PlayableMedia
-            {
-                Media = media,
-                Source = source,
-                Path = source.Path
-            };
         }
     }
 }

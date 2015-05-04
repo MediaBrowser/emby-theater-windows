@@ -1,12 +1,11 @@
-﻿using System.Windows.Controls;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.Views
 {
     /// <summary>
     ///     Interaction logic for HomeView.xaml
     /// </summary>
-    public partial class HomeView : UserControl
+    public partial class HomeView
     {
         public HomeView()
         {

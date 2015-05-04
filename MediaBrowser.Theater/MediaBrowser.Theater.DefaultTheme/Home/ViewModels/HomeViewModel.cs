@@ -24,8 +24,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels
 
         public List<IViewModel> Pages { get; private set; }
 
-        public const double TileWidth = 400; //336;
-        public const double TileHeight = TileWidth * 9 / 16;
+        public const double HeaderHeight = 80;
+        public const double FooterHeight = 50;
+        public const double TileWidth = TileHeight*(16/9.0); //400; //336;
+        public const double TileHeight = (int)((1080 - 20 - 38 - 40 - HeaderHeight - FooterHeight) / 3) - TileMargin*2; // 1080p - drag bar - command bar - section heading // TileWidth * 9 / 16;
         public const int TileMargin = 2;
         public const double SectionSpacing = 50;
 

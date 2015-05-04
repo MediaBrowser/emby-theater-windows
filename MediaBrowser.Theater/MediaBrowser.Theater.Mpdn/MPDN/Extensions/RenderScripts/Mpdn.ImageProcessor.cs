@@ -1,4 +1,20 @@
-﻿using System;
+// This file is a part of MPDN Extensions.
+// https://github.com/zachsaw/MPDN_Extensions
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3.0 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.
+// 
+using System;
 using System.ComponentModel;
 using System.Linq;
 
@@ -53,17 +69,17 @@ namespace Mpdn.RenderScript
                 get { return ShaderDataFilePath; }
             }
 
-            public override IFilter CreateFilter(IResizeableFilter sourceFilter)
+            public override IFilter CreateFilter(IFilter input)
             {
-                if (UseImageProcessor(sourceFilter))
+                if (UseImageProcessor(input))
                 {
-                    return ShaderFileNames.Aggregate((IFilter) sourceFilter,
+                    return ShaderFileNames.Aggregate((IFilter) input,
                         (current, filename) => new ShaderFilter(CompileShader(filename), current));
                 }
-                return sourceFilter;
+                return input;
             }
 
-            private bool UseImageProcessor(IFilter sourceFilter)
+            private bool UseImageProcessor(IFilter input)
             {
                 var notscalingVideo = false;
                 var upscalingVideo = false;
@@ -91,7 +107,7 @@ namespace Mpdn.RenderScript
                     downscalingVideo = true;
                 }
 
-                inputSize = sourceFilter.OutputSize;
+                inputSize = input.OutputSize;
                 if (outputSize == inputSize)
                 {
                     // Not scaling input
@@ -139,6 +155,11 @@ namespace Mpdn.RenderScript
                 get { return "Mpdn.ImageProcessor"; }
             }
 
+            public override string Category
+            {
+                get { return "Processing"; }
+            }
+
             public override ExtensionUiDescriptor Descriptor
             {
                 get
@@ -154,14 +175,14 @@ namespace Mpdn.RenderScript
 
             private string GetDescription()
             {
-                return Chain.ShaderFileNames.Length == 0
+                return Settings.ShaderFileNames.Length == 0
                     ? "Pixel shader pre-/post-processing filter"
-                    : GetUsageString() + string.Join(" ➔ ", Chain.ShaderFileNames);
+                    : GetUsageString() + string.Join(" ➔ ", Settings.ShaderFileNames);
             }
 
             private string GetUsageString()
             {
-                var usage = Chain.ImageProcessorUsage;
+                var usage = Settings.ImageProcessorUsage;
                 string result;
                 switch (usage)
                 {

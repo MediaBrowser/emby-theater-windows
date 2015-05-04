@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using MediaBrowser.Model.Dto;
 
 namespace MediaBrowser.Theater.Api.UserInterface
 {
@@ -26,5 +27,10 @@ namespace MediaBrowser.Theater.Api.UserInterface
         /// </summary>
         /// <returns>A task which represents the asynchronous operation.</returns>
         Task Close();
+    }
+
+    public interface IItemViewModel : IViewModel
+    {
+        BaseItemDto Item { get; }
     }
 }

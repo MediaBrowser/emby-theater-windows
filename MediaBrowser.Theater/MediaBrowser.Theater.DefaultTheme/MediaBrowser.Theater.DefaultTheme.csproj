@@ -43,13 +43,13 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.Common, Version=3.0.5480.20823, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.540\lib\net45\MediaBrowser.Common.dll</HintPath>
+    <Reference Include="MediaBrowser.Common">
+      <HintPath>..\packages\MediaBrowser.Common.3.0.603\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.5480.20825, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.540\lib\net45\MediaBrowser.Model.dll</HintPath>
+    <Reference Include="MediaBrowser.Model">
+      <HintPath>..\packages\MediaBrowser.Common.3.0.603\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -94,12 +94,13 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="WPFLocalizeExtension, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="WPFLocalizeExtension, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WpfLocalizeExtension.2.2.1\lib\net35\WPFLocalizeExtension.dll</HintPath>
+      <HintPath>..\packages\WpfLocalizeExtension.2.3\lib\net35\WPFLocalizeExtension.dll</HintPath>
     </Reference>
-    <Reference Include="XAMLMarkupExtensions">
-      <HintPath>..\packages\XAMLMarkupExtensions.1.1.6.3\lib\net40\XAMLMarkupExtensions.dll</HintPath>
+    <Reference Include="XAMLMarkupExtensions, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\XAMLMarkupExtensions.1.2\lib\net40\XAMLMarkupExtensions.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -155,6 +156,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Core\Views\PlayButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Core\Views\RestartMenuCommandIconView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -174,6 +179,46 @@
     <Page Include="Home\Views\Generic\GenericFolderSpotlightView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ItemCommands\BrowseItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\CommandsPopupView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\DislikeItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\FavoriteItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\ItemCommandListItemView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\LikeItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\PlayFromStartItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\PlayItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\PlayTrailerItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemCommands\WatchedItemCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Login\Views\ConnectLoginButtonView.xaml">
       <SubType>Designer</SubType>
@@ -224,6 +269,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Osd\Views\SubtitleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\ContentPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -466,11 +515,16 @@
     </Compile>
     <Compile Include="Configuration\ColorPalette.cs" />
     <Compile Include="Configuration\PluginConfiguration.cs" />
+    <Compile Include="Controls\ContentPage.cs" />
     <Compile Include="Controls\TileButton.cs" />
     <Compile Include="Core\Commands\ExitMenuCommand.cs" />
     <Compile Include="Core\Commands\HomeCommand.cs" />
+    <Compile Include="Core\ViewModels\PlayButtonViewModel.cs" />
     <Compile Include="Core\Views\ButtonNotificationView.xaml.cs">
       <DependentUpon>ButtonNotificationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\PlayButtonView.xaml.cs">
+      <DependentUpon>PlayButtonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Home\ViewModels\Channels\ChannelsListViewModel.cs" />
     <Compile Include="Home\ViewModels\Channels\ChannelListHomePageGenerator.cs" />
@@ -482,6 +536,37 @@
     </Compile>
     <Compile Include="Home\Views\Generic\GenericFolderSpotlightView.xaml.cs">
       <DependentUpon>GenericFolderSpotlightView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\BrowseItemCommandView.xaml.cs">
+      <DependentUpon>BrowseItemCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\CommandsPopupView.xaml.cs">
+      <DependentUpon>CommandsPopupView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\CommandsPopupViewModel.cs" />
+    <Compile Include="ItemCommands\DislikeItemCommandView.xaml.cs">
+      <DependentUpon>DislikeItemCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\FavoriteItemCommandView.xaml.cs">
+      <DependentUpon>FavoriteItemCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\ItemCommandListItemView.xaml.cs">
+      <DependentUpon>ItemCommandListItemView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\LikeItemCommandView.xaml.cs">
+      <DependentUpon>LikeItemCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\PlayFromStartItemCommandView.xaml.cs">
+      <DependentUpon>PlayFromStartItemCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\PlayItemCommandView.xaml.cs">
+      <DependentUpon>PlayItemCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\PlayTrailerItemCommandView.xaml.cs">
+      <DependentUpon>PlayTrailerItemCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCommands\WatchedItemCommandView.xaml.cs">
+      <DependentUpon>WatchedItemCommandView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Login\ManualConnectionContext.cs" />
     <Compile Include="Login\ServerSelectionContext.cs" />
@@ -667,7 +752,6 @@
       <DependentUpon>RecommendationsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ItemList\ItemListContext.cs" />
-    <Compile Include="ItemList\ItemListPath.cs" />
     <Compile Include="ItemList\ViewModels\ItemListViewModel.cs" />
     <Compile Include="ItemList\Views\ItemListView.xaml.cs">
       <DependentUpon>ItemListView.xaml</DependentUpon>
@@ -800,6 +884,10 @@
     <Resource Include="Resources\Fonts\SourceSansPro-Semibold.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MediaBrowser.Theater.Api.Implementations\MediaBrowser.Theater.Api.Implementations.csproj">
+      <Project>{4b8f5bcc-d1d8-4ef1-9f03-91634b233ed0}</Project>
+      <Name>MediaBrowser.Theater.Api.Implementations</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MediaBrowser.Theater.Api\MediaBrowser.Theater.Api.csproj">
       <Project>{76a1834d-1be3-4361-bac2-711cdd74eb3f}</Project>
       <Name>MediaBrowser.Theater.Api</Name>

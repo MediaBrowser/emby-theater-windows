@@ -1,3 +1,19 @@
+// This file is a part of MPDN Extensions.
+// https://github.com/zachsaw/MPDN_Extensions
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3.0 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.
+// 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -44,9 +60,7 @@ namespace Mpdn.RenderScript
 
             public BicubicChroma()
             {
-                B = (float) (1.0/3.0);
-                C = (float) (1.0/3.0);
-                Preset = Presets.Custom;
+                Preset = Presets.MitchellNetravali;
             }
 
             public float B { get; set; }
@@ -74,17 +88,17 @@ namespace Mpdn.RenderScript
                 get { return "ChromaScaler"; }
             }
 
-            public override IFilter CreateFilter(IResizeableFilter sourceFilter)
+            public override IFilter CreateFilter(IFilter input)
             {
-                var chromaShader = CompileShader("Chroma.hlsl");
-
                 var yInput = new YSourceFilter();
                 var uInput = new USourceFilter();
                 var vInput = new VSourceFilter();
 
-                float[] offset = { 0.0f, 0.5f };
+                Vector2 offset = Renderer.ChromaOffset + new Vector2(0.5f, 0.5f);
 
-                var chroma = new ShaderFilter(chromaShader, new[] {B, C, offset[0], offset[1]}, yInput, uInput, vInput);
+                var chromaShader = CompileShader("Chroma.hlsl").Configure(arguments: new[] { B, C, offset[0], offset[1] });
+
+                var chroma = new ShaderFilter(chromaShader, yInput, uInput, vInput);
                 var rgb = chroma.ConvertToRgb();
 
                 return rgb;
@@ -97,6 +111,11 @@ namespace Mpdn.RenderScript
             protected override string ConfigFileName
             {
                 get { return "Shiandow.Chroma"; }
+            }
+
+            public override string Category
+            {
+                get { return "Chroma Scaling"; }
             }
 
             public override ExtensionUiDescriptor Descriptor

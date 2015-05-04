@@ -1,5 +1,6 @@
 ﻿using System.Windows.Input;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 

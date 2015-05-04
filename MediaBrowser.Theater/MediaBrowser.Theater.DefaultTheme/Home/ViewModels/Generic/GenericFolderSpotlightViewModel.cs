@@ -14,12 +14,9 @@ using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
-using MediaBrowser.Theater.DefaultTheme.ItemList;
-using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
@@ -28,28 +25,24 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
     public class GenericFolderSpotlightViewModel
         : BaseViewModel, IKnownSize, IHomePage
     {
-        private readonly IImageManager _imageManager;
+        private readonly IConnectionManager _connectionManager;
+        private readonly ItemTileFactory _itemFactory;
         private readonly ILogger _logger;
         private readonly double _miniSpotlightWidth;
-        private readonly INavigator _navigator;
-        private readonly IConnectionManager _connectionManager;
-        private readonly IPlaybackManager _playbackManager;
         private readonly ISessionManager _sessionManager;
         private CancellationTokenSource _mainViewCancellationTokenSource;
 
-        public GenericFolderSpotlightViewModel(BaseItemDto folder, IImageManager imageManager, INavigator navigator, IConnectionManager connectionManager, ISessionManager sessionManager, ILogManager logManager, IPlaybackManager playbackManager)
+        public GenericFolderSpotlightViewModel(BaseItemDto folder, IImageManager imageManager, INavigator navigator, IConnectionManager connectionManager, ISessionManager sessionManager, ILogManager logManager, ItemTileFactory itemFactory)
         {
-            _imageManager = imageManager;
-            _navigator = navigator;
             _connectionManager = connectionManager;
-            _playbackManager = playbackManager;
+            _itemFactory = itemFactory;
             _sessionManager = sessionManager;
             _logger = logManager.GetLogger(folder.Name + " Spotlight");
             SpotlightHeight = HomeViewModel.TileHeight*2 + HomeViewModel.TileMargin*2;
             SpotlightWidth = 16*(SpotlightHeight/9) + 100;
             _miniSpotlightWidth = HomeViewModel.TileWidth + (HomeViewModel.TileMargin/4) - 1;
 
-            LowerSpotlightWidth = SpotlightWidth/2 - HomeViewModel.TileMargin;//*1.5;
+            LowerSpotlightWidth = SpotlightWidth/2 - HomeViewModel.TileMargin; //*1.5;
             LowerSpotlightHeight = HomeViewModel.TileHeight;
 
             BrowseItemsCommand = new RelayCommand(arg => {
@@ -60,7 +53,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
 
                 navigator.Navigate(Go.To.ItemList(itemParams));
             });
-            
+
             AllItemsImagesViewModel = new ImageSlideshowViewModel(imageManager, Enumerable.Empty<string>()) {
                 ImageStretch = Stretch.UniformToFill
             };
@@ -80,7 +73,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
 
             LoadViewModels(folder);
         }
-        
+
         public double SpotlightWidth { get; private set; }
         public double SpotlightHeight { get; private set; }
 
@@ -142,8 +135,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
             _mainViewCancellationTokenSource = new CancellationTokenSource();
 
             try {
-                var spotlight = await ItemChildren.Get(_connectionManager, _sessionManager, folder, new ChildrenQueryParams
-                {
+                ItemsResult spotlight = await ItemChildren.Get(_connectionManager, _sessionManager, folder, new ChildrenQueryParams {
                     Filters = new[] { ItemFilter.IsRecentlyAdded },
                     SortBy = new[] { ItemSortBy.CommunityRating },
                     SortOrder = SortOrder.Descending,
@@ -151,10 +143,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
                     Recursive = true
                 });
 
-                if (spotlight.TotalRecordCount < 2)
-                {
-                    spotlight = await ItemChildren.Get(_connectionManager, _sessionManager, folder, new ChildrenQueryParams
-                    {
+                if (spotlight.TotalRecordCount < 2) {
+                    spotlight = await ItemChildren.Get(_connectionManager, _sessionManager, folder, new ChildrenQueryParams {
                         SortBy = new[] { ItemSortBy.CommunityRating },
                         SortOrder = SortOrder.Descending,
                         Limit = 10,
@@ -175,23 +165,23 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
 
         private ItemTileViewModel CreateMiniSpotlightItem(double width, double height)
         {
-            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager, null) {
-                DesiredImageWidth = width,
-                DesiredImageHeight = height,
-                PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
-                DisplayNameGenerator = GetDisplayName
-            };
+            ItemTileViewModel vm = _itemFactory.Create(null);
+            vm.DesiredImageWidth = width;
+            vm.DesiredImageHeight = height;
+            vm.PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb };
+            vm.DisplayNameGenerator = GetDisplayName;
+            return vm;
         }
 
         private void LoadMiniSpotlightsViewModel(ItemsResult itemResult)
         {
-            var items = itemResult.Items.Shuffle().Take(5).ToList();
+            List<BaseItemDto> items = itemResult.Items.Shuffle().Take(5).ToList();
 
             AddItemsToMiniSpotlight(MiniSpotlightItemsBottom, items.Take(2).ToList(), LowerSpotlightWidth, LowerSpotlightHeight);
             AddItemsToMiniSpotlight(MiniSpotlightItemsSide, items.Skip(2).Take(3).ToList(), _miniSpotlightWidth, HomeViewModel.TileHeight);
         }
 
-        private void AddItemsToMiniSpotlight(RangeObservableCollection<ItemTileViewModel> spotlight, IList<BaseItemDto> items, double itemWidth, double itemHeight) 
+        private void AddItemsToMiniSpotlight(RangeObservableCollection<ItemTileViewModel> spotlight, IList<BaseItemDto> items, double itemWidth, double itemHeight)
         {
             for (int i = 0; i < items.Count; i++) {
                 if (spotlight.Count > i) {
@@ -212,11 +202,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
 
         private async Task LoadAllItemsViewModel(BaseItemDto folder)
         {
-            var folderImage = DownloadImage(folder);
+            string folderImage = DownloadImage(folder);
             if (folderImage != null) {
                 AllItemsImagesViewModel.Images.Add(folderImage);
             } else {
-                var items = await ItemChildren.Get(_connectionManager, _sessionManager, folder);
+                ItemsResult items = await ItemChildren.Get(_connectionManager, _sessionManager, folder);
 
                 IEnumerable<string> images = items.Items.Select(DownloadImage)
                                                   .Where(img => img != null);
@@ -226,7 +216,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
 
             AllItemsImagesViewModel.StartRotating();
         }
-        
+
         /// <summary>
         ///     Gets an image url that can be used to download an image from the api
         /// </summary>
@@ -238,37 +228,29 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
         /// <returns>System.String.</returns>
         private string GetImageUrl(BaseItemDto item, ImageType imageType, int? imageIndex = null)
         {
-            var imageOptions = new ImageOptions
-            {
+            var imageOptions = new ImageOptions {
                 ImageType = imageType,
                 ImageIndex = imageIndex,
-                Width = (int)SpotlightWidth,
+                Width = (int) SpotlightWidth,
                 EnableImageEnhancers = false
             };
 
-            var apiClient = _connectionManager.GetApiClient(item);
+            IApiClient apiClient = _connectionManager.GetApiClient(item);
             return apiClient.GetImageUrl(item, imageOptions);
         }
 
         public string DownloadImage(BaseItemDto item)
         {
             var preferredImageTypes = new[] { ImageType.Backdrop, ImageType.Art, ImageType.Primary };
-            
-            if (item != null)
-            {
-                foreach (ImageType imageType in preferredImageTypes)
-                {
-                    if (imageType == ImageType.Backdrop)
-                    {
-                        if (item.BackdropCount == 0)
-                        {
+
+            if (item != null) {
+                foreach (ImageType imageType in preferredImageTypes) {
+                    if (imageType == ImageType.Backdrop) {
+                        if (item.BackdropCount == 0) {
                             continue;
                         }
-                    }
-                    else
-                    {
-                        if (!item.ImageTags.ContainsKey(imageType))
-                        {
+                    } else {
+                        if (!item.ImageTags.ContainsKey(imageType)) {
                             continue;
                         }
                     }

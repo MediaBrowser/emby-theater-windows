@@ -1,31 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
-using MediaBrowser.Theater.Api.UserInterface;
-using MediaBrowser.Theater.Playback;
+using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Channels
 {
     public class ChannelListHomePageGenerator
         : IUserViewHomePageGenerator
     {
-        private readonly IImageManager _imageManager;
-        private readonly INavigator _navigator;
-        private readonly IConnectionManager _connectionManager;
-        private readonly IPlaybackManager _playbackManager;
+        private readonly ItemTileFactory _itemFactory;
         private readonly ISessionManager _sessionManager;
 
-        public ChannelListHomePageGenerator(IImageManager imageManager, INavigator navigator, IConnectionManager connectionManager, ISessionManager sessionManager, IPlaybackManager playbackManager)
+        public ChannelListHomePageGenerator(ISessionManager sessionManager, ItemTileFactory itemFactory)
         {
-            _imageManager = imageManager;
-            _navigator = navigator;
-            _connectionManager = connectionManager;
             _sessionManager = sessionManager;
-            _playbackManager = playbackManager;
+            _itemFactory = itemFactory;
         }
 
         public string CollectionType
@@ -36,7 +26,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Channels
         public Task<IEnumerable<IHomePage>> GetHomePages(BaseItemDto mediaFolder)
         {
             IEnumerable<IHomePage> pages = new IHomePage[] {
-                new ChannelListViewModel(_connectionManager, _imageManager, _navigator, _sessionManager, _playbackManager)
+                new ChannelListViewModel(_sessionManager, _itemFactory)
             };
 
             return Task.FromResult(pages);

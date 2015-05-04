@@ -4,14 +4,12 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.DefaultTheme.Configuration;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
-using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
@@ -22,15 +20,18 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
     {
         private static readonly Regex NumberRegex = new Regex(@"^\d+");
 
-        public string DisplayName { get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sorting_ByTitle".Localize(); } }
+        public string DisplayName
+        {
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sorting_ByTitle".Localize(); }
+        }
 
         public object GetSortKey(BaseItemDto item)
         {
-            var index = GetIndexKey(item);
+            object index = GetIndexKey(item);
 
             string name = item.SortName ?? item.Name ?? string.Empty;
             if (name.Length > 0) {
-                var match = NumberRegex.Match(name);
+                Match match = NumberRegex.Match(name);
                 if (match.Success) {
                     int number = int.Parse(match.Value);
                     name = number.ToString("D5") + name.Substring(match.Index + match.Length);
@@ -45,12 +46,12 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         {
             string name = (item.SortName ?? item.Name ?? string.Empty).Trim();
             if (name.Length > 0) {
-                var key = name.First().ToString(CultureInfo.CurrentUICulture).ToUpper(CultureInfo.CurrentUICulture);
+                string key = name.First().ToString(CultureInfo.CurrentUICulture).ToUpper(CultureInfo.CurrentUICulture);
 
                 if (char.IsLetter(key, 0)) {
                     return key;
                 }
-                
+
                 if (char.IsNumber(key, 0)) {
                     return "#";
                 }
@@ -65,7 +66,10 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
     {
         private readonly ItemNameSortMode _byName = new ItemNameSortMode();
 
-        public string DisplayName { get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sorting_ByNaturalOrder".Localize(); } }
+        public string DisplayName
+        {
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sorting_ByNaturalOrder".Localize(); }
+        }
 
         public object GetSortKey(BaseItemDto item)
         {
@@ -89,7 +93,10 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
     public class ItemYearSortMode
         : IItemListSortMode
     {
-        public string DisplayName { get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sorting_ByYear".Localize(); } }
+        public string DisplayName
+        {
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sorting_ByYear".Localize(); }
+        }
 
         public object GetSortKey(BaseItemDto item)
         {
@@ -98,7 +105,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
 
         public object GetIndexKey(BaseItemDto item)
         {
-            var date = GetDate(item);
+            DateTime? date = GetDate(item);
             if (date != null) {
                 return (date.Value.Year/5)*5;
             }
@@ -123,7 +130,10 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
     public class ItemCommunityReviewSortMode
         : IItemListSortMode
     {
-        public string DisplayName { get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sorting_ByCommunityReview".Localize(); } }
+        public string DisplayName
+        {
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sorting_ByCommunityReview".Localize(); }
+        }
 
         public object GetSortKey(BaseItemDto item)
         {
@@ -136,8 +146,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
 
         public object GetIndexKey(BaseItemDto item)
         {
-            if (item.CommunityRating != null)
-            {
+            if (item.CommunityRating != null) {
                 return Math.Round(item.CommunityRating.Value);
             }
 
@@ -150,30 +159,22 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
     {
         public const double ItemHeight = 500;
 
-        private readonly ItemListParameters _parameters;
-        private readonly IConnectionManager _connectionManager;
-        private readonly IImageManager _imageManager;
+        private readonly ItemTileFactory _itemFactory;
         private readonly Task<ItemsResult> _items;
-        private readonly INavigator _navigator;
-        private readonly IPlaybackManager _playbackManager;
-        private readonly ISessionManager _sessionManager;
+        private readonly ItemListParameters _parameters;
+        private IEnumerable<IItemListSortMode> _availableSortModes;
 
         private string _itemType;
-        private IItemListSortMode _sortMode;
         private ItemTileViewModel _selectedItem;
         private ItemInfoViewModel _selectedItemDetails;
-        private IEnumerable<IItemListSortMode> _availableSortModes;
         private SortDirection _sortDirection;
+        private IItemListSortMode _sortMode;
 
-        public ItemListViewModel(ItemListParameters parameters, IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, IPlaybackManager playbackManager, ISessionManager sessionManager)
+        public ItemListViewModel(ItemListParameters parameters, ItemTileFactory itemFactory)
         {
             _items = parameters.Items;
             _parameters = parameters;
-            _connectionManager = connectionManager;
-            _imageManager = imageManager;
-            _navigator = navigator;
-            _playbackManager = playbackManager;
-            _sessionManager = sessionManager;
+            _itemFactory = itemFactory;
             _availableSortModes = new IItemListSortMode[] { new IndexSortMode(), new ItemNameSortMode(), new ItemYearSortMode(), new ItemCommunityReviewSortMode() };
 
             Items = new RangeObservableCollection<IItemViewModel>();
@@ -185,72 +186,6 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         }
 
         public string Title { get; private set; }
-
-        public SortDirection SortDirection
-        {
-            get { return _sortDirection; }
-            set
-            {
-                if (value == _sortDirection) {
-                    return;
-                }
-
-                _sortDirection = value;
-                SaveSortPreference();
-
-                OnPropertyChanged();
-                RefreshSorting();
-            }
-        }
-
-        public IEnumerable<IItemListSortMode> AvailableSortModes
-        {
-            get { return _availableSortModes; }
-            set
-            {
-                _availableSortModes = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public IItemListSortMode SortMode
-        {
-            get { return _sortMode ?? _availableSortModes.First(); }
-            set
-            {
-                if (Equals(_sortMode, value)) {
-                    return;
-                }
-
-                _sortMode = value;
-                SaveSortPreference();
-
-                OnPropertyChanged();
-                RefreshSorting();
-            }
-        }
-
-        private void SaveSortPreference()
-        {
-            if (!string.IsNullOrEmpty(_itemType) && _sortMode != null) {
-                Theme.Instance.Configuration.SaveSortMode(_itemType, _sortMode, _sortDirection);
-            }
-        }
-        
-        private void RefreshSorting()
-        {
-            var sorted = SortItems(Items);
-
-            Items.Clear();
-            Items.AddRange(sorted);
-        }
-
-        private IEnumerable<IItemViewModel> SortItems(IEnumerable<IItemViewModel> items)
-        {
-            return (SortDirection == SortDirection.Ascending) ?
-                       items.OrderBy(vm => SortMode.GetSortKey(vm.Item)).ToList() :
-                       items.OrderByDescending(vm => SortMode.GetSortKey(vm.Item)).ToList();
-        }
 
         public RangeObservableCollection<IItemViewModel> Items { get; private set; }
 
@@ -309,7 +244,73 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             }
         }
 
+        public SortDirection SortDirection
+        {
+            get { return _sortDirection; }
+            set
+            {
+                if (value == _sortDirection) {
+                    return;
+                }
+
+                _sortDirection = value;
+                SaveSortPreference();
+
+                OnPropertyChanged();
+                RefreshSorting();
+            }
+        }
+
+        public IEnumerable<IItemListSortMode> AvailableSortModes
+        {
+            get { return _availableSortModes; }
+            set
+            {
+                _availableSortModes = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public IItemListSortMode SortMode
+        {
+            get { return _sortMode ?? _availableSortModes.First(); }
+            set
+            {
+                if (Equals(_sortMode, value)) {
+                    return;
+                }
+
+                _sortMode = value;
+                SaveSortPreference();
+
+                OnPropertyChanged();
+                RefreshSorting();
+            }
+        }
+
         public RootPresentationOptions PresentationOptions { get; private set; }
+
+        private void SaveSortPreference()
+        {
+            if (!string.IsNullOrEmpty(_itemType) && _sortMode != null) {
+                Theme.Instance.Configuration.SaveSortMode(_itemType, _sortMode, _sortDirection);
+            }
+        }
+
+        private void RefreshSorting()
+        {
+            IEnumerable<IItemViewModel> sorted = SortItems(Items);
+
+            Items.Clear();
+            Items.AddRange(sorted);
+        }
+
+        private IEnumerable<IItemViewModel> SortItems(IEnumerable<IItemViewModel> items)
+        {
+            return (SortDirection == SortDirection.Ascending) ?
+                       items.OrderBy(vm => SortMode.GetSortKey(vm.Item)).ToList() :
+                       items.OrderByDescending(vm => SortMode.GetSortKey(vm.Item)).ToList();
+        }
 
         public override async Task Initialize()
         {
@@ -317,16 +318,11 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             await base.Initialize();
         }
 
-        private ItemTileViewModel CreateItemViewModel(BaseItemDto dto)
-        {
-            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager, dto);
-        }
-
         private async Task LoadItems(Task<ItemsResult> itemsTask)
         {
             ItemsResult result = await itemsTask;
             IEnumerable<IItemViewModel> viewModels = result.Items.Select(dto => {
-                var vm = (_parameters.ViewModelSelector ?? CreateItemViewModel)(dto);
+                IItemViewModel vm = (_parameters.ViewModelSelector ?? _itemFactory.Create)(dto);
 
                 var itemView = vm as ItemTileViewModel;
                 if (itemView != null) {
@@ -343,7 +339,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             if (result.Items.Length > 0 && _sortMode == null) {
                 _itemType = result.Items[0].Type;
 
-                var sortModePreference = Theme.Instance.Configuration.FindSortMode(_itemType);
+                SortModePreference sortModePreference = Theme.Instance.Configuration.FindSortMode(_itemType);
                 if (sortModePreference != null) {
                     _sortDirection = sortModePreference.SortDirection;
                     _sortMode = _availableSortModes.FirstOrDefault(sm => sm.GetType().FullName == sortModePreference.SortModeType);

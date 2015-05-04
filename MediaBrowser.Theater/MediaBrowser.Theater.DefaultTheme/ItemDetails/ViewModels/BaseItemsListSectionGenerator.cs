@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
-using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
-using MediaBrowser.Theater.Api.UserInterface;
-using MediaBrowser.Theater.Playback;
+using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 {
@@ -17,18 +14,14 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         : IItemDetailSectionGenerator
     {
         private readonly IConnectionManager _connectionManager;
+        private readonly ItemTileFactory _itemFactory;
         private readonly ISessionManager _sessionManager;
-        private readonly IImageManager _imageManager;
-        private readonly INavigator _navigator;
-        private readonly IPlaybackManager _playbackManager;
 
-        protected BaseItemsListSectionGenerator(IConnectionManager connectionManager, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator, IPlaybackManager playbackManager)
+        protected BaseItemsListSectionGenerator(IConnectionManager connectionManager, ISessionManager sessionManager, ItemTileFactory itemFactory)
         {
             _connectionManager = connectionManager;
             _sessionManager = sessionManager;
-            _imageManager = imageManager;
-            _navigator = navigator;
-            _playbackManager = playbackManager;
+            _itemFactory = itemFactory;
 
             ListThreshold = 8;
         }
@@ -56,7 +49,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 return null;
             }
 
-            var apiClient = _connectionManager.GetApiClient(itemsResult.Items[0]);
+            IApiClient apiClient = _connectionManager.GetApiClient(itemsResult.Items[0]);
 
             if (itemsResult.Items.Length == 1 && expandSingleItem && itemsResult.Items[0].IsFolder) {
                 var query = new ItemQuery { ParentId = itemsResult.Items[0].Id, UserId = _sessionManager.CurrentUser.Id };
@@ -64,10 +57,10 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             }
 
             if (listCondition(itemsResult)) {
-                return new ItemsListViewModel(itemsResult, _connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager);
+                return new ItemsListViewModel(itemsResult, _itemFactory);
             }
 
-            return new ItemsGridViewModel(itemsResult, _connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager);
+            return new ItemsGridViewModel(itemsResult, _itemFactory);
         }
     }
 }

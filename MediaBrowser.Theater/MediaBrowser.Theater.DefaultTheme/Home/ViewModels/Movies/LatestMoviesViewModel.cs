@@ -25,23 +25,17 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         private const double PosterHeight = (HomeViewModel.TileHeight*1.5) + HomeViewModel.TileMargin;
         private const double PosterWidth = PosterHeight*2/3.0;
 
-        private readonly IConnectionManager _connectionManager;
-        private readonly IImageManager _imageManager;
-        private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
-        private readonly IPlaybackManager _playbackManager;
+        private readonly ItemTileFactory _itemFactory;
         private readonly IApiClient _apiClient;
 
         private bool _isVisible;
 
-        public LatestMoviesViewModel(BaseItemDto movieFolder, IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
+        public LatestMoviesViewModel(BaseItemDto movieFolder, IConnectionManager connectionManager, ISessionManager sessionManager, ItemTileFactory itemFactory)
         {
             _apiClient = connectionManager.GetApiClient(movieFolder);
-            _connectionManager = connectionManager;
-            _imageManager = imageManager;
-            _navigator = navigator;
             _sessionManager = sessionManager;
-            _playbackManager = playbackManager;
+            _itemFactory = itemFactory;
 
             SectionTitle = movieFolder.Name;
             Title = "MediaBrowser.Theater.DefaultTheme:Strings:Home_LatestMovies_Title".Localize();
@@ -129,12 +123,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
         private ItemTileViewModel CreateMovieItem()
         {
-            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager, null) {
-                DesiredImageWidth = PosterWidth,
-                DesiredImageHeight = PosterHeight,
-                ShowCaptionBar = false,
-                PreferredImageTypes = new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb }
-            };
+            var vm = _itemFactory.Create(null);
+            vm.DesiredImageWidth = PosterWidth;
+            vm.DesiredImageHeight = PosterHeight;
+            vm.ShowCaptionBar = false;
+            vm.PreferredImageTypes = new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb };
+            return vm;
         }
     }
 }

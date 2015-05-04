@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using MediaBrowser.Model.ApiClient;
@@ -9,16 +10,45 @@ using MediaBrowser.Model.Session;
 using MediaBrowser.Theater.Api.Commands.ItemCommands;
 using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
+using MediaBrowser.Theater.DefaultTheme.ItemCommands;
 using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 {
+    public class ItemTileFactory
+    {
+        private readonly IConnectionManager _connectionManager;
+        private readonly IImageManager _imageManager;
+        private readonly INavigator _navigator;
+        private readonly IPlaybackManager _playbackManager;
+        private readonly ISessionManager _sessionManager;
+        private readonly IPresenter _presenter;
+        private readonly IItemCommandsManager _commandManager;
+
+        public ItemTileFactory(IConnectionManager connectionManager, IImageManager imageManager,
+                                 INavigator navigator, IPlaybackManager playbackManager, ISessionManager sessionManager,
+                                 IPresenter presenter, IItemCommandsManager commandManager)
+        {
+            _connectionManager = connectionManager;
+            _imageManager = imageManager;
+            _navigator = navigator;
+            _playbackManager = playbackManager;
+            _sessionManager = sessionManager;
+            _presenter = presenter;
+            _commandManager = commandManager;
+        }
+
+        public ItemTileViewModel Create(BaseItemDto item)
+        {
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager, _presenter, _commandManager, item);
+        }
+    }
+
     public class ItemTileViewModel
         : BaseViewModel, IKnownSize, IItemViewModel
     {
@@ -30,9 +60,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private ICommand _playCommand;
         private ICommand _goToDetailsCommand;
         private ICommand _playTrailerCommand;
+        private ICommand _showCommandMenuCommand;
 
         public ItemTileViewModel(IConnectionManager connectionManager, IImageManager imageManager,
                                  INavigator navigator, IPlaybackManager playbackManager, ISessionManager sessionManager,
+                                 IPresenter presenter, IItemCommandsManager commandManager,
                                  BaseItemDto item)
         {
             _connectionManager = connectionManager;
@@ -53,6 +85,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             PlayCommand = new RelayCommand(async o => {
                 var media = await item.GetSmartPlayMedia(connectionManager, sessionManager);
                 await _playbackManager.Play(media);
+            });
+
+            ShowCommandMenuCommand = new RelayCommand(async o => {
+                var commands = (await commandManager.GetCommands(_item)).ToList();
+                await presenter.ShowPopup(new CommandsPopupViewModel(commands), true, false);
             });
         }
 
@@ -215,6 +252,20 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                     return;
                 }
                 _playTrailerCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand ShowCommandMenuCommand
+        {
+            get { return _showCommandMenuCommand; }
+            set
+            {
+                if (Equals(value, _showCommandMenuCommand)) {
+                    return;
+                }
+
+                _showCommandMenuCommand = value;
                 OnPropertyChanged();
             }
         }

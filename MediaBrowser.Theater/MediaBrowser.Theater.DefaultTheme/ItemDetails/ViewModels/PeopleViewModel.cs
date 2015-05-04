@@ -74,7 +74,15 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         {
             get
             {
-                int width = Math.Min(People.Count, 3);
+                int width;
+                if (People.Count <= 2) {
+                    width = 1;
+                } else if (People.Count <= 4) {
+                    width = 2;
+                } else {
+                    width = 3;
+                }
+
                 return (PersonListItemViewModel.Width + 2*HomeViewModel.TileMargin)*width;
             }
         }

@@ -23,7 +23,6 @@ using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
-using MediaBrowser.Theater.DefaultTheme.ItemList;
 
 namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 {
@@ -44,8 +43,22 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private IItemCommand _toggleLikeCommand;
         private IItemCommand _toggleDislikeCommand;
         private ICommand _showCommands;
+        private ItemArtworkViewModel _posterArtwork;
 
-        public ItemArtworkViewModel PosterArtwork { get; set; }
+        public ItemArtworkViewModel PosterArtwork
+        {
+            get { return _posterArtwork; }
+            set
+            {
+                if (Equals(value, _posterArtwork)) {
+                    return;
+                }
+
+                _posterArtwork = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ItemArtworkViewModel BackgroundArtwork { get; set; }
         public ItemInfoViewModel Info { get; set; }
         
@@ -272,6 +285,11 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
                 PosterArtwork.PropertyChanged += (s, e) => {
                     if (e.PropertyName == "Size") {
+                        if (PosterArtwork.Size.Width > PosterHeight * 0.8) {
+                            // hide artwork if it is too wide
+                            PosterArtwork = null;
+                        }
+
                         OnPropertyChanged("Size");
                     }
                 };

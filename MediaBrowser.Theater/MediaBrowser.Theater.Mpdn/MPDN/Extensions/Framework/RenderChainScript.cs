@@ -1,4 +1,20 @@
-﻿using System;
+// This file is a part of MPDN Extensions.
+// https://github.com/zachsaw/MPDN_Extensions
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3.0 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.
+// 
+using System;
 using System.Drawing;
 
 namespace Mpdn.RenderScript
@@ -47,8 +63,10 @@ namespace Mpdn.RenderScript
         {
             m_SourceFilter = new SourceFilter();
             var rgbInput = m_SourceFilter.Transform(x => new RgbFilter(x));
-            m_Filter = Chain.CreateFilter(rgbInput);
-            m_Filter = m_Filter.Initialize();
+            var result = Chain.CreateFilter(rgbInput);
+            result.SetSize(Renderer.TargetSize);
+            m_Filter = result.Compile();
+            m_Filter.Initialize();
         }
 
         public void Render()

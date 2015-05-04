@@ -1,5 +1,22 @@
-﻿using System;
+// This file is a part of MPDN Extensions.
+// https://github.com/zachsaw/MPDN_Extensions
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3.0 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.
+// 
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -57,6 +74,21 @@ namespace Mpdn.PlayerExtensions
         public override void Destroy()
         {
             base.Destroy();
+            if(Settings.IsActive)
+                ShutdownServer();
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            Settings.PropertyChanged += Settings_PropertyChanged;
+            if(Settings.IsActive)
+                SetupServer();
+                 
+        }
+
+        private void ShutdownServer()
+        {
             Unsubscribe();
             _locationTimer.Stop();
             _locationTimer = null;
@@ -70,12 +102,12 @@ namespace Mpdn.PlayerExtensions
                 catch
                 { }
             }
-            _serverSocket.Close();
+            if (_serverSocket != null)
+                _serverSocket.Close();
         }
 
-        public override void Initialize()
+        private void SetupServer()
         {
-            base.Initialize();
             Subscribe();
             _locationTimer = new Timer(100);
             _locationTimer.Elapsed += _locationTimer_Elapsed;
@@ -90,8 +122,7 @@ namespace Mpdn.PlayerExtensions
                     _playlistInstance.GetPlaylistForm.PlaylistChanged += GetPlaylistForm_PlaylistChanged;
                 }
             }
-
-            Task.Factory.StartNew(Server);
+            Task.Factory.StartNew(Server);   
         }
 
         void GetPlaylistForm_PlaylistChanged(object sender, EventArgs e)
@@ -113,7 +144,19 @@ namespace Mpdn.PlayerExtensions
             PlayerControl.ExitingFullScreenMode += m_PlayerControl_ExitingFullScreenMode;
             PlayerControl.VolumeChanged += PlayerControl_VolumeChanged;
             PlayerControl.SubtitleTrackChanged += PlayerControl_SubtitleTrackChanged;
-            PlayerControl.AudioTrackChanged += PlayerControl_AudioTrackChanged;
+            PlayerControl.AudioTrackChanged += PlayerControl_AudioTrackChanged;            
+        }
+
+        void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsActive" && Settings.IsActive)
+            {
+                SetupServer();
+            }
+            if (e.PropertyName == "IsActive" && !Settings.IsActive)
+            {
+                ShutdownServer();
+            }
         }
 
         private void Unsubscribe()
@@ -750,17 +793,86 @@ namespace Mpdn.PlayerExtensions
         }
     }
 
-    public class RemoteControlSettings
+    public class RemoteControlSettings : INotifyPropertyChanged
     {
         #region Variables
-        public int ConnectionPort { get; set; }
-        public bool ValidateClients { get; set; }
+
+        private int _connectionPort;
+        private bool _validateClients;
+        private bool _isActive;
+
         #endregion
+
+        #region Properties
+
+        public int ConnectionPort
+        {
+            get
+            {
+                return _connectionPort;
+                
+            }
+            set
+            {
+                _connectionPort = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("ConnectionPort"));
+            }
+        }
+
+        public bool ValidateClients
+        {
+            get
+            {
+              return _validateClients;  
+            }
+            set
+            {
+                _validateClients = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("ValidateClients"));
+            }
+        }
+
+        public bool IsActive
+        {
+            get
+            {
+                return _isActive;
+            }
+            set
+            {
+                _isActive = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("IsActive"));
+            }
+        }
+
+        #endregion
+
+        #region Events
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
+        #region Public Methods
 
         public RemoteControlSettings()
         {
             ConnectionPort = 6545;
             ValidateClients = true;
         }
+
+        #endregion
+
+        #region Private Methods
+
+        public void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, e);
+            }
+        }
+
+        #endregion
     }
 }

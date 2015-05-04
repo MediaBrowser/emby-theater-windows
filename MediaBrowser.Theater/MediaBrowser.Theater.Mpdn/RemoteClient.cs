@@ -166,6 +166,7 @@ namespace MediaBrowser.Theater.Mpdn
                 case "Closing":
                     break;
                 case "Position":
+                case "Postion": // typo in the remote client
                     long progress;
                     if (long.TryParse(cmd[1], out progress)) {
                         OnProgressChanged(progress * 10);

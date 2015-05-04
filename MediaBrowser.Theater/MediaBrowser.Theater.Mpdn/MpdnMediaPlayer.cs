@@ -134,9 +134,9 @@ namespace MediaBrowser.Theater.Mpdn
                 Directory.CreateDirectory(configDirectory);
             }
 
-            var configLocation = Path.Combine(configDirectory, "Application.32.config");
-            
-            File.Copy(Path.Combine(programDirectory ?? "", @"MPDN\Application.32.config"), configLocation, true);
+            CopyMpdnConfigurationFile(configDirectory, programDirectory);
+            CopyRemoteControlConfigurationFile(configDirectory, programDirectory);
+
             EnsureRemoteClientAuthentication();
 
             return Task.Run(() => {
@@ -149,6 +149,18 @@ namespace MediaBrowser.Theater.Mpdn
                 //process.WaitForInputIdle();
                 return process;
             });
+        }
+
+        private static void CopyMpdnConfigurationFile(string configDirectory, string programDirectory)
+        {
+            var configLocation = Path.Combine(configDirectory, "Application.32.config");
+            File.Copy(Path.Combine(programDirectory ?? "", @"MPDN\Application.32.config"), configLocation, true);
+        }
+
+        private static void CopyRemoteControlConfigurationFile(string configDirectory, string programDirectory)
+        {
+            var configLocation = Path.Combine(configDirectory, "PlayerExtensions.32", "Example.RemoteSettings.config");
+            File.Copy(Path.Combine(programDirectory ?? "", @"MPDN\Example.RemoteSettings.config"), configLocation, true);
         }
 
         private void EnsureRemoteClientAuthentication()

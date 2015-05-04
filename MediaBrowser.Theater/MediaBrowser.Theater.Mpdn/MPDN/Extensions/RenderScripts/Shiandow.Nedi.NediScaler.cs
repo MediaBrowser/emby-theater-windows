@@ -1,5 +1,21 @@
+// This file is a part of MPDN Extensions.
+// https://github.com/zachsaw/MPDN_Extensions
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3.0 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.
+// 
 using System;
-using System.Drawing;
+using SharpDX;
 
 namespace Mpdn.RenderScript
 {
@@ -12,19 +28,19 @@ namespace Mpdn.RenderScript
             public Nedi()
             {
                 AlwaysDoubleImage = false;
-                Centered = true;
+                ForceCentered = false;
             }
 
             public bool AlwaysDoubleImage { get; set; }
-            public bool Centered { get; set; }
+            public bool ForceCentered { get; set; }
 
             #endregion
 
             public float[] LumaConstants = {0.2126f, 0.7152f, 0.0722f};
 
-            private bool UseNedi(IFilter sourceFilter)
+            private bool UseNedi(IFilter input)
             {
-                var size = sourceFilter.OutputSize;
+                var size = input.OutputSize;
                 if (size.IsEmpty)
                     return false;
 
@@ -35,33 +51,28 @@ namespace Mpdn.RenderScript
                        Renderer.TargetSize.Height > size.Height;
             }
 
-            public override IFilter CreateFilter(IResizeableFilter sourceFilter)
+            public override IFilter CreateFilter(IFilter input)
             {
-                var nedi1Shader = CompileShader("NEDI-I.hlsl");
-                var nedi2Shader = CompileShader("NEDI-II.hlsl");
-                var nediHInterleaveShader = CompileShader("NEDI-HInterleave.hlsl");
-                var nediVInterleaveShader = CompileShader("NEDI-VInterleave.hlsl");
-
                 Func<TextureSize, TextureSize> transformWidth;
                 Func<TextureSize, TextureSize> transformHeight;
-                if (Centered)
-                {
-                    transformWidth = s => new TextureSize(2 * s.Width - 1, s.Height);
-                    transformHeight = s => new TextureSize(s.Width, 2 * s.Height - 1);
-                } else {
-                    transformWidth = s => new TextureSize(2 * s.Width, s.Height);
-                    transformHeight = s => new TextureSize(s.Width, 2 * s.Height);
-                }
+                transformWidth = s => new TextureSize(2 * s.Width, s.Height);
+                transformHeight = s => new TextureSize(s.Width, 2 * s.Height);
 
-                if (!UseNedi(sourceFilter))
-                    return sourceFilter;
+                var nedi1Shader = CompileShader("NEDI-I.hlsl").Configure(arguments: LumaConstants);
+                var nedi2Shader = CompileShader("NEDI-II.hlsl").Configure(arguments: LumaConstants);
+                var nediHInterleaveShader = CompileShader("NEDI-HInterleave.hlsl").Configure(transform: transformWidth);
+                var nediVInterleaveShader = CompileShader("NEDI-VInterleave.hlsl").Configure(transform: transformHeight);
 
-                var nedi1 = new ShaderFilter(nedi1Shader, LumaConstants, sourceFilter);
-                var nediH = new ShaderFilter(nediHInterleaveShader, transformWidth, sourceFilter, nedi1);
-                var nedi2 = new ShaderFilter(nedi2Shader, LumaConstants, nediH);
-                var nediV = new ShaderFilter(nediVInterleaveShader, transformHeight, nediH, nedi2);
+                if (!UseNedi(input))
+                    return input;
 
-                return nediV;
+                var nedi1 = new ShaderFilter(nedi1Shader, input);
+                var nediH = new ShaderFilter(nediHInterleaveShader, input, nedi1);
+                var nedi2 = new ShaderFilter(nedi2Shader, nediH);
+                var nediV = new ShaderFilter(nediVInterleaveShader, nediH, nedi2);
+
+                return new ResizeFilter(nediV, nediV.OutputSize, new Vector2(0.5f, 0.5f),
+                        Renderer.LumaUpscaler, Renderer.LumaDownscaler, ForceCentered ? Renderer.LumaUpscaler : null);
             }
         }
 
@@ -70,6 +81,11 @@ namespace Mpdn.RenderScript
             protected override string ConfigFileName
             {
                 get { return "Shiandow.Nedi"; }
+            }
+
+            public override string Category
+            {
+                get { return "Upscaling"; }
             }
 
             public override ExtensionUiDescriptor Descriptor

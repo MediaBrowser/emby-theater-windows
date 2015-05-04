@@ -1,4 +1,20 @@
-﻿using System;
+// This file is a part of MPDN Extensions.
+// https://github.com/zachsaw/MPDN_Extensions
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3.0 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.
+// 
+using System;
 using System.ComponentModel;
 using System.Drawing;
 
@@ -16,6 +32,7 @@ namespace Mpdn.RenderScript
             [Description("Video size x4")] VideoSizeX4,
             [Description("Video size x8")] VideoSizeX8,
             [Description("Video size x16")] VideoSizeX16,
+            [Description("The smaller of target size and video size")] SmallerOfTargetAndVideoSize,
             [Description("The greater of target size and video size")] GreaterOfTargetAndVideoSize,
             [Description("The greater of target size and video size x2")] GreaterOfTargetAndVideoSizeX2,
             [Description("The greater of target size and video size x4")] GreaterOfTargetAndVideoSizeX4,
@@ -41,9 +58,6 @@ namespace Mpdn.RenderScript
         {
             #region Settings
 
-            public IScaler Downscaler; // Not saved
-            public IScaler Upscaler; // Not saved
-
             public Resizer()
             {
                 ResizerOption = ResizerOption.TargetSize100Percent;
@@ -53,10 +67,10 @@ namespace Mpdn.RenderScript
 
             #endregion
 
-            public override IFilter CreateFilter(IResizeableFilter sourceFilter)
+            public override IFilter CreateFilter(IFilter input)
             {
-                return new ResizeFilter(sourceFilter, GetOutputSize(),
-                    Upscaler ?? Renderer.LumaUpscaler, Downscaler ?? Renderer.LumaDownscaler);
+                input.SetSize(GetOutputSize());
+                return input;
             }
 
             #region Size Calculation
@@ -85,6 +99,9 @@ namespace Mpdn.RenderScript
                         break;
                     case ResizerOption.VideoSizeX16:
                         size = new TextureSize(videoSize.Width << 4, videoSize.Height << 4);
+                        break;
+                    case ResizerOption.SmallerOfTargetAndVideoSize:
+                        size = GetMinSize(targetSize, videoSize);
                         break;
                     case ResizerOption.GreaterOfTargetAndVideoSize:
                         size = GetMaxSize(targetSize, videoSize);
@@ -146,6 +163,12 @@ namespace Mpdn.RenderScript
                 return size1.Height > size2.Height ? size1 : size2;
             }
 
+            private static TextureSize GetMinSize(TextureSize size1, TextureSize size2)
+            {
+                // Use height to determine which is min
+                return size1.Height < size2.Height ? size1 : size2;
+            }            
+
             private TextureSize GetVideoBasedSizeOver(int targetWidth, int targetHeight)
             {
                 var videoWidth = Renderer.VideoSize.Width;
@@ -181,6 +204,11 @@ namespace Mpdn.RenderScript
                 get { return "Mpdn.Resizer"; }
             }
 
+            public override string Category
+            {
+                get { return "Scaling"; }
+            }
+
             public override ExtensionUiDescriptor Descriptor
             {
                 get
@@ -196,9 +224,9 @@ namespace Mpdn.RenderScript
 
             private string GetDescription()
             {
-                var desc = Chain.ResizerOption == ResizerOption.TargetSize100Percent
+                var desc = Settings.ResizerOption == ResizerOption.TargetSize100Percent
                     ? "Resizes the image"
-                    : string.Format("Resize to: {0}", Chain.ResizerOption.ToDescription());
+                    : string.Format("Resize to: {0}", Settings.ResizerOption.ToDescription());
                 return desc;
             }
         }

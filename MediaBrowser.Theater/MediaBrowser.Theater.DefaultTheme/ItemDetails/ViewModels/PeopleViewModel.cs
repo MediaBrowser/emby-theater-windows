@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -25,14 +24,12 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     {
         private readonly IImageManager _imageManager;
         private readonly BaseItemDto _item;
-        private readonly IConnectionManager _connectionManager;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
 
-        public PeopleListViewModel(BaseItemDto item, IConnectionManager connectionManager, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator)
+        public PeopleListViewModel(BaseItemDto item, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator)
         {
             _item = item;
-            _connectionManager = connectionManager;
             _sessionManager = sessionManager;
             _imageManager = imageManager;
             _navigator = navigator;
@@ -218,14 +215,12 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class PeopleListSectionGenerator
         : IItemDetailSectionGenerator
     {
-        private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
 
-        public PeopleListSectionGenerator(IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, ISessionManager sessionManager)
+        public PeopleListSectionGenerator(IImageManager imageManager, INavigator navigator, ISessionManager sessionManager)
         {
-            _connectionManager = connectionManager;
             _imageManager = imageManager;
             _navigator = navigator;
             _sessionManager = sessionManager;
@@ -238,7 +233,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
-            IItemDetailSection section = new PeopleListViewModel(item, _connectionManager, _sessionManager, _imageManager, _navigator);
+            IItemDetailSection section = new PeopleListViewModel(item, _sessionManager, _imageManager, _navigator);
             return Task.FromResult<IEnumerable<IItemDetailSection>>(new[] { section });
         }
     }

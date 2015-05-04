@@ -1,4 +1,20 @@
-﻿using System;
+// This file is a part of MPDN Extensions.
+// https://github.com/zachsaw/MPDN_Extensions
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3.0 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.
+// 
+using System;
 using Mpdn.Config;
 using YAXLib;
 
@@ -6,7 +22,8 @@ namespace Mpdn.RenderScript
 {
     public interface IRenderChainUi : IRenderScriptUi
     {
-        RenderChain GetChain();
+        RenderChain Chain { get; }
+        string Category { get; }
     }
 
     public static class RenderChainUi
@@ -25,6 +42,11 @@ namespace Mpdn.RenderScript
 
         private class IdentityRenderChainUi : RenderChainUi<IdentityRenderChain>
         {
+            public override string Category
+            {
+                get { return "Meta"; }
+            }
+
             public override ExtensionUiDescriptor Descriptor
             {
                 get
@@ -46,14 +68,9 @@ namespace Mpdn.RenderScript
 
     public abstract class RenderChainUi<TChain, TDialog> : ExtensionUi<Config.Internal.RenderScripts, TChain, TDialog>, IRenderChainUi
         where TChain : RenderChain, new()
-        where TDialog : ScriptConfigDialog<TChain>, new()
+        where TDialog : IScriptConfigDialog<TChain>, new()
     {
-        [YAXSerializeAs("Settings")]
-        public TChain Chain
-        {
-            get { return Settings; }
-            set { Settings = value; }
-        }
+        public abstract string Category { get; }
 
         protected RenderChainUi()
         {
@@ -62,14 +79,15 @@ namespace Mpdn.RenderScript
 
         public IRenderScript CreateRenderScript()
         {
-            return new RenderChainScript(Chain);
+            return new RenderChainScript(Settings);
         }
 
         #region Implementation
 
-        public RenderChain GetChain()
+        [YAXDontSerialize]
+        public RenderChain Chain
         {
-            return Chain;
+            get { return Settings; }
         }
 
         public override void Destroy()

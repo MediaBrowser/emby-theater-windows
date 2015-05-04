@@ -1,4 +1,20 @@
-﻿using System;
+// This file is a part of MPDN Extensions.
+// https://github.com/zachsaw/MPDN_Extensions
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3.0 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.
+// 
+using System;
 using System.Windows.Forms;
 
 namespace Mpdn
@@ -33,7 +49,14 @@ namespace Mpdn
 
         public class NoSettings { }
 
-        public class ScriptConfigDialog<TSettings> : Form
+        public interface IScriptConfigDialog<in TSettings> : IDisposable
+            where TSettings : class, new()
+        {
+            void Setup(TSettings settings);
+            DialogResult ShowDialog(IWin32Window owner);
+        }
+
+        public class ScriptConfigDialog<TSettings> : Form, IScriptConfigDialog<TSettings>
             where TSettings : class, new()
         {
             protected TSettings Settings { get; private set; }
@@ -70,7 +93,7 @@ namespace Mpdn
 
         public abstract class ExtensionUi<TExtensionClass, TSettings, TDialog> : IExtensionUi
             where TSettings : class, new()
-            where TDialog : ScriptConfigDialog<TSettings>, new()
+            where TDialog : IScriptConfigDialog<TSettings>, new()
         {
             protected virtual string ConfigFileName { get { return this.GetType().Name; } }
 
@@ -80,7 +103,7 @@ namespace Mpdn
 
             private Config ScriptConfig { get; set; }
 
-            protected TSettings Settings
+            public TSettings Settings
             {
                 get 
                 {

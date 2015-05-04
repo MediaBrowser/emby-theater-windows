@@ -1,5 +1,22 @@
-﻿using System;
+// This file is a part of MPDN Extensions.
+// https://github.com/zachsaw/MPDN_Extensions
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3.0 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.
+// 
+using System;
 using YAXLib;
+using SharpDX;
 
 namespace Mpdn.RenderScript
 {
@@ -28,10 +45,10 @@ namespace Mpdn.RenderScript
                 Passes = 2;
 
                 Strength = 0.75f;
-                Sharpness = 0.15f;
-                AntiAliasing = 0.25f;
-                AntiRinging = 0.75f;
-                Softness = 0.5f;
+                Sharpness = 0.25f;
+                AntiAliasing = 0.5f;
+                AntiRinging = 0.0f;
+                Softness = 0.1f;
 
                 FirstPassOnly = true;
                 upscaler = new Scaler.Bilinear();
@@ -40,31 +57,15 @@ namespace Mpdn.RenderScript
 
             protected override string ShaderPath
             {
-                get { return "SuperRes"; }
+                get { return @"SuperRes\SuperChromaRes"; }
             }
 
-            public override IFilter CreateFilter(IResizeableFilter sourceFilter)
+            public override IFilter CreateFilter(IFilter input)
             {
                 IFilter yuv;
 
-                var chromaSize = Renderer.ChromaSize;
-                var targetSize = sourceFilter.OutputSize;
-
-                var Diff = CompileShader("SuperChromaRes/Diff.hlsl");
-                var CopyLuma = CompileShader("SuperChromaRes/CopyLuma.hlsl");
-                var CopyChroma = CompileShader("SuperChromaRes/CopyChroma.hlsl");
-                var SuperRes = CompileShader("SuperChromaRes/SuperRes.hlsl");
-
-                var GammaToLab = CompileShader("GammaToLab.hlsl");
-                var LabToGamma = CompileShader("LabToGamma.hlsl");
-                var LinearToGamma = CompileShader("LinearToGamma.hlsl");
-                var GammaToLinear = CompileShader("GammaToLinear.hlsl");
-                var LabToLinear = CompileShader("LabToLinear.hlsl");
-                var LinearToLab = CompileShader("LinearToLab.hlsl");
-
-                // Skip if downscaling
-                if (targetSize.Width <= chromaSize.Width && targetSize.Height <= chromaSize.Height)
-                    return sourceFilter;
+                var chromaSize = (TextureSize)Renderer.ChromaSize;
+                var targetSize = input.OutputSize;
 
                 // Original values
                 var yInput = new YSourceFilter();
@@ -74,7 +75,7 @@ namespace Mpdn.RenderScript
                 float[] YuvConsts = new float[2];
                 switch (Renderer.Colorimetric)
                 {
-                    case YuvColorimetric.Auto : return sourceFilter;
+                    case YuvColorimetric.Auto : return input;
                     case YuvColorimetric.FullRangePc601: YuvConsts = new[] { 0.114f, 0.299f, 0.0f}; break;
                     case YuvColorimetric.FullRangePc709: YuvConsts = new[] { 0.0722f, 0.2126f, 0.0f }; break;
                     case YuvColorimetric.FullRangePc2020: YuvConsts = new[] { 0.0593f, 0.2627f, 0.0f }; break;
@@ -83,10 +84,35 @@ namespace Mpdn.RenderScript
                     case YuvColorimetric.ItuBt2020: YuvConsts = new[] { 0.0593f, 0.2627f, 1.0f }; break;
                 }
 
-                var Consts = new[] { Strength, Sharpness   , AntiAliasing, AntiRinging,  
-                                     Softness, YuvConsts[0], YuvConsts[1]};
+                // Skip if downscaling
+                if (targetSize.Width <= chromaSize.Width && targetSize.Height <= chromaSize.Height)
+                    return input;
 
-                yuv = sourceFilter.ConvertToYuv();
+                Vector2 offset = Renderer.ChromaOffset;
+                Vector2 adjointOffset = -offset * targetSize / chromaSize;
+
+                var Consts = new[] { Strength, Sharpness   , AntiAliasing, AntiRinging,  
+                                     Softness, YuvConsts[0], YuvConsts[1], 0.0f,
+                                     offset.X, offset.Y };
+
+                var CopyLuma = CompileShader("CopyLuma.hlsl");
+                var CopyChroma = CompileShader("CopyChroma.hlsl");
+                var Diff = CompileShader("Diff.hlsl").Configure(arguments: YuvConsts, format: TextureFormat.Float16);
+                var SuperRes = CompileShader("SuperRes.hlsl", macroDefinitions:
+                        (AntiRinging  == 0 ? "SkipAntiRinging  = 1;" : "") +
+                        (AntiAliasing == 0 ? "SkipAntiAliasing = 1;" : "") +
+                        (Sharpness == 0 ? "SkipSharpening = 1;" : "") +
+                        (Softness  == 0 ? "SkipSoftening  = 1;" : "")
+                    ).Configure(arguments: new[] { Strength, Sharpness, AntiAliasing, AntiRinging, Softness });
+
+                var GammaToLab = CompileShader("../../Common/GammaToLab.hlsl");
+                var LabToGamma = CompileShader("../../Common/LabToGamma.hlsl");
+                var LinearToGamma = CompileShader("../../Common/LinearToGamma.hlsl");
+                var GammaToLinear = CompileShader("../../Common/GammaToLinear.hlsl");
+                var LabToLinear = CompileShader("../../Common/LabToLinear.hlsl");
+                var LinearToLab = CompileShader("../../Common/LinearToLab.hlsl");
+
+                yuv = input.ConvertToYuv();
 
                 for (int i = 1; i <= Passes; i++)
                 {
@@ -95,14 +121,14 @@ namespace Mpdn.RenderScript
 
                     // Compare to chroma
                     linear = new ShaderFilter(GammaToLinear, yuv.ConvertToRgb());
-                    res = new ResizeFilter(linear, chromaSize, upscaler, downscaler);
+                    res = new ResizeFilter(linear, chromaSize, adjointOffset, upscaler, downscaler);
                     res = new ShaderFilter(LinearToGamma, res).ConvertToYuv();
-                    diff = new ShaderFilter(Diff, YuvConsts, res, uInput, vInput);
+                    diff = new ShaderFilter(Diff, res, uInput, vInput);
                     if (!useBilinear)
-                        diff = new ResizeFilter(diff, targetSize, upscaler, downscaler); // Scale to output size
+                        diff = new ResizeFilter(diff, targetSize, offset, upscaler, downscaler); // Scale to output size
 
                     // Update result
-                    yuv = new ShaderFilter(SuperRes, useBilinear, Consts, yuv, diff, uInput, vInput);
+                    yuv = new ShaderFilter(SuperRes.Configure(useBilinear, arguments: Consts), yuv, diff, uInput, vInput);
                 }
 
                 return yuv.ConvertToRgb();
@@ -114,6 +140,11 @@ namespace Mpdn.RenderScript
             protected override string ConfigFileName
             {
                 get { return "SuperChromaRes"; }
+            }
+
+            public override string Category
+            {
+                get { return "Chroma Scaling"; }
             }
 
             public override ExtensionUiDescriptor Descriptor

@@ -21,8 +21,6 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class ItemsListViewModel
         : BaseViewModel, IItemDetailSection, IKnownSize
     {
-        private const int TileHeight = 200;
-
         private readonly ItemsResult _itemsResult;
         private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
@@ -32,6 +30,15 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private readonly ImageType[] _preferredImageTypes;
 
         private bool _isVisible;
+
+        public static double ItemHeight
+        {
+            get
+            {
+                const double available = 3 * HomeViewModel.TileHeight + 6 * HomeViewModel.TileMargin;
+                return available / 3 - 2 * HomeViewModel.TileMargin;
+            }
+        }
 
         public int SortOrder 
         {
@@ -46,8 +53,15 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                     return new Size();
                 }
 
-                return new Size(Items.First().Size.Width + 20, 700);
+                var itemSize = Items.First().Size;
+
+                return new Size(itemSize.Width + 2 * HomeViewModel.TileMargin + 20, ListHeight + 20);
             }
+        }
+
+        public double ListHeight
+        {
+            get { return 3*ItemHeight + 6*HomeViewModel.TileMargin; }
         }
 
         public string Title { get; set; }
@@ -94,7 +108,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         {
             IEnumerable<ItemTileViewModel> items = _itemsResult.Items.Select(i => new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager, i)
             {
-                DesiredImageHeight = TileHeight,
+                DesiredImageHeight = ItemHeight,
                 PreferredImageTypes = _preferredImageTypes
             });
 

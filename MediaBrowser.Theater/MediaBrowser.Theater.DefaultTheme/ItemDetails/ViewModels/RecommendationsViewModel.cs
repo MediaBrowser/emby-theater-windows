@@ -73,7 +73,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 var width = (int)Math.Ceiling(Items.Count / 2.0);
                 var itemSize = Items.First().Size;
 
-                return new Size(width * (itemSize.Width + 2 * HomeViewModel.TileMargin) + 20, itemSize.Height + 2 * HomeViewModel.TileMargin);
+                return new Size(width * (itemSize.Width + 2 * HomeViewModel.TileMargin) + 20, 2 * itemSize.Height + 4 * HomeViewModel.TileMargin);
             }
         }
 

@@ -36,7 +36,7 @@ namespace MediaBrowser.Theater.Api.Commands.ItemCommands
             IconViewModel = new BrowseItemCommandViewModel();
             ExecuteCommand = new RelayCommand(async o => {
                 await _navigator.Navigate(Go.To.ItemList(new ItemListParameters {
-                    Items = ItemChildren.Get(_connectionManager, _sessionManager, item),
+                    Items = ItemChildren.Get(_connectionManager, _sessionManager, item, new ChildrenQueryParams { ExpandSingleItems = true }),
                     Title = item.GetDisplayName()
                 }));
             });

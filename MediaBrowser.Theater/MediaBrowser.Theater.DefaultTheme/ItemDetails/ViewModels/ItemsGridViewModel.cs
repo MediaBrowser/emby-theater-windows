@@ -20,8 +20,6 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class ItemsGridViewModel
         : BaseViewModel, IItemDetailSection, IKnownSize
     {
-        private const double PosterHeight = 350 - HomeViewModel.TileMargin * 0.5;
-
         private readonly ItemsResult _itemsResult;
         private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
@@ -67,14 +65,14 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         {
             get
             {
-                if (Items.Count == 0)
-                {
-                    return new Size();
+                if (Items.Count == 0) {
+                    return new Size(0, 0);
                 }
 
                 var width = (int)Math.Ceiling(Items.Count / 2.0);
+                var itemSize = Items.First().Size;
 
-                return new Size(width * (Items.First().Size.Width + 2 * HomeViewModel.TileMargin) + 20, 900);
+                return new Size(width*(itemSize.Width + 2*HomeViewModel.TileMargin) + 20, 2*itemSize.Height + 4*HomeViewModel.TileMargin + 20);
             }
         }
 
@@ -117,7 +115,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         {
             return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, _sessionManager, null)
             {
-                DesiredImageHeight = PosterHeight,
+                DesiredImageHeight = PersonListItemViewModel.Height,
                 PreferredImageTypes = _preferredImageTypes
             };
         }

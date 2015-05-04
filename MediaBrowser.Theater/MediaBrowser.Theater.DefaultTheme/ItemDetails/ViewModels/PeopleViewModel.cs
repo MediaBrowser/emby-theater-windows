@@ -61,8 +61,6 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                     return new Size(0, 0);
                 }
 
-                
-
                 return new Size(ListWidth + 20, ListHeight + 20);
             }
         }

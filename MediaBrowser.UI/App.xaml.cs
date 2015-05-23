@@ -99,7 +99,7 @@ namespace MediaBrowser.UI
                 try
                 {
                     new ApplicationUpdater().UpdateApplication(appPaths, updateArchive,
-                        logManager.GetLogger("ApplicationUpdater"), string.Empty);
+                        logManager.GetLogger("ApplicationUpdater"));
 
                     // And just let the app exit so it can update
                     return;

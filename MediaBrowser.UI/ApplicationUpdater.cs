@@ -10,7 +10,7 @@ namespace MediaBrowser.UI
         private const string UpdaterExe = "Mediabrowser.Updater.exe";
         private const string UpdaterDll = "Mediabrowser.InstallUtil.dll";
 
-        public void UpdateApplication(IApplicationPaths appPaths, string archive, ILogger logger, string restartServiceName)
+        public void UpdateApplication(IApplicationPaths appPaths, string archive, ILogger logger)
         {
             // First see if there is a version file and read that in
             var version = "Unknown";
@@ -39,7 +39,12 @@ namespace MediaBrowser.UI
             File.Copy(source, Path.Combine(Path.GetTempPath(), "SharpCompress.dll"), true);
 
             logger.Info("Starting updater process.");
-            Process.Start(tempUpdater, string.Format("product={0} archive=\"{1}\" caller={2} pismo=false version={3} service={4} installpath=\"{5}\"", product, archive, Process.GetCurrentProcess().Id, version, restartServiceName ?? string.Empty, appPaths.ProgramDataPath));
+
+            var args = string.Format("product={0} archive=\"{1}\" caller={2} pismo=false version={3} service={4} installpath=\"{5}\"",
+                    product, archive, Process.GetCurrentProcess().Id, version, string.Empty, appPaths.ProgramDataPath);
+
+            logger.Info("Args: {0}", args);
+            Process.Start(tempUpdater, args);
 
             // That's it.  The installer will do the work once we exit
         }

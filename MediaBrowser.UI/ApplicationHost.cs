@@ -389,15 +389,32 @@ namespace MediaBrowser.UI
         {
             var shortcutPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Media Browser 3", "Media Browser Theater.lnk");
 
+            if (!Directory.Exists(Path.GetDirectoryName(shortcutPath)))
+            {
+                shortcutPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Emby", "Emby Theater.lnk");
+            }
+
+            var startupPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+
+            // Remove lnk from old name
+            try
+            {
+                File.Delete(Path.Combine(startupPath, Path.GetFileName(shortcutPath) ?? "MediaBrowserTheaterStartup.lnk"));
+            }
+            catch
+            {
+
+            }
+
             if (autorun)
             {
                 // Copy our shortut into the startup folder for this user
-                File.Copy(shortcutPath, Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), Path.GetFileName(shortcutPath) ?? "MediaBrowserTheaterStartup.lnk"), true);
+                File.Copy(shortcutPath, Path.Combine(startupPath, Path.GetFileName(shortcutPath) ?? "Emby Theater.lnk"), true);
             }
             else
             {
                 // Remove our shortcut from the startup folder for this user
-                File.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), Path.GetFileName(shortcutPath) ?? "MediaBrowserTheaterStartup.lnk"));
+                File.Delete(Path.Combine(startupPath, Path.GetFileName(shortcutPath) ?? "Emby Theater.lnk"));
             }
         }
 

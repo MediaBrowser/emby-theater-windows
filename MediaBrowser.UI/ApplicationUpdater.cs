@@ -20,30 +20,32 @@ namespace MediaBrowser.UI
             }
 
             var systemPath = appPaths.ProgramSystemPath;
+            var tempPath = Path.GetTempPath();
 
             // Use our installer passing it the specific archive
             // We need to copy to a temp directory and execute it there
             var source = Path.Combine(systemPath, UpdaterExe);
 
             logger.Info("Copying updater to temporary location");
-            var tempUpdater = Path.Combine(Path.GetTempPath(), UpdaterExe);
+            var tempUpdater = Path.Combine(tempPath, UpdaterExe);
             File.Copy(source, tempUpdater, true);
             source = Path.Combine(systemPath, UpdaterDll);
-            var tempUpdaterDll = Path.Combine(Path.GetTempPath(), UpdaterDll);
+            var tempUpdaterDll = Path.Combine(tempPath, UpdaterDll);
 
             logger.Info("Copying updater dependencies to temporary location");
             File.Copy(source, tempUpdaterDll, true);
             var product = "mbt";
             // Our updater needs SS and ionic
             source = Path.Combine(systemPath, "ServiceStack.Text.dll");
-            File.Copy(source, Path.Combine(Path.GetTempPath(), "ServiceStack.Text.dll"), true);
+            File.Copy(source, Path.Combine(tempPath, "ServiceStack.Text.dll"), true);
             source = Path.Combine(systemPath, "SharpCompress.dll");
-            File.Copy(source, Path.Combine(Path.GetTempPath(), "SharpCompress.dll"), true);
+            File.Copy(source, Path.Combine(tempPath, "SharpCompress.dll"), true);
 
             logger.Info("Starting updater process.");
 
             // installpath = program data folder
-            // start path = executable to launch
+            // startpath = executable to launch
+            // systempath = folder containing installation
             var args = string.Format("product={0} archive=\"{1}\" caller={2} pismo=false version={3} service={4} installpath=\"{5}\" startpath=\"{6}\" systempath=\"{7}\"",
                     product, archive, Process.GetCurrentProcess().Id, version, string.Empty, appPaths.ProgramDataPath, appPaths.ApplicationPath, systemPath);
 

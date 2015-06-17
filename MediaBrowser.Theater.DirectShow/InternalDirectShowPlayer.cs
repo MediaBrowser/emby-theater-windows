@@ -46,13 +46,13 @@ namespace MediaBrowser.Theater.DirectShow
 
         public event EventHandler<PlaybackStopEventArgs> PlaybackCompleted;
 
-        public URCOMLoader PrivateCom
-        {
-            get
-            {
-                return _privateCom;
-            }
-        }
+        //public URCOMLoader PrivateCom
+        //{
+        //    get
+        //    {
+        //        return _privateCom;
+        //    }
+        //}
 
         private List<BaseItemDto> _playlist = new List<BaseItemDto>();
 
@@ -76,8 +76,9 @@ namespace MediaBrowser.Theater.DirectShow
             _config.Configuration.InternalPlayerConfiguration.COMConfig.SetDefaults();
 
             //use a static object so we keep the libraries in the same place. Doesn't usually matter, but the EVR Presenter does some COM hooking that has problems if we change the lib address.
-            if (_privateCom == null)
-                _privateCom = new URCOMLoader(_config, _zipClient);
+            //if (_privateCom == null)
+            //    _privateCom = new URCOMLoader(_config, _zipClient);
+            URCOMLoader.Instance.Initialize(_config, _zipClient, logManager);
 
             EnsureMediaFilters();
         }
@@ -88,7 +89,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 try
                 {
-                    MediaBrowser.Theater.DirectShow.URCOMLoader.EnsureObjects(_config, _zipClient, false);
+                    URCOMLoader.Instance.EnsureObjects(_config, _zipClient, false);
                 }
                 catch
                 {

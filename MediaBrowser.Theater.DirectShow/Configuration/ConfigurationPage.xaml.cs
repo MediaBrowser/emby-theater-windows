@@ -172,7 +172,13 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             }
             _config.SaveConfiguration();
             if (redownloadFilters)
-                URCOMLoader.EnsureObjects(_config, _zipClient, false, true);
+            {
+                if (URCOMLoader.Instance.EnsureObjects(_config, _zipClient, false, true))
+                {
+                    //if the player was used we can't update the filters until the client is restarted
+                    //TODO: Tell users to restart MBT
+                }
+            }
         }
 
         async void BtnConfigureMadVr_Click(object sender, RoutedEventArgs e)

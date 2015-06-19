@@ -82,6 +82,15 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+        private void ExtractBytes(byte[] comBin, string dlPath, IZipClient zipClient)
+        {
+            using (MemoryStream ms = new MemoryStream(comBin))
+            {
+                _logger.Debug("ExtractBytes: {0}", dlPath);
+                zipClient.ExtractAll(ms, dlPath, true);
+            }
+        }
+
         public bool EnsureObjects(ITheaterConfigurationManager mbtConfig, IZipClient zipClient, bool block)
         {
             return EnsureObjects(mbtConfig, zipClient, block, false);
@@ -99,9 +108,16 @@ namespace MediaBrowser.Theater.DirectShow
                 string lastCheckedPath = Path.Combine(objPath, LAST_CHECKED);
                 bool needsCheck = true;
 
-                if (!Directory.Exists(objPath))
+                if (!Directory.Exists(objPath) || Directory.GetDirectories(objPath).Length == 0)
                 {
                     Directory.CreateDirectory(objPath);
+                    //extract embedded filters
+                    ExtractBytes(MediaBrowser.Theater.DirectShow.Properties.Resources.babgvant, objPath, zipClient);
+                    ExtractBytes(MediaBrowser.Theater.DirectShow.Properties.Resources.LAV, objPath, zipClient);
+                    ExtractBytes(MediaBrowser.Theater.DirectShow.Properties.Resources.madVR, objPath, zipClient);
+                    ExtractBytes(MediaBrowser.Theater.DirectShow.Properties.Resources.mpaudio, objPath, zipClient);
+                    ExtractBytes(MediaBrowser.Theater.DirectShow.Properties.Resources.XySubFilter, objPath, zipClient);
+                    ExtractBytes(MediaBrowser.Theater.DirectShow.Properties.Resources.xy_VSFilter, objPath, zipClient);
                 }
                 else if (redownload)
                 {
@@ -209,11 +225,13 @@ namespace MediaBrowser.Theater.DirectShow
                                                     {
                                                         _logger.Error("CheckObjects Delete: {0}", ex.Message);
                                                     }
-                                                    using (MemoryStream ms = new MemoryStream(comBin))
-                                                    {
-                                                        _logger.Debug("CheckObjects extract: {0}", dlPath);
-                                                        zipClient.ExtractAll(ms, dlPath, true);
-                                                    }
+
+                                                    ExtractBytes(comBin, dlPath, zipClient);
+                                                    //using (MemoryStream ms = new MemoryStream(comBin))
+                                                    //{
+                                                    //    _logger.Debug("CheckObjects extract: {0}", dlPath);
+                                                    //    zipClient.ExtractAll(ms, dlPath, true);
+                                                    //}
 
                                                     DateAndVersion.Write(new DateAndVersion(txtPath, lmDate, ExeVersion));
                                                 }

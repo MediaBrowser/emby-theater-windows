@@ -570,7 +570,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     {
                         text += "-" + _item.EndDate.Value.Year;
                     }
-                    else if (_item.Status.HasValue && _item.Status.Value == SeriesStatus.Continuing)
+                    else if (_item.SeriesStatus.HasValue && _item.SeriesStatus.Value == SeriesStatus.Continuing)
                     {
                         text += "-Present";
                     }
@@ -595,7 +595,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     return null;
                 }
 
-                return (_item.Status ?? SeriesStatus.Continuing) == SeriesStatus.Continuing ? "Airs" : "Aired";
+                return (_item.SeriesStatus ?? SeriesStatus.Continuing) == SeriesStatus.Continuing ? "Airs" : "Aired";
             }
         }
 
@@ -745,7 +745,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     {
                         text += "-" + item.EndDate.Value.Year;
                     }
-                    else if (item.Status.HasValue && item.Status.Value == SeriesStatus.Continuing)
+                    else if (item.SeriesStatus.HasValue && item.SeriesStatus.Value == SeriesStatus.Continuing)
                     {
                         text += "-Present";
                     }

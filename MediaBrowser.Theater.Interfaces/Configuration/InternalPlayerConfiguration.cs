@@ -553,9 +553,12 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
     {
         private static Regex isGuid = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$", RegexOptions.Compiled);
 
+        public int LoadWait { get; set; }
+
         public KnownCOMObjectConfiguration()
         {
             FilterList = new SerializableDictionary<Guid, KnownCOMObject>();
+            LoadWait = 60000;
         }
 
         public SerializableDictionary<Guid, KnownCOMObject> FilterList { get; set; }

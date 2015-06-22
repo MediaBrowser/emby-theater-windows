@@ -77,6 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdditionalFilterInterfaces.cs" />
+    <Compile Include="CanPing.cs" />
     <Compile Include="Configuration\ConfigurationPage.xaml.cs">
       <DependentUpon>ConfigurationPage.xaml</DependentUpon>
     </Compile>
@@ -142,6 +143,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="FilterZips\babgvant.zip" />
+    <None Include="FilterZips\LAV.zip" />
+    <None Include="FilterZips\madVR.zip" />
+    <None Include="FilterZips\mpaudio.zip" />
+    <None Include="FilterZips\xy-VSFilter.zip" />
+    <None Include="FilterZips\XySubFilter.zip" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

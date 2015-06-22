@@ -169,94 +169,99 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void CheckObjects(object objDlPath, IZipClient zipClient, ITheaterConfigurationManager mbtConfig)
         {
-            try
+            string dsDlPath = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings["PrivateObjectsManifest"], mbtConfig.Configuration.InternalPlayerConfiguration.FilterSet);
+            Uri objManifest = new Uri(Path.Combine(dsDlPath, "manifest.txt"));
+                    
+            //only check if we need to update filters if the CDN is available
+            if (CanPing.TryPing(objManifest.Host))
             {
-                _mreFilterBlock.Reset();
-
-                string dsDlPath = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings["PrivateObjectsManifest"], mbtConfig.Configuration.InternalPlayerConfiguration.FilterSet);
-                Uri objManifest = new Uri(Path.Combine(dsDlPath, "manifest.txt"));
-                string dlPath = objDlPath.ToString();
-                string lastCheckedPath = Path.Combine(dlPath, LAST_CHECKED);
-
-                _logger.Debug("CheckObjects lastCheckedPath: {0}", lastCheckedPath);
-
-                using (WebClient mwc = new WebClient())
+                try
                 {
-                    string dlList = mwc.DownloadString(objManifest);
-                    if (!string.IsNullOrWhiteSpace(dlList))
+                    _mreFilterBlock.Reset();
+
+                    string dlPath = objDlPath.ToString();
+                    string lastCheckedPath = Path.Combine(dlPath, LAST_CHECKED);
+
+                    _logger.Debug("CheckObjects lastCheckedPath: {0}", lastCheckedPath);
+
+                    using (WebClient mwc = new WebClient())
                     {
-                        _logger.Debug("CheckObjects manifest: {0}", dlList);
-
-                        string[] objToCheck = dlList.Split(new string[] { System.Environment.NewLine, "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                        foreach (string toCheck in objToCheck)
+                        string dlList = mwc.DownloadString(objManifest);
+                        if (!string.IsNullOrWhiteSpace(dlList))
                         {
-                            try
+                            _logger.Debug("CheckObjects manifest: {0}", dlList);
+
+                            string[] objToCheck = dlList.Split(new string[] { System.Environment.NewLine, "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                            foreach (string toCheck in objToCheck)
                             {
-                                string txtPath = Path.Combine(dlPath, Path.ChangeExtension(toCheck, "txt"));
-                                DateAndVersion lastUpdate = new DateAndVersion(txtPath);
-                                Uri comPath = new Uri(Path.Combine(dsDlPath, toCheck));
-                                WebRequest request = WebRequest.Create(comPath);
-                                request.Method = "HEAD";
-
-                                _logger.Debug("CheckObjects check: {0}", comPath);
-
-                                using (WebResponse wr = request.GetResponse())
+                                try
                                 {
-                                    DateTime lmDate;
-                                    if (DateTime.TryParse(wr.Headers[HttpResponseHeader.LastModified], out lmDate))
+                                    string txtPath = Path.Combine(dlPath, Path.ChangeExtension(toCheck, "txt"));
+                                    DateAndVersion lastUpdate = new DateAndVersion(txtPath);
+                                    Uri comPath = new Uri(Path.Combine(dsDlPath, toCheck));
+                                    WebRequest request = WebRequest.Create(comPath);
+                                    request.Method = "HEAD";
+
+                                    _logger.Debug("CheckObjects check: {0}", comPath);
+
+                                    using (WebResponse wr = request.GetResponse())
                                     {
-                                        _logger.Debug("CheckObjects lmDate: {0} StoredDate", lmDate, lastUpdate.StoredDate );
-                                        if (lmDate > lastUpdate.StoredDate)
+                                        DateTime lmDate;
+                                        if (DateTime.TryParse(wr.Headers[HttpResponseHeader.LastModified], out lmDate))
                                         {
-                                            //download the updated component
-                                            using (WebClient fd = new WebClient())
+                                            _logger.Debug("CheckObjects lmDate: {0} StoredDate", lmDate, lastUpdate.StoredDate);
+                                            if (lmDate > lastUpdate.StoredDate)
                                             {
-                                                fd.DownloadProgressChanged += fd_DownloadProgressChanged;
-                                                byte[] comBin = fd.DownloadData(comPath);
-                                                if (comBin.Length > 0)
+                                                //download the updated component
+                                                using (WebClient fd = new WebClient())
                                                 {
-                                                    try
+                                                    fd.DownloadProgressChanged += fd_DownloadProgressChanged;
+                                                    byte[] comBin = fd.DownloadData(comPath);
+                                                    if (comBin.Length > 0)
                                                     {
-                                                        string dirPath = Path.Combine(dlPath, Path.GetFileNameWithoutExtension(toCheck));
-                                                        if(Directory.Exists(dirPath))
-                                                            Directory.Delete(dirPath, true);
-                                                    }
-                                                    catch (Exception ex)
-                                                    {
-                                                        _logger.Error("CheckObjects Delete: {0}", ex.Message);
-                                                    }
+                                                        try
+                                                        {
+                                                            string dirPath = Path.Combine(dlPath, Path.GetFileNameWithoutExtension(toCheck));
+                                                            if (Directory.Exists(dirPath))
+                                                                Directory.Delete(dirPath, true);
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+                                                            _logger.Error("CheckObjects Delete: {0}", ex.Message);
+                                                        }
 
-                                                    ExtractBytes(comBin, dlPath, zipClient);
-                                                    //using (MemoryStream ms = new MemoryStream(comBin))
-                                                    //{
-                                                    //    _logger.Debug("CheckObjects extract: {0}", dlPath);
-                                                    //    zipClient.ExtractAll(ms, dlPath, true);
-                                                    //}
+                                                        ExtractBytes(comBin, dlPath, zipClient);
+                                                        //using (MemoryStream ms = new MemoryStream(comBin))
+                                                        //{
+                                                        //    _logger.Debug("CheckObjects extract: {0}", dlPath);
+                                                        //    zipClient.ExtractAll(ms, dlPath, true);
+                                                        //}
 
-                                                    DateAndVersion.Write(new DateAndVersion(txtPath, lmDate, ExeVersion));
+                                                        DateAndVersion.Write(new DateAndVersion(txtPath, lmDate, ExeVersion));
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.WriteLine(ex.Message);
+                                catch (Exception ex)
+                                {
+                                    Debug.WriteLine(ex.Message);
+                                }
                             }
                         }
                     }
-                }
 
-                DateAndVersion.Write(new DateAndVersion(lastCheckedPath, DateTime.Now, ExeVersion));
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
-            finally
-            {
-                _mreFilterBlock.Set();
+                    DateAndVersion.Write(new DateAndVersion(lastCheckedPath, DateTime.Now, ExeVersion));
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    _mreFilterBlock.Set();
+                }
             }
         }
 

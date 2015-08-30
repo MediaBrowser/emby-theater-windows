@@ -1133,7 +1133,7 @@ namespace MediaBrowser.Theater.DirectShow
         private void RenderDvdStreams(bool enableMadvr, bool enableMadvrExclusiveMode)
         {
             int hr;
-            
+
             AMDvdGraphFlags buildFlags = AMDvdGraphFlags.DoNotClear;
 
             #region Video
@@ -1174,36 +1174,36 @@ namespace MediaBrowser.Theater.DirectShow
             hr = _dvdGraphBuilder.RenderDvdVideoVolume(_filePath, buildFlags, out buildStatus);
             DsError.ThrowExceptionForHR(hr);
 
-            if (buildStatus.iNumStreamsFailed > 1)
+            //The DVD Graph Builder won't connect LAV to the VR
+            IPin lavOut = null;
+            IPin vrIn = null;
+            if (_lavvideo != null)
             {
-                //   throw new ApplicationException("Could not render video_ts, try forcing a dvd decoder");
-                IPin lavOut = null;
-                IPin evrIn = null;
-                if (_lavvideo != null)
+                try
                 {
-                    try
+                    lavOut = DsFindPin.ByDirection((_lavvideo as IBaseFilter), PinDirection.Output, 0);
+                    if (lavOut != null)
                     {
-                        lavOut = DsFindPin.ByDirection((_lavvideo as IBaseFilter), PinDirection.Output, 0);
-                        if (lavOut != null)
-                        {
-                            hr = lavOut.ConnectedTo(out evrIn);
-                            //DsError.ThrowExceptionForHR(hr);
+                        hr = lavOut.ConnectedTo(out vrIn);
+                        //DsError.ThrowExceptionForHR(hr);
 
-                            if (evrIn == null)
-                            {
-                                evrIn = DsFindPin.ByDirection(_mPEvr, PinDirection.Input, 0);
-                                hr = _graph.ConnectDirect(lavOut, evrIn, null);
-                                DsError.ThrowExceptionForHR(hr);
-                            }
+                        if (vrIn == null)
+                        {
+                            if (_madvr != null)
+                                vrIn = DsFindPin.ByDirection((_madvr as IBaseFilter), PinDirection.Input, 0);
+                            else
+                                vrIn = DsFindPin.ByDirection(_mPEvr, PinDirection.Input, 0);
+                            hr = _graph.ConnectDirect(lavOut, vrIn, null);
+                            DsError.ThrowExceptionForHR(hr);
                         }
                     }
-                    finally
-                    {
-                        if (lavOut != null)
-                            Marshal.ReleaseComObject(lavOut);
-                        if (evrIn != null)
-                            Marshal.ReleaseComObject(evrIn);
-                    }
+                }
+                finally
+                {
+                    if (lavOut != null)
+                        Marshal.ReleaseComObject(lavOut);
+                    if (vrIn != null)
+                        Marshal.ReleaseComObject(vrIn);
                 }
             }
 

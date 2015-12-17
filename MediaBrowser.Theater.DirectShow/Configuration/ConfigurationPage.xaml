@@ -32,12 +32,16 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
             <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0 0 0 0"><Run Text="Filter Set:"/></TextBlock>
-            <controls:SelectList x:Name="SelectFilterSet" Margin="300 0 0 0"/>
+            <controls:SelectList x:Name="SelectFilterSet" Margin="302 0 0 0"/>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
             <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0 0 0 0"><Run Text="Video Renderer:"/></TextBlock>
-            <controls:SelectList x:Name="SelectVideoRenderer" Margin="212 0 0 0"/>
+            <controls:SelectList x:Name="SelectVideoRenderer" Margin="213 0 0 0"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
+            <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0 0 0 0"><Run Text="Output Range:"/></TextBlock>
+            <controls:SelectList x:Name="SelectOutputRange" Margin="232 0 0 0"/>
         </StackPanel>
         <!--<CheckBox x:Name="ChkEnableMadvr" Margin="0 30 0 0" VerticalAlignment="Center">
             <TextBlock Style="{StaticResource TextBlockStyle}" >Enable madVR</TextBlock>

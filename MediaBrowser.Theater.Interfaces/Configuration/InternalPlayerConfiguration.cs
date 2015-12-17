@@ -139,7 +139,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             HwaMode = -1;
 
             UseCustomPresenter = true;
-            NominalRange = 2; //MFNominalRange_16_235
+            NominalRange = 1; //MFNominalRange_0_255 2; //MFNominalRange_16_235
 
             AutoChangeRefreshRate = false;
             MinRefreshRateMin = 5;

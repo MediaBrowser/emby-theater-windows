@@ -85,6 +85,12 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
                  new SelectListItem{ Text = "madVR", Value="madVR"},
                  new SelectListItem{ Text = "EVR", Value="EVR"}
             };
+
+            SelectOutputRange.Options = new List<SelectListItem>
+            {
+                 new SelectListItem{ Text = "PC (0-255)", Value="1"},
+                 new SelectListItem{ Text = "Video (16-235)", Value="2"}
+            };
         }
 
         async void BtnConfigureSubtitles_Click(object sender, RoutedEventArgs e)
@@ -133,6 +139,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             SelectMaxStreamingBitrate.SelectedValue = (_config.Configuration.MaxStreamingBitrate / 1000000).ToString(CultureInfo.InvariantCulture);
             ChkEnableAutoRes.IsChecked = config.VideoConfig.AutoChangeRefreshRate;
             SelectFilterSet.SelectedValue = config.FilterSet;
+            SelectOutputRange.SelectedValue = config.VideoConfig.NominalRange.ToString();
         }
 
         void GeneralSettingsPage_Unloaded(object sender, RoutedEventArgs e)
@@ -163,6 +170,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             config.AudioConfig.Renderer = (AudioRendererChoice)Enum.Parse(typeof(AudioRendererChoice), SelectAudioRenderer.SelectedValue);
 
             config.VideoConfig.HwaMode = int.Parse(SelectHwaMode.SelectedValue);
+            config.VideoConfig.NominalRange = int.Parse(SelectOutputRange.SelectedValue);
             config.VideoConfig.AutoChangeRefreshRate = ChkEnableAutoRes.IsChecked ?? false;
             _config.Configuration.MaxStreamingBitrate = int.Parse(SelectMaxStreamingBitrate.SelectedValue) * 1000000;
             if (config.FilterSet != SelectFilterSet.SelectedValue)

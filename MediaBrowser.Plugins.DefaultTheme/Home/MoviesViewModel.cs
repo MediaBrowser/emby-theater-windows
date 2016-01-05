@@ -568,6 +568,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 query.SortBy = new[] { ItemSortBy.SortName };
                 query.SortOrder = SortOrder.Ascending;
+                query.ParentId = null;
             }
             else if (string.Equals(indexOption, "FavoriteMovies"))
             {

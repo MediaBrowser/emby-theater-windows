@@ -4,6 +4,7 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 
@@ -69,10 +70,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 viewModel.DisableActivePresentation();
             }
-            
+
             _presentationManager.RemoveResourceDictionary(_dynamicResourceDictionary);
         }
 
+        private static bool _newAppDisplayed;
         void HomePage_Loaded(object sender, RoutedEventArgs e)
         {
             var viewModel = DataContext as HomePageViewModel;
@@ -81,7 +83,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 viewModel.EnableActivePresentation();
             }
-            
+
             _presentationManager.SetDefaultPageTitle();
 
             if (_dynamicResourceDictionary == null)
@@ -101,6 +103,47 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 viewModel.SetBackdrops();
             }
+
+            if (!_newAppDisplayed && DateTime.UtcNow >= new DateTime(2016, 1, 15))
+            {
+                _newAppDisplayed = true;
+
+                var result = _presentationManager.ShowMessage(new MessageBoxInfo
+                {
+                    Button = MessageBoxButton.OKCancel,
+                    Caption = "Try the new Emby Theater!",
+                    Icon = Theater.Interfaces.Theming.MessageBoxIcon.Information,
+                    Text = "The new Emby Theater is faster, smoother, and looks better than ever. Get it now on the Emby website!"
+                });
+
+                if (result == MessageBoxResult.OK)
+                {
+                    var process = new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = "http://emby.media/download"
+                        },
+
+                        EnableRaisingEvents = true,
+                    };
+
+                    process.Exited += process_Exited;
+
+                    try
+                    {
+                        process.Start();
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+        }
+
+        void process_Exited(object sender, EventArgs e)
+        {
+            ((Process)sender).Dispose();
         }
 
         public BaseItemDto PageItem

@@ -72,7 +72,7 @@ namespace Emby.Theater.DirectShowPlayer
             {
                 _isFadingOut = true;
 
-                for (int i = -100; i > -10000; i -= 10)
+                for (int i = -100; i > -10000; i -= 20)
                 {
                     if (!_isFadingOut)
                     {

@@ -221,7 +221,7 @@
             ignoreEnded = true;
 
             var cmd = destroyPlayer ? 'stopfade' : 'stop';
-            sendCommand(cmd).then(function () {
+            return sendCommand(cmd).then(function () {
 
                 onEnded(reportEnded);
 

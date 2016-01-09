@@ -14,6 +14,7 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Emby.Theater.App;
 using Emby.Theater.DirectShow.Configuration;
 using SocketHttpListener.Net;
 
@@ -25,7 +26,7 @@ namespace Emby.Theater.DirectShowPlayer
         private readonly IJsonSerializer _json;
         private readonly ILogger _logger;
         private bool _isVideo;
-        
+
         public DirectShowPlayerBridge(ILogManager logManager
             , MainBaseForm hostForm
             , IApplicationPaths appPaths
@@ -315,7 +316,27 @@ namespace Emby.Theater.DirectShowPlayer
                 }
             }
 
+            ResetStandby();
             SendResponse(context, positionTicks);
+        }
+
+        private DateTime _lastStandbyCall;
+        private void ResetStandby()
+        {
+            if ((DateTime.Now - _lastStandbyCall).TotalMinutes < 3)
+            {
+                return;
+            }
+
+            try
+            {
+                Standby.PreventSystemStandby();
+                _lastStandbyCall = DateTime.Now;
+            }
+            catch
+            {
+
+            }
         }
 
         private void SendResponse(HttpListenerContext context, long? positionTicks)

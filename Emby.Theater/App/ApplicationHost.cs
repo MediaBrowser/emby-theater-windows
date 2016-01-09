@@ -18,6 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CommonIO.Windows;
+using MediaBrowser.Common.Implementations.Updates;
 using MediaBrowser.Model.IO;
 
 namespace Emby.Theater.App
@@ -204,21 +205,22 @@ namespace Emby.Theater.App
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="progress">The progress.</param>
         /// <returns>Task{CheckForUpdateResult}.</returns>
-        public override async Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken,
-                                                                    IProgress<double> progress)
+        public override Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken, IProgress<double> progress)
         {
-            var availablePackages = await InstallationManager.GetAvailablePackagesWithoutRegistrationInfo(cancellationToken).ConfigureAwait(false);
+            var cacheLength = TimeSpan.FromHours(12);
+            var updateLevel = ConfigurationManager.CommonConfiguration.SystemUpdateLevel;
 
-            // Fake this with a really high number
-            // With the idea of multiple servers there's no point in making server version a part of this
-            var serverVersion = new Version(10, 0, 0, 0);
+            if (updateLevel == PackageVersionClass.Beta)
+            {
+                cacheLength = TimeSpan.FromHours(1);
+            }
+            else if (updateLevel == PackageVersionClass.Dev)
+            {
+                cacheLength = TimeSpan.FromMinutes(5);
+            }
 
-            var version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Path.GetFileNameWithoutExtension(Program.UpdatePackageName), null, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
-
-            var versionObject = version == null || string.IsNullOrWhiteSpace(version.versionStr) ? null : new Version(version.versionStr);
-
-            return versionObject != null ? new CheckForUpdateResult { AvailableVersion = versionObject.ToString(), IsUpdateAvailable = versionObject > ApplicationVersion, Package = version } :
-                       new CheckForUpdateResult { AvailableVersion = ApplicationVersion.ToString(), IsUpdateAvailable = false };
+            return new GithubUpdater(HttpClient, JsonSerializer, cacheLength).CheckForUpdateResult("MediaBrowser", "Emby.Theater.Windows", ApplicationVersion, updateLevel, "Emby.Theater.Windows.zip",
+                    "MBServer", "Mbserver.zip", cancellationToken);
         }
 
         /// <summary>
@@ -230,7 +232,7 @@ namespace Emby.Theater.App
         /// <returns>Task.</returns>
         public override async Task UpdateApplication(PackageVersionInfo package, CancellationToken cancellationToken, IProgress<double> progress)
         {
-            await InstallationManager.InstallPackage(package, progress, cancellationToken).ConfigureAwait(false);
+            await InstallationManager.InstallPackage(package, false, progress, cancellationToken).ConfigureAwait(false);
 
             OnApplicationUpdated(package);
         }

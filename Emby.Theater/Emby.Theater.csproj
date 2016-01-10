@@ -115,6 +115,7 @@
     <Compile Include="App\IStartupEntryPoint.cs" />
     <Compile Include="App\PatternsLogger.cs" />
     <Compile Include="App\Standby.cs" />
+    <Compile Include="App\SystemUpdateTask.cs" />
     <Compile Include="CommandActions\InputToCommand.cs" />
     <Compile Include="Configuration\ApplicationConfiguration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />

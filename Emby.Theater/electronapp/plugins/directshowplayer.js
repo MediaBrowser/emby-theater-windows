@@ -75,12 +75,11 @@
                 profile.TranscodingProfiles = [];
 
                 profile.TranscodingProfiles.push({
-                    Container: 'ts',
+                    Container: 'mkv',
                     Type: 'Video',
-                    AudioCodec: 'aac',
+                    AudioCodec: 'aac,mp3,ac3',
                     VideoCodec: 'h264',
-                    Context: 'Streaming',
-                    Protocol: 'hls'
+                    Context: 'Streaming'
                 });
 
                 profile.TranscodingProfiles.push({

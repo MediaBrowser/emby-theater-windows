@@ -58,8 +58,8 @@ namespace Emby.Theater
             {
                 win.Top = rect.Top;
                 win.Left = rect.Left;
-                win.Width = rect.Right - rect.Left;
-                win.Height = rect.Bottom - rect.Top;
+                win.Width = Math.Abs(rect.Right - rect.Left);
+                win.Height = Math.Abs(rect.Bottom - rect.Top);
             }
         }
 

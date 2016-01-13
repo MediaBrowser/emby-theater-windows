@@ -219,8 +219,8 @@ namespace Emby.Theater.App
                 cacheLength = TimeSpan.FromMinutes(5);
             }
 
-            return new GithubUpdater(HttpClient, JsonSerializer, cacheLength).CheckForUpdateResult("MediaBrowser", "Emby.Theater.Windows", ApplicationVersion, updateLevel, "Emby.Theater.Windows.zip",
-                    "MBServer", "Mbserver.zip", cancellationToken);
+            return new GithubUpdater(HttpClient, JsonSerializer, cacheLength).CheckForUpdateResult("MediaBrowser", "Emby.Theater.Windows", ApplicationVersion, updateLevel, "emby.theater.zip",
+                    "emby.theater", "emby.theater.zip", cancellationToken);
         }
 
         /// <summary>

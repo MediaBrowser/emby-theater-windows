@@ -1,11 +1,6 @@
-﻿(function () {
+﻿define(['loading'], function (loading) {
 
-    document.addEventListener("viewinit-directshowplayer-settings", function (e) {
-
-        new settingsPage(e.target);
-    });
-
-    function settingsPage(view) {
+    return function (view, params) {
 
         var self = this;
 
@@ -15,9 +10,7 @@
 
             Emby.Page.setTitle('Windows Player');
 
-            require(['loading'], function (loading) {
-                loading.hide();
-            });
+            loading.hide();
 
             if (!isRestored) {
                 renderSettings();
@@ -30,7 +23,7 @@
         });
 
         function saveSettings() {
-            
+
             getConfiguration().then(function (config) {
 
                 var selectHwaMode = view.querySelector('.selectHwaMode');
@@ -156,4 +149,4 @@
         }
     }
 
-})();
+});

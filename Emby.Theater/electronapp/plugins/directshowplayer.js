@@ -21,9 +21,9 @@
                 id: 'directshowplayer-settings',
                 transition: 'slide',
                 dependencies: [
-                    Emby.PluginManager.mapPath(self, 'directshowplayer/settings.js'),
                     'emby-dropdown-menu'
                 ],
+                controller: Emby.PluginManager.mapPath(self, 'directshowplayer/settings.js'),
                 type: 'settings',
                 title: 'Windows Player',
                 category: 'Playback',

@@ -26,12 +26,6 @@ namespace Emby.Theater
         [STAThread]
         static void Main()
         {
-            if (DateTime.UtcNow >= new DateTime(2016, 1, 16))
-            {
-                MessageBox.Show("This build has expired. Please download a new version.");
-                return;
-            }
-
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             
             bool createdNew;

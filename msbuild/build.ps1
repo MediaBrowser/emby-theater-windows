@@ -19,16 +19,16 @@ function Remove-Tree($Path,$Include='*') {
 # http://invokemsbuild.codeplex.com/documentation?referringTitle=Home
 Import-Module -Name "$PSScriptRoot\Invoke-MsBuild.psm1"
 
-$DeployPath = "$PSScriptRoot\..\..\..\Deploy"
+$DeployPath = "$PSScriptRoot\..\..\Deploy"
 $DeployPathServerPath = "$DeployPath\Emby.Theater"
 $DeployPathSystemPath = "$DeployPathServerPath"
-$7za = "$PSScriptRoot\..\..\ThirdParty\7zip\7za.exe"
+$7za = "$PSScriptRoot\..\ThirdParty\7zip\7za.exe"
 $7zaOptions = "a -mx9"
 
-$WindowsBinReleasePath = "$PSScriptRoot\..\..\Emby.Theater\bin\Release"
+$WindowsBinReleasePath = "$PSScriptRoot\..\Emby.Theater\bin\Release"
 
 Write-Host "Building Windows version..."
-$buildSucceeded = Invoke-MsBuild -Path "$PSScriptRoot\..\..\Emby.Theater.sln" -MsBuildParameters "/target:Clean;Build /property:Configuration=Release;Platform=""Any CPU"" /verbosity:Quiet" -BuildLogDirectoryPath "$PSScriptRoot" 
+$buildSucceeded = Invoke-MsBuild -Path "$PSScriptRoot\..\Emby.Theater.sln" -MsBuildParameters "/target:Clean;Build /property:Configuration=Release;Platform=""Any CPU"" /verbosity:Quiet" -BuildLogDirectoryPath "$PSScriptRoot" 
 
 if ($buildSucceeded)
 {

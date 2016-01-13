@@ -207,20 +207,8 @@ namespace Emby.Theater.App
         /// <returns>Task{CheckForUpdateResult}.</returns>
         public override Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken, IProgress<double> progress)
         {
-            var cacheLength = TimeSpan.FromHours(12);
             var updateLevel = ConfigurationManager.CommonConfiguration.SystemUpdateLevel;
-
-            if (updateLevel == PackageVersionClass.Beta)
-            {
-                cacheLength = TimeSpan.FromHours(1);
-            }
-            else if (updateLevel == PackageVersionClass.Dev)
-            {
-                cacheLength = TimeSpan.FromMinutes(5);
-            }
-
-            return new GithubUpdater(HttpClient, JsonSerializer, cacheLength).CheckForUpdateResult("MediaBrowser", "Emby.Theater.Windows", ApplicationVersion, updateLevel, "emby.theater.zip",
-                    "emby.theater", "emby.theater.zip", cancellationToken);
+            return new GithubUpdater(HttpClient, JsonSerializer, TimeSpan.FromTicks(0)).CheckForUpdateResult("MediaBrowser", "Emby.Theater.Windows", ApplicationVersion, updateLevel, "emby.theater.zip", "emby.theater", "emby.theater.zip", cancellationToken);
         }
 
         /// <summary>

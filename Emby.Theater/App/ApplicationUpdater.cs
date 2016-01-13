@@ -33,7 +33,7 @@ namespace Emby.Theater.App
 
             logger.Info("Copying updater dependencies to temporary location");
             File.Copy(source, tempUpdaterDll, true);
-            var product = "embytheater";
+            var product = "emby.theater";
             // Our updater needs SS and ionic
             source = Path.Combine(systemPath, "ServiceStack.Text.dll");
             File.Copy(source, Path.Combine(tempPath, "ServiceStack.Text.dll"), true);
@@ -45,8 +45,8 @@ namespace Emby.Theater.App
             // installpath = program data folder
             // startpath = executable to launch
             // systempath = folder containing installation
-            var args = string.Format("product={0} archive=\"{1}\" caller={2} pismo=false version={3} service={4} installpath=\"{5}\" startpath=\"{6}\" systempath=\"{7}\"",
-                    product, archive, Process.GetCurrentProcess().Id, version, string.Empty, appPaths.ProgramDataPath, appPaths.ApplicationPath, systemPath);
+            var args = string.Format("product=\"{0}\" archive=\"{1}\" caller={2} pismo=false version={3} installpath=\"{4}\" startpath=\"{5}\" systempath=\"{6}\"",
+                    product, archive, Process.GetCurrentProcess().Id, version, appPaths.ProgramDataPath, appPaths.ApplicationPath, systemPath);
 
             logger.Info("Args: {0}", args);
             Process.Start(tempUpdater, args);

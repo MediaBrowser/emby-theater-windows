@@ -1,0 +1,11 @@
+{
+    "HardwareAccelerationMode": "Modo acelera\u00e7\u00e3o por hardware",
+    "Auto": "Autom\u00e1tico",
+    "Disabled": "Desativado",
+    "AudioBitstreamingMode": "Modo fluxo de bits \u00e1udio",
+    "None": "Nenhum",
+    "AudioRenderer": "Renderizador de \u00e1udio",
+    "VideoRenderer": "Renderizador de v\u00eddeo",
+    "Default": "Padr\u00e3o",
+    "ChangeRefreshRate": "Mudar a taxa de atualiza\u00e7\u00e3o do monitor para corresponder com o v\u00eddeo"
+}

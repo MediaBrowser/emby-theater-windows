@@ -1,0 +1,11 @@
+{
+    "HardwareAccelerationMode": "Hardware acceleratie mode",
+    "Auto": "Automatisch",
+    "Disabled": "Uitgeschakeld",
+    "AudioBitstreamingMode": "Audio bitstreaming mode",
+    "None": "Geen",
+    "AudioRenderer": "Audio renderer",
+    "VideoRenderer": "Video renderer",
+    "Default": "Standaard",
+    "ChangeRefreshRate": "Pas monitor refresh rate aan video aan"
+}

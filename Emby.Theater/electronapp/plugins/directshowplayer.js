@@ -39,7 +39,37 @@
 
             files.push({
                 lang: 'en-us',
-                path: Emby.PluginManager.mapPath(self, 'directshowplayer/strings/en-us.json')
+                path: Emby.PluginManager.mapPath(self, 'directshowplayer/strings/en-US.json')
+            });
+
+            files.push({
+                lang: 'fr',
+                path: Emby.PluginManager.mapPath(self, 'directshowplayer/strings/fr.json')
+            });
+
+            files.push({
+                lang: 'nl',
+                path: Emby.PluginManager.mapPath(self, 'directshowplayer/strings/nl.json')
+            });
+
+            files.push({
+                lang: 'pt-BR',
+                path: Emby.PluginManager.mapPath(self, 'directshowplayer/strings/pt-BR.json')
+            });
+
+            files.push({
+                lang: 'pt-PT',
+                path: Emby.PluginManager.mapPath(self, 'directshowplayer/strings/pt-PT.json')
+            });
+
+            files.push({
+                lang: 'ru',
+                path: Emby.PluginManager.mapPath(self, 'directshowplayer/strings/ru.json')
+            });
+
+            files.push({
+                lang: 'sv',
+                path: Emby.PluginManager.mapPath(self, 'directshowplayer/strings/sv.json')
             });
 
             return files;

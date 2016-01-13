@@ -1,0 +1,11 @@
+{
+    "HardwareAccelerationMode": "Mode acc\u00e9l\u00e9ration mat\u00e9rielle",
+    "Auto": "Automatique",
+    "Disabled": "D\u00e9sactiv\u00e9",
+    "AudioBitstreamingMode": "Mode audio par flux binaire",
+    "None": "Aucun",
+    "AudioRenderer": "Rendu audio",
+    "VideoRenderer": "Rendu vid\u00e9o",
+    "Default": "D\u00e9faut",
+    "ChangeRefreshRate": "Changez le taux de rafraichissement de l'\u00e9cran pour qu'il corresponde \u00e0 celui de la vid\u00e9o"
+}

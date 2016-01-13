@@ -1,0 +1,11 @@
+{
+    "HardwareAccelerationMode": "H\u00e5rdvaruaccelerationsl\u00e4ge",
+    "Auto": "Auto",
+    "Disabled": "Inaktiverad",
+    "AudioBitstreamingMode": "Audio bitstr\u00f6msl\u00e4ge",
+    "None": "Ingen",
+    "AudioRenderer": "Ljud\u00e5tergivare",
+    "VideoRenderer": "Bild\u00e5tergivare",
+    "Default": "F\u00f6rvald",
+    "ChangeRefreshRate": "\u00c4ndra bildsk\u00e4rmens uppdaterings frekvens s\u00e5 den matchar video"
+}

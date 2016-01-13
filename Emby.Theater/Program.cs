@@ -179,15 +179,7 @@ namespace Emby.Theater
 
         public static string GetProgramDataPath(string applicationPath)
         {
-            var useDebugPath = false;
-
-#if DEBUG
-            useDebugPath = true;
-#endif
-
-            var programDataPath = useDebugPath ?
-                System.Configuration.ConfigurationManager.AppSettings["DebugProgramDataPath"] :
-                System.Configuration.ConfigurationManager.AppSettings["ReleaseProgramDataPath"];
+            var programDataPath = System.Configuration.ConfigurationManager.AppSettings["ProgramDataPath"];
 
             programDataPath = programDataPath.Replace("%ApplicationData%", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
 
@@ -204,6 +196,11 @@ namespace Emby.Theater
                 programDataPath = Path.Combine(path, programDataPath);
 
                 programDataPath = Path.GetFullPath(programDataPath);
+            }
+
+            if (string.Equals(Path.GetFileName(Path.GetDirectoryName(applicationPath)), "system", StringComparison.OrdinalIgnoreCase))
+            {
+                programDataPath = Path.GetDirectoryName(programDataPath);
             }
 
             Directory.CreateDirectory(programDataPath);

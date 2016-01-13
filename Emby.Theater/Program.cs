@@ -14,7 +14,7 @@ namespace Emby.Theater
 {
     static class Program
     {
-        public static string UpdatePackageName = "Emby.Theater.Windows.zip";
+        public static string UpdatePackageName = "emby.theater.zip";
 
         private static Mutex _singleInstanceMutex;
         private static ApplicationHost _appHost;

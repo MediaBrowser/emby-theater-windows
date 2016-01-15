@@ -42,7 +42,7 @@ namespace Emby.Theater.Window
             SyncWindowSize();
         }
 
-        public void OnElectronWindowStateChanged(FormWindowState newWindowState)
+        public void OnElectronWindowStateChanged(string newWindowState)
         {
             // Now that the electron window is reporting changes, this timer is no longer needed
             var timer = _syncTimer;
@@ -64,13 +64,13 @@ namespace Emby.Theater.Window
             switch (placement.showCmd)
             {
                 case ShowWindowCommands.Maximized:
-                    SyncWindowState(FormWindowState.Maximized);
+                    SyncWindowState("Maximized");
                     break;
                 case ShowWindowCommands.Minimized:
-                    SyncWindowState(FormWindowState.Minimized);
+                    SyncWindowState("Minimized");
                     break;
                 case ShowWindowCommands.Normal:
-                    SyncWindowState(FormWindowState.Normal);
+                    SyncWindowState("Normal");
                     break;
             }
 
@@ -101,22 +101,56 @@ namespace Emby.Theater.Window
             }
         }
 
-        private void SyncWindowState(FormWindowState newWindowState)
+        private void SyncWindowState(string newWindowState)
         {
             try
             {
+                FormWindowState newState;
+                bool fullscreen = false;
+                if (string.Equals(newWindowState, "fullscreen", StringComparison.OrdinalIgnoreCase))
+                {
+                    newState = FormWindowState.Maximized;
+                    fullscreen = true;
+                }
+                else if (string.Equals(newWindowState, "maximized", StringComparison.OrdinalIgnoreCase))
+                {
+                    newState = FormWindowState.Maximized;
+                    fullscreen = true;
+                }
+                else if (string.Equals(newWindowState, "minimized", StringComparison.OrdinalIgnoreCase))
+                {
+                    newState = FormWindowState.Minimized;
+                }
+                else
+                {
+                    newState = FormWindowState.Normal;
+                }
+
                 _form.InvokeIfRequired(() =>
                 {
-                    _form.WindowState = newWindowState;
+                    _form.WindowState = newState;
                 });
 
-                if (newWindowState == FormWindowState.Maximized)
+                if (fullscreen)
                 {
                     NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
+                    var placement = new WINDOWPLACEMENT();
+                    placement.showCmd = ShowWindowCommands.Maximized;
+                    NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
                 }
-                else if (newWindowState == FormWindowState.Normal)
+                else if (newState == FormWindowState.Maximized)
                 {
+                    NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
+                    var placement = new WINDOWPLACEMENT();
+                    placement.showCmd = ShowWindowCommands.Maximized;
+                    NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
+                }
+                else if (newState == FormWindowState.Normal)
+                {
+                    var placement = new WINDOWPLACEMENT();
+                    placement.showCmd = ShowWindowCommands.Normal;
                     NativeWindowMethods.SetWindowPos(_windowHandle, -2, _form.Left, _form.Top, _form.Width, _form.Height, 0);
+                    //NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
                 }
 
                 NativeWindowMethods.SetForegroundWindow(_windowHandle);

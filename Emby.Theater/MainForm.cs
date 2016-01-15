@@ -4,6 +4,7 @@ using MediaBrowser.Model.Logging;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -46,6 +47,7 @@ namespace Emby.Theater
 
             win.WindowState = FormWindowState.Normal;
             win.StartPosition = FormStartPosition.CenterScreen;
+            win.MinimumSize = new Size(720, 480);
             win.Width = 1280;
             win.Height = 720;
             FormBorderStyle = FormBorderStyle.None;
@@ -169,15 +171,19 @@ namespace Emby.Theater
             {
                 if (string.Equals(localPath, "windowstate-maximized", StringComparison.OrdinalIgnoreCase))
                 {
-                    _windowSync.OnElectronWindowStateChanged(FormWindowState.Maximized);
+                    _windowSync.OnElectronWindowStateChanged("maximized");
                 }
                 else if (string.Equals(localPath, "windowstate-normal", StringComparison.OrdinalIgnoreCase))
                 {
-                    _windowSync.OnElectronWindowStateChanged(FormWindowState.Normal);
+                    _windowSync.OnElectronWindowStateChanged("normal");
                 }
                 else if (string.Equals(localPath, "windowstate-minimized", StringComparison.OrdinalIgnoreCase))
                 {
-                    _windowSync.OnElectronWindowStateChanged(FormWindowState.Minimized);
+                    _windowSync.OnElectronWindowStateChanged("minimized");
+                }
+                else if (string.Equals(localPath, "windowstate-fullscreen", StringComparison.OrdinalIgnoreCase))
+                {
+                    _windowSync.OnElectronWindowStateChanged("fullscreen");
                 }
                 else if (string.Equals(localPath, "windowsize", StringComparison.OrdinalIgnoreCase))
                 {

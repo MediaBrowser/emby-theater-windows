@@ -8,14 +8,12 @@
 
             var isRestored = e.detail.isRestored;
 
-            Emby.Page.setTitle('Windows Player');
+            Emby.Page.setTitle('Madvr');
 
             loading.hide();
 
             if (!isRestored) {
                 renderSettings();
-
-                view.querySelector('.btnMadvr').addEventListener('click', onMadvrClick);
             }
         });
 
@@ -24,30 +22,13 @@
             saveSettings();
         });
 
-        function onMadvrClick() {
-            Emby.Page.show(Emby.PluginManager.mapPath('directshowplayer', 'directshowplayer/madvr.html'));
-        }
-
         function saveSettings() {
 
             getConfiguration().then(function (config) {
 
-                var selectHwaMode = view.querySelector('.selectHwaMode');
-                config.VideoConfig.HwaMode = selectHwaMode.getValue();
-
-                var selectVideoRenderer = view.querySelector('.selectVideoRenderer');
-                config.VideoConfig.EnableMadvr = selectVideoRenderer.getValue() == 'madVR';
-                config.VideoConfig.UseCustomPresenter = selectVideoRenderer.getValue() == 'EVRCP';
-
-                var selectAudioBitstreamingMode = view.querySelector('.selectAudioBitstreamingMode');
-                config.AudioConfig.AudioBitstreaming = selectAudioBitstreamingMode.getValue();
-
-                var selectAudioRenderer = view.querySelector('.selectAudioRenderer');
-                config.AudioConfig.Renderer = selectAudioRenderer.getValue();
-
-                var selectRefreshRateMode = view.querySelector('.selectRefreshRateMode');
-                config.VideoConfig.AutoChangeRefreshRate = selectRefreshRateMode.getValue();
-
+                var selectSmoothMotion = view.querySelector('.selectSmoothMotion');
+                config.VideoConfig.UseMadVrSmoothMotion = selectSmoothMotion.getValue() != '';
+                config.VideoConfig.MadVrSmoothMotionMode = selectSmoothMotion.getValue() || 'avoidJudder';
                 saveConfiguration(config);
             });
 
@@ -57,22 +38,8 @@
 
             getConfiguration().then(function (config) {
 
-                var selectHwaMode = view.querySelector('.selectHwaMode');
-                selectHwaMode.setValue(config.VideoConfig.HwaMode);
-
-                var selectVideoRenderer = view.querySelector('.selectVideoRenderer');
-                var videoRenderer = config.VideoConfig.EnableMadvr ? 'madVR' : config.VideoConfig.UseCustomPresenter ? 'EVRCP' : 'EVR';
-                selectVideoRenderer.setValue(videoRenderer);
-
-                var selectAudioBitstreamingMode = view.querySelector('.selectAudioBitstreamingMode');
-                selectAudioBitstreamingMode.setValue(config.AudioConfig.AudioBitstreaming);
-
-                var selectAudioRenderer = view.querySelector('.selectAudioRenderer');
-                selectAudioRenderer.setValue(config.AudioConfig.Renderer);
-
-                var selectRefreshRateMode = view.querySelector('.selectRefreshRateMode');
-                selectRefreshRateMode.setValue(config.VideoConfig.AutoChangeRefreshRate);
-
+                var selectSmoothMotion = view.querySelector('.selectSmoothMotion');
+                selectSmoothMotion.setValue(config.VideoConfig.UseMadVrSmoothMotion ? config.VideoConfig.MadVrSmoothMotionMode : '');
             });
         }
 

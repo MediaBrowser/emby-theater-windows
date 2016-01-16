@@ -7,5 +7,9 @@
     "AudioRenderer": "Audio renderer",
     "VideoRenderer": "Video renderer",
     "Default": "Default",
-    "ChangeRefreshRate": "Change monitor refresh rate to match video"
+    "ChangeRefreshRate": "Change monitor refresh rate to match video",
+    "SmoothMotionMode": "Smooth motion mode",
+    "Always":  "Always",
+    "AlmostAlways":  "Almost Always",
+    "AvoidJudder":  "Avoid Judder"
 }

@@ -4,7 +4,7 @@
         <emby-dropdown-menu class="selectHwaMode" label="${HardwareAccelerationMode}">
             <div class="dropdown-content">
                 <div class="dropdownItem" data-value="-1">${Auto}</div>
-                <div class="dropdownItem" data-value="0">${Disabled}</div>
+                <div class="dropdownItem" data-value="0">${None}</div>
                 <div class="dropdownItem" data-value="1">Nvidia CUVID</div>
                 <div class="dropdownItem" data-value="2">QuickSync</div>
                 <div class="dropdownItem" data-value="3">DXVA2CopyBack</div>
@@ -37,9 +37,12 @@
 
         <emby-dropdown-menu class="selectRefreshRateMode" label="${ChangeRefreshRate}">
             <div class="dropdown-content">
-                <div class="dropdownItem" data-value="true">Yes</div>
-                <div class="dropdownItem" data-value="false">No</div>
+                <div class="dropdownItem" data-value="true">${Yes}</div>
+                <div class="dropdownItem" data-value="false">${No}</div>
             </div>
         </emby-dropdown-menu>
+
+        <br/>
+        <paper-button raised class="btnMadvr block">Madvr</paper-button>
     </div>
 </div>

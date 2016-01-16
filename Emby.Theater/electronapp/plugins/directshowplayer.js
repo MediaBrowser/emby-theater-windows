@@ -30,6 +30,17 @@
                 thumbImage: ''
             });
 
+            routes.push({
+                path: Emby.PluginManager.mapPath(self, 'directshowplayer/madvr.html'),
+                id: 'directshowplayer-madvr',
+                transition: 'slide',
+                dependencies: [
+                    'emby-dropdown-menu'
+                ],
+                controller: Emby.PluginManager.mapPath(self, 'directshowplayer/madvr.js'),
+                thumbImage: ''
+            });
+
             return routes;
         };
 

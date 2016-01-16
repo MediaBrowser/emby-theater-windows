@@ -9,7 +9,12 @@
     "Default": "Default",
     "ChangeRefreshRate": "Change monitor refresh rate to match video",
     "SmoothMotionMode": "Smooth motion mode",
-    "Always":  "Always",
-    "AlmostAlways":  "Almost Always",
-    "AvoidJudder":  "Avoid Judder"
+    "Always": "Always",
+    "AlmostAlways": "Almost Always",
+    "AvoidJudder": "Avoid Judder",
+    "SpeakerLayout": "Speaker layout",
+    "Stereo": "Stereo",
+    "Quadraphonic": "Quadraphonic",
+    "Surround": "Surround",
+    "DynamicRangeCompression": "Dynamic range compression"
 }

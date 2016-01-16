@@ -32,6 +32,13 @@
                 var selectAudioRenderer = view.querySelector('.selectAudioRenderer');
                 config.AudioConfig.Renderer = selectAudioRenderer.getValue();
 
+                var selectSpeakerLayout = view.querySelector('.selectSpeakerLayout');
+                config.AudioConfig.SpeakerLayout = selectSpeakerLayout.getValue();
+
+                var selectDrc = view.querySelector('.selectDrc');
+                config.AudioConfig.EnableDRC = selectDrc.getValue() != '';
+                config.AudioConfig.DRCLevel = selectDrc.getValue() || '100';
+
                 saveConfiguration(config);
             });
 
@@ -47,6 +54,10 @@
                 var selectAudioRenderer = view.querySelector('.selectAudioRenderer');
                 selectAudioRenderer.setValue(config.AudioConfig.Renderer);
 
+                view.querySelector('.selectSpeakerLayout').setValue(config.AudioConfig.SpeakerLayout);
+
+                var selectDrc = view.querySelector('.selectDrc');
+                selectDrc.setValue(config.AudioConfig.EnableDRC ? config.AudioConfig.DRCLevel : '');
             });
         }
 

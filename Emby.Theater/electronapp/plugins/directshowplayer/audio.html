@@ -1,6 +1,16 @@
 ﻿<div class="externalPageContainer">
     <div style="width: 50%; margin: auto;">
 
+        <emby-dropdown-menu class="selectSpeakerLayout" label="${SpeakerLayout}">
+            <div class="dropdown-content">
+                <div class="dropdownItem" data-value="Stereo">${Stereo}</div>
+                <div class="dropdownItem" data-value="Quad">${Quadraphonic}</div>
+                <div class="dropdownItem" data-value="Surround">${Surround}</div>
+                <div class="dropdownItem" data-value="FiveDotOneSurround">5.1</div>
+                <div class="dropdownItem" data-value="SevenDotOneSurround">7.1</div>
+            </div>
+        </emby-dropdown-menu>
+
         <emby-dropdown-menu class="selectAudioBitstreamingMode" label="${AudioBitstreamingMode}">
             <div class="dropdown-content">
                 <div class="dropdownItem" data-value="None">${None}</div>
@@ -14,6 +24,22 @@
                 <div class="dropdownItem" data-value="Default">${Default}</div>
                 <div class="dropdownItem" data-value="Reclock">Reclock</div>
                 <div class="dropdownItem" data-value="WASAPI">WASAPI</div>
+            </div>
+        </emby-dropdown-menu>
+
+        <emby-dropdown-menu class="selectDrc" label="${DynamicRangeCompression}">
+            <div class="dropdown-content">
+                <div class="dropdownItem" data-value="">${None}</div>
+                <div class="dropdownItem" data-value="10">10%</div>
+                <div class="dropdownItem" data-value="20">20%</div>
+                <div class="dropdownItem" data-value="30">30%</div>
+                <div class="dropdownItem" data-value="40">40%</div>
+                <div class="dropdownItem" data-value="50">50%</div>
+                <div class="dropdownItem" data-value="60">60%</div>
+                <div class="dropdownItem" data-value="70">70%</div>
+                <div class="dropdownItem" data-value="80">80%</div>
+                <div class="dropdownItem" data-value="90">90%</div>
+                <div class="dropdownItem" data-value="100">100%</div>
             </div>
         </emby-dropdown-menu>
     </div>

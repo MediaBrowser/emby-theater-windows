@@ -17,15 +17,29 @@
             var routes = [];
 
             routes.push({
-                path: Emby.PluginManager.mapPath(self, 'directshowplayer/settings.html'),
-                id: 'directshowplayer-settings',
+                path: Emby.PluginManager.mapPath(self, 'directshowplayer/audio.html'),
+                id: 'directshowplayer-audio',
                 transition: 'slide',
                 dependencies: [
                     'emby-dropdown-menu'
                 ],
-                controller: Emby.PluginManager.mapPath(self, 'directshowplayer/settings.js'),
+                controller: Emby.PluginManager.mapPath(self, 'directshowplayer/audio.js'),
                 type: 'settings',
-                title: 'Windows Player',
+                title: 'Audio',
+                category: 'Playback',
+                thumbImage: ''
+            });
+
+            routes.push({
+                path: Emby.PluginManager.mapPath(self, 'directshowplayer/video.html'),
+                id: 'directshowplayer-video',
+                transition: 'slide',
+                dependencies: [
+                    'emby-dropdown-menu'
+                ],
+                controller: Emby.PluginManager.mapPath(self, 'directshowplayer/video.js'),
+                type: 'settings',
+                title: 'Video',
                 category: 'Playback',
                 thumbImage: ''
             });

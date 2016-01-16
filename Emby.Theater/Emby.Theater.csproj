@@ -297,10 +297,16 @@
     <Content Include="electronapp\plugins\directshowplayer\madvr.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="electronapp\plugins\directshowplayer\settings.html">
+    <Content Include="electronapp\plugins\directshowplayer\audio.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="electronapp\plugins\directshowplayer\settings.js">
+    <Content Include="electronapp\plugins\directshowplayer\audio.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="electronapp\plugins\directshowplayer\video.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="electronapp\plugins\directshowplayer\video.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="electronapp\scripts\windowsync.js">

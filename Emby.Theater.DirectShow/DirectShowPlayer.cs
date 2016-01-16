@@ -670,7 +670,8 @@ namespace Emby.Theater.DirectShow
                             DsError.ThrowExceptionForHR(hr);
 
                             _logger.Debug("SetPGSForcedStream: {0}", _config.SplitterConfig.PGSForcedStream);
-                            hr = lss.SetPGSForcedStream(_config.SplitterConfig.PGSForcedStream);
+                            //hr = lss.SetPGSForcedStream(_config.SplitterConfig.PGSForcedStream);
+                            hr = lss.SetPGSForcedStream(false);
                             DsError.ThrowExceptionForHR(hr);
 
                             _logger.Debug("SetPGSOnlyForced: {0}", _config.SplitterConfig.PGSOnlyForced);

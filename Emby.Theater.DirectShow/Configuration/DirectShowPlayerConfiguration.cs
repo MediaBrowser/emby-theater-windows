@@ -370,7 +370,7 @@ namespace Emby.Theater.DirectShow.Configuration
             PreferredSubtitleLanguages = string.Empty;
             AdvancedSubtitleConfig = string.Empty;
             SubtitleMode = "Default";
-            PGSForcedStream = true;
+            PGSForcedStream = false;
             PGSOnlyForced = false;
             VC1TimestampMode = "Auto";
             SubstreamsEnabled = true;

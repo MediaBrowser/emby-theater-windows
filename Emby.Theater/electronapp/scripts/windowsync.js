@@ -4,6 +4,12 @@
 
         var state = e.detail.windowState;
 
+        if (state.toLowerCase() == 'normal') {
+            document.querySelector('.windowDragRegion').classList.remove('nodrag');
+        } else {
+            document.querySelector('.windowDragRegion').classList.add('nodrag');
+        }
+
         var xhr = new XMLHttpRequest();
         xhr.open('POST', 'http://localhost:8154/windowstate-' + state, true);
 

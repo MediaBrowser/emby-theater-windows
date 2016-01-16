@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using MediaBrowser.Model.Logging;
 
@@ -134,15 +135,17 @@ namespace Emby.Theater.Window
                 if (fullscreen)
                 {
                     NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
-                    var placement = new WINDOWPLACEMENT();
-                    placement.showCmd = ShowWindowCommands.Maximized;
-                    NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
+                    //var placement = new WINDOWPLACEMENT();
+                    //placement.showCmd = ShowWindowCommands.Maximized;
+                    //placement.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
+                    //NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
                 }
                 else if (newState == FormWindowState.Maximized)
                 {
-                    NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
+                    //NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
                     var placement = new WINDOWPLACEMENT();
                     placement.showCmd = ShowWindowCommands.Maximized;
+                    placement.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
                     NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
                 }
                 else if (newState == FormWindowState.Normal)

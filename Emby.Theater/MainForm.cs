@@ -91,7 +91,7 @@ namespace Emby.Theater
 
             try
             {
-                _electronProcess.WaitForExit(1000);
+                _electronProcess.WaitForExit(2000);
             }
             catch (Exception ex)
             {

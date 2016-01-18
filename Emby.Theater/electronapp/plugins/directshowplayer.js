@@ -218,13 +218,15 @@
                 //var isVideo = options.mimeType.toLowerCase('video').indexOf() == 0;
                 var isVideo = options.item.MediaType == 'Video';
 
+                var enableFullscreen = options.fullscreen !== false;
+
                 var requestBody = {
                     url: options.url,
                     isVideo: isVideo,
                     item: options.item,
                     mediaSource: options.mediaSource,
                     startPositionTicks: options.playerStartPositionTicks,
-                    fullscreen: fullscreen
+                    fullscreen: enableFullscreen
                 };
 
                 sendCommand('play', requestBody).then(function () {
@@ -232,7 +234,7 @@
                     Events.trigger(self, 'started');
 
                     if (isVideo) {
-                        if (options.fullscreen !== false) {
+                        if (enableFullscreen) {
 
                             Emby.Page.showVideoOsd();
 

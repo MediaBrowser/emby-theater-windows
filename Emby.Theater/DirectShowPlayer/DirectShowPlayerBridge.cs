@@ -40,12 +40,13 @@ namespace Emby.Theater.DirectShowPlayer
             _player = new InternalDirectShowPlayer(logManager, hostForm, appPaths, isoManager, zipClient, httpClient, configurationManager);
         }
 
-        public void Play(string path, long startPositionTicks, bool isVideo, MediaSourceInfo mediaSource, BaseItemDto item)
+        public void Play(string path, long startPositionTicks, bool isVideo, MediaSourceInfo mediaSource, BaseItemDto item, bool isFullScreen)
         {
             _isFadingOut = false;
             _isVideo = isVideo;
 
-            _player.Play(path, startPositionTicks, isVideo, item, mediaSource);
+            var forcedVideoRenderer = isFullScreen ? null : "evr";
+            _player.Play(path, startPositionTicks, isVideo, item, mediaSource, forcedVideoRenderer);
         }
 
         /// <summary>
@@ -255,7 +256,7 @@ namespace Emby.Theater.DirectShowPlayer
             {
                 var playRequest = _json.DeserializeFromStream<PlayRequest>(context.Request.InputStream);
 
-                Play(playRequest.url, playRequest.startPositionTicks ?? 0, playRequest.isVideo, playRequest.mediaSource, playRequest.item);
+                Play(playRequest.url, playRequest.startPositionTicks ?? 0, playRequest.isVideo, playRequest.mediaSource, playRequest.item, playRequest.fullscreen);
             }
             else if (string.Equals(command, "pause", StringComparison.OrdinalIgnoreCase))
             {

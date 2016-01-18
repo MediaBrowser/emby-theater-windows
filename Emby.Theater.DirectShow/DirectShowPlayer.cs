@@ -455,7 +455,7 @@ namespace Emby.Theater.DirectShow
             }
         }
 
-        public void Play(PlayableItem item)
+        public void Play(PlayableItem item, string forcedVideoRenderer)
         {
             try
             {
@@ -534,7 +534,7 @@ namespace Emby.Theater.DirectShow
                 var isDvd = ((item.MediaSource.VideoType ?? VideoType.VideoFile) == VideoType.Dvd ||
                              (item.MediaSource.IsoType ?? IsoType.BluRay) == IsoType.Dvd);
 
-                Initialize(item.PlayablePath, _isDvd);
+                Initialize(item.PlayablePath, _isDvd, forcedVideoRenderer);
 
                 //_hiddenWindow.OnWMGRAPHNOTIFY = HandleGraphEvent;
                 //_hiddenWindow.OnDVDEVENT = HandleDvdEvent;
@@ -601,7 +601,7 @@ namespace Emby.Theater.DirectShow
         }
 
         private void Initialize(string path,
-            bool isDvd)
+            bool isDvd, string forcedVideoRenderer)
         {
             _filePath = path;
 
@@ -619,7 +619,7 @@ namespace Emby.Theater.DirectShow
                 InitializeDvd(path);
 
                 // Try to render the streams.
-                RenderStreams(_sourceFilter, false);
+                RenderStreams(_sourceFilter, forcedVideoRenderer, false);
                 //we don't need XySubFilter for DVD 
             }
             else
@@ -735,7 +735,7 @@ namespace Emby.Theater.DirectShow
                     DsError.ThrowExceptionForHR(hr);
                 }
                 // Try to render the streams.
-                RenderStreams(_sourceFilter, true);
+                RenderStreams(_sourceFilter, forcedVideoRenderer, true);
             }
 
             // Get the seeking capabilities.
@@ -789,6 +789,7 @@ namespace Emby.Theater.DirectShow
         }
 
         private void RenderStreams(DirectShowLib.IBaseFilter pSource,
+            string forcedVideoRenderer,
             bool enableXySubFilter)
         {
             int hr;
@@ -822,6 +823,8 @@ namespace Emby.Theater.DirectShow
                     DirectShowLib.IPin decOut = null;
                     DirectShowLib.IPin rendIn = null;
 
+                    var enableMadvr = _config.VideoConfig.EnableMadvr && (string.IsNullOrWhiteSpace(forcedVideoRenderer) || string.Equals(forcedVideoRenderer, "madvr", StringComparison.OrdinalIgnoreCase));
+
                     try
                     {
                         if (mediaTypes[m] == DirectShowLib.MediaType.Video)
@@ -829,7 +832,7 @@ namespace Emby.Theater.DirectShow
                             #region Video
 
                             //add the video renderer first so we know whether to enable DXVA2 in "Auto" mode.
-                            if (_config.VideoConfig.EnableMadvr)
+                            if (enableMadvr)
                             {
                                 try
                                 {
@@ -897,7 +900,7 @@ namespace Emby.Theater.DirectShow
                                 DsError.ThrowExceptionForHR(hr);
 
                                 //we only need 2 input pins on the EVR if LAV Video isn't used for DVDs, but it doesn't hurt to have them
-                                InitializeEvr(_mPEvr, _isDvd ? 2 : 1);
+                                InitializeEvr(_mPEvr, _isDvd ? 2 : 1, forcedVideoRenderer);
                             }
 
                             try
@@ -1613,7 +1616,7 @@ namespace Emby.Theater.DirectShow
             return mt;
         }
 
-        private void InitializeEvr(DirectShowLib.IBaseFilter pEvr, int dwStreams)
+        private void InitializeEvr(DirectShowLib.IBaseFilter pEvr, int dwStreams, string forcedVideoRenderer)
         {
             int hr = 0;
             var pGetService = pEvr as IMFGetService;
@@ -1624,7 +1627,7 @@ namespace Emby.Theater.DirectShow
             //try to load the custom presenter
             IMFVideoPresenter pPresenter = null;
 
-            if (_config.VideoConfig.UseCustomPresenter)
+            if (_config.VideoConfig.UseCustomPresenter && !string.Equals(forcedVideoRenderer, "evr", StringComparison.OrdinalIgnoreCase))
             {
                 IMFVideoRenderer pRenderer = pEvr as IMFVideoRenderer;
                 pPresenter = URCOMLoader.Instance.GetObject("EVR Presenter (babgvant)", false) as IMFVideoPresenter;

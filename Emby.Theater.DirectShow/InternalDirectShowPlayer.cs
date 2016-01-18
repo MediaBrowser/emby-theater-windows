@@ -203,11 +203,11 @@ namespace Emby.Theater.DirectShow
             }
         }
 
-        public void Play(string path, long startPositionTicks, bool isVideo, BaseItemDto item, MediaSourceInfo mediaSource)
+        public void Play(string path, long startPositionTicks, bool isVideo, BaseItemDto item, MediaSourceInfo mediaSource, string forcedVideoRenderer)
         {
             try
             {
-                PlayTrack(path, startPositionTicks, isVideo, item, mediaSource);
+                PlayTrack(path, startPositionTicks, isVideo, item, mediaSource, forcedVideoRenderer);
             }
             catch (Exception ex)
             {
@@ -224,7 +224,7 @@ namespace Emby.Theater.DirectShow
             _mediaPlayer.SetVolume(level);
         }
 
-        private void PlayTrack(string path, long startPositionTicks, bool isVideo, BaseItemDto item, MediaSourceInfo mediaSource)
+        private void PlayTrack(string path, long startPositionTicks, bool isVideo, BaseItemDto item, MediaSourceInfo mediaSource, string forcedVideoRenderer)
         {
             var playableItem = new PlayableItem
             {
@@ -241,7 +241,7 @@ namespace Emby.Theater.DirectShow
                     DisposePlayer();
 
                     _mediaPlayer = new DirectShowPlayer(this, _hostForm, _logger, GetConfiguration(), _httpClient);
-                    _mediaPlayer.Play(playableItem);
+                    _mediaPlayer.Play(playableItem, forcedVideoRenderer);
 
                 }, true);
             }

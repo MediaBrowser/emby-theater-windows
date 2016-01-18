@@ -223,7 +223,8 @@
                     isVideo: isVideo,
                     item: options.item,
                     mediaSource: options.mediaSource,
-                    startPositionTicks: options.playerStartPositionTicks
+                    startPositionTicks: options.playerStartPositionTicks,
+                    fullscreen: fullscreen
                 };
 
                 sendCommand('play', requestBody).then(function () {

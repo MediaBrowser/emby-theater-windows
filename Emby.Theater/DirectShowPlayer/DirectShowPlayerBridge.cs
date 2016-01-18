@@ -385,6 +385,7 @@ namespace Emby.Theater.DirectShowPlayer
         {
             public string url { get; set; }
             public bool isVideo { get; set; }
+            public bool fullscreen { get; set; }
             public long? startPositionTicks { get; set; }
             public BaseItemDto item { get; set; }
             public MediaSourceInfo mediaSource { get; set; }

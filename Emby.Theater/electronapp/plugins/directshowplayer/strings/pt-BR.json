@@ -7,5 +7,14 @@
     "AudioRenderer": "Renderizador de \u00e1udio",
     "VideoRenderer": "Renderizador de v\u00eddeo",
     "Default": "Padr\u00e3o",
-    "ChangeRefreshRate": "Alterar taxa de atualiza\u00e7\u00e3o do monitor para combinar com o v\u00eddeo."
+    "ChangeRefreshRate": "Alterar taxa de atualiza\u00e7\u00e3o do monitor para combinar com o v\u00eddeo.",
+    "SmoothMotionMode": "Modo de movimentos suaves",
+    "Always": "Sempre",
+    "AlmostAlways": "Quase Sempre",
+    "AvoidJudder": "Evitar Trepida\u00e7\u00e3o",
+    "SpeakerLayout": "Layout de Alto-falantes",
+    "Stereo": "Est\u00e9reo",
+    "Quadraphonic": "Quadraf\u00f4nico",
+    "Surround": "Surround",
+    "DynamicRangeCompression": "Compress\u00e3o de gama din\u00e2mica"
 }

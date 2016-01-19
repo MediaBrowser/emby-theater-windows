@@ -7,5 +7,14 @@
     "AudioRenderer": "Audio renderer",
     "VideoRenderer": "Video renderer",
     "Default": "Standaard",
-    "ChangeRefreshRate": "Pas monitor refresh rate aan video aan"
+    "ChangeRefreshRate": "Pas monitor refresh rate aan video aan",
+    "SmoothMotionMode": "Vloeiende beweging modus",
+    "Always": "Altijd",
+    "AlmostAlways": "Bijna altijd",
+    "AvoidJudder": "Vermijd trillingen",
+    "SpeakerLayout": "Speaker indeling",
+    "Stereo": "Stereo",
+    "Quadraphonic": "Quadrophonisch",
+    "Surround": "Surround",
+    "DynamicRangeCompression": "Dynamisch bereik compressie"
 }

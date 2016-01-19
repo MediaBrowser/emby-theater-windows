@@ -7,5 +7,14 @@
     "AudioRenderer": "Ljud\u00e5tergivare",
     "VideoRenderer": "Bild\u00e5tergivare",
     "Default": "F\u00f6rvald",
-    "ChangeRefreshRate": "\u00c4ndra bildsk\u00e4rmens uppdaterings frekvens s\u00e5 den matchar video"
+    "ChangeRefreshRate": "\u00c4ndra bildsk\u00e4rmens uppdaterings frekvens s\u00e5 den matchar video",
+    "SmoothMotionMode": "Smooth motion mode",
+    "Always": "Always",
+    "AlmostAlways": "Almost Always",
+    "AvoidJudder": "Avoid Judder",
+    "SpeakerLayout": "Speaker layout",
+    "Stereo": "Stereo",
+    "Quadraphonic": "Quadraphonic",
+    "Surround": "Surround",
+    "DynamicRangeCompression": "Dynamic range compression"
 }

@@ -1,0 +1,20 @@
+{
+    "HardwareAccelerationMode": "Hardwarebeschleunigungsmodus:",
+    "Auto": "Auto",
+    "Disabled": "Deaktiviert",
+    "AudioBitstreamingMode": "Audio Bitstreaming Modus",
+    "None": "Keine",
+    "AudioRenderer": "Audio Renderer",
+    "VideoRenderer": "Video Renderer",
+    "Default": "Standard",
+    "ChangeRefreshRate": "\u00c4ndere Bildwiederholfrequenz passend zum Video",
+    "SmoothMotionMode": "Smooth motion mode",
+    "Always": "Always",
+    "AlmostAlways": "Almost Always",
+    "AvoidJudder": "Avoid Judder",
+    "SpeakerLayout": "Speaker layout",
+    "Stereo": "Stereo",
+    "Quadraphonic": "Quadraphonic",
+    "Surround": "Surround",
+    "DynamicRangeCompression": "Dynamic range compression"
+}

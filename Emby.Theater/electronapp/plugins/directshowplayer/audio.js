@@ -39,6 +39,9 @@
                 config.AudioConfig.EnableDRC = selectDrc.getValue() != '';
                 config.AudioConfig.DRCLevel = selectDrc.getValue() || '100';
 
+                config.AudioConfig.ExpandMono = view.querySelector('.selectExpandMono').getValue() == 'true';
+                config.AudioConfig.Expand61 = view.querySelector('.selectExpandSixToSeven').getValue() == 'true';
+
                 saveConfiguration(config);
             });
 
@@ -56,8 +59,10 @@
 
                 view.querySelector('.selectSpeakerLayout').setValue(config.AudioConfig.SpeakerLayout);
 
-                var selectDrc = view.querySelector('.selectDrc');
-                selectDrc.setValue(config.AudioConfig.EnableDRC ? config.AudioConfig.DRCLevel : '');
+                view.querySelector('.selectDrc').setValue(config.AudioConfig.EnableDRC ? config.AudioConfig.DRCLevel : '');
+
+                view.querySelector('.selectExpandMono').setValue(config.AudioConfig.ExpandMono);
+                view.querySelector('.selectExpandSixToSeven').setValue(config.AudioConfig.Expand61);
             });
         }
 

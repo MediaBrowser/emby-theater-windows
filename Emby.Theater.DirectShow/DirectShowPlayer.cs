@@ -25,6 +25,7 @@ using MediaBrowser.Model.IO;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Common.Net;
 using Emby.Theater.DirectShow.Configuration;
+using MediaBrowser.Model.MediaInfo;
 
 namespace Emby.Theater.DirectShow
 {
@@ -499,7 +500,7 @@ namespace Emby.Theater.DirectShow
                                 {
                                     int videoRate = (int)ms.RealFrameRate;
 
-                                    if (videoRate == 25 || videoRate == 29 || videoRate == 30) 
+                                    if (videoRate == 25 || videoRate == 29 || videoRate == 30)
                                     {
                                         //Every display/GPU should be able to display @2x FPS and it's quite likely that 2x is the rendered FPS anyway
                                         videoRate = (int)(ms.RealFrameRate * 2);
@@ -628,7 +629,7 @@ namespace Emby.Theater.DirectShow
                 bool loadSource = true;
                 object objLavSource = URCOMLoader.Instance.GetObject(typeof(LAVSplitterSource).GUID, true);
                 _sourceFilter = objLavSource as IBaseFilter;
-                
+
                 if (_sourceFilter != null)
                 {
                     hr = m_graph.AddFilter(_sourceFilter, "LAV Splitter Source");
@@ -2878,7 +2879,7 @@ namespace Emby.Theater.DirectShow
                         {
                             Index = s.Index,
                             Name = s.Language ?? "Unknown",
-                            Path = s.Path,
+                            Path = string.IsNullOrWhiteSpace(s.DeliveryUrl) ? s.Path : s.DeliveryUrl,
                             Type = MediaStreamType.Subtitle,
                             Identifier = "external",
                             IsActive = !String.IsNullOrEmpty(s.Language)
@@ -3086,44 +3087,36 @@ namespace Emby.Theater.DirectShow
 
             ToggleHideSubtitles(stream.Name.ToLower().Contains("no subtitles"));
         }
-        
+
         private async void LoadExternalSubtitleFromStream(SelectableMediaStream stream)
         {
             _logger.Debug("LoadExternalSubtitleFromStream: {0}", stream);
-        /*
-            string url;
+            var path = stream.Path;
 
-            if (_item.MediaSource.Protocol == MediaProtocol.Http)
+            if (path.StartsWith("http", StringComparison.OrdinalIgnoreCase))
             {
-                url = stream.Path;
+                try
+                {
+                    // as xvfilter throw's an error for a stream, we copy the stream to
+                    // a local temp file and change it ext to 'srt'
+                    var tempFile = await _httpClient.GetTempFile(new HttpRequestOptions
+                    {
+                        Url = path,
+                        Progress = new Progress<double>()
+                    });
+
+                    var pathWithExtension = Path.ChangeExtension(tempFile, Path.GetExtension(path));
+                    File.Move(tempFile, pathWithExtension);
+                    path = pathWithExtension;
+                }
+                catch
+                {
+                    return;
+                }
             }
-            else
-            {
-                url = _apiClient.GetSubtitleUrl(new SubtitleDownloadOptions
-               {
-                   ItemId = _item.OriginalItem.Id,
-                   StreamIndex = stream.Index,
 
-                   MediaSourceId = _item.MediaSource.Id,
-
-                   Format = "srt"
-               });
-            }
-
-            // as xvfilter throw's an error for a stream, we copy the stream to
-            // a local temp file and change it ext to 'srt'
-            var tempFile = await _httpClient.GetTempFile(new HttpRequestOptions
-            {
-                Url = url,
-                Progress = new Progress<double>()
-            });
-
-
-            var srtPath = Path.ChangeExtension(tempFile, ".srt");
-            File.Move(tempFile, srtPath);
-
-            _logger.Debug("loadExternalSubtitleFromStream {0} {1} {2} {3}", stream.Index, stream.Type, url, tempFile);
-            LoadExternalSubtitle(srtPath);*/
+            _logger.Debug("loadExternalSubtitleFromStream {0} {1} {2}", stream.Index, stream.Type, path);
+            LoadExternalSubtitle(path);
         }
 
         private async void SetExternalSubtitleStream(SelectableMediaStream stream)

@@ -217,11 +217,26 @@
 
                 var enableFullscreen = options.fullscreen !== false;
 
+                var mediaSource = JSON.parse(JSON.stringify(options.mediaSource));
+
+                // Update the text url in the media source with the full url from the options object
+                mediaSource.MediaStreams.forEach(function (ms) {
+                    var textTrack = options.textTracks.filter(function (t) {
+                        return t.index == ms.Index;
+
+                    })[0];
+
+                    if (textTrack) {
+                        alert(textTrack.url);
+                        ms.DeliveryUrl = textTrack.url;
+                    }
+                });
+
                 var requestBody = {
                     url: options.url,
                     isVideo: isVideo,
                     item: options.item,
-                    mediaSource: options.mediaSource,
+                    mediaSource: mediaSource,
                     startPositionTicks: options.playerStartPositionTicks,
                     fullscreen: enableFullscreen
                 };

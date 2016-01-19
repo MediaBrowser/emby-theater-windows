@@ -227,7 +227,6 @@
                     })[0];
 
                     if (textTrack) {
-                        alert(textTrack.url);
                         ms.DeliveryUrl = textTrack.url;
                     }
                 });

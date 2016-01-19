@@ -495,11 +495,11 @@ namespace Emby.Theater.DirectShow
                             if (ms.Type == MediaStreamType.Video)
                             {
                                 _startResolution = Display.GetCurrentResolution();
-                                if (ms.RealFrameRate.HasValue)
+                                if (ms.RealFrameRate.HasValue && !ms.IsInterlaced)
                                 {
                                     int videoRate = (int)ms.RealFrameRate;
 
-                                    if (videoRate == 25 || videoRate == 29 || videoRate == 30 || ms.IsInterlaced) // ms.IsInterlaced doesn't appear to be accurate
+                                    if (videoRate == 25 || videoRate == 29 || videoRate == 30) 
                                     {
                                         //Every display/GPU should be able to display @2x FPS and it's quite likely that 2x is the rendered FPS anyway
                                         videoRate = (int)(ms.RealFrameRate * 2);

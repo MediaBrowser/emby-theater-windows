@@ -267,6 +267,10 @@
       <Link>electronapp\scripts\navbuttons.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\Emby.Theater.Electron\scripts\videohandler.js">
+      <Link>electronapp\scripts\videohandler.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\Emby.Theater.Electron\serverdiscovery\serverdiscovery-native.js">
       <Link>electronapp\serverdiscovery\serverdiscovery-native.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

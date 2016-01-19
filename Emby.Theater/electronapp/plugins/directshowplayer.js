@@ -18,7 +18,6 @@
 
             routes.push({
                 path: Emby.PluginManager.mapPath(self, 'directshowplayer/audio.html'),
-                id: 'directshowplayer-audio',
                 transition: 'slide',
                 dependencies: [
                     'emby-dropdown-menu'
@@ -32,7 +31,6 @@
 
             routes.push({
                 path: Emby.PluginManager.mapPath(self, 'directshowplayer/video.html'),
-                id: 'directshowplayer-video',
                 transition: 'slide',
                 dependencies: [
                     'emby-dropdown-menu'
@@ -46,7 +44,6 @@
 
             routes.push({
                 path: Emby.PluginManager.mapPath(self, 'directshowplayer/madvr.html'),
-                id: 'directshowplayer-madvr',
                 transition: 'slide',
                 dependencies: [
                     'emby-dropdown-menu'

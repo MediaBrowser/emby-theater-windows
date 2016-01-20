@@ -459,11 +459,16 @@
 
             }).then(function (state) {
 
-                var previousPlayState = playerState.playstate;
+                var previousPlayerState = playerState;
 
                 playerState = state;
 
-                if (state.playstate == 'idle' && previousPlayState != 'idle' && previousPlayState) {
+                if (previousPlayerState.isMuted != state.isMuted ||
+                    previousPlayerState.volume != state.volume) {
+                    onVolumeChange();
+                }
+
+                if (state.playstate == 'idle' && previousPlayerState.playstate != 'idle' && previousPlayerState.playstate) {
                     if (!ignoreEnded) {
                         ignoreEnded = true;
                         onEnded(true);

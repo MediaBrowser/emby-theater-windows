@@ -8,13 +8,13 @@
     "VideoRenderer": "Rendu vid\u00e9o",
     "Default": "D\u00e9faut",
     "ChangeRefreshRate": "Changer le taux de rafraichissement de l'\u00e9cran pour qu'il corresponde \u00e0 celui de la vid\u00e9o",
-    "SmoothMotionMode": "Smooth motion mode",
-    "Always": "Always",
-    "AlmostAlways": "Almost Always",
-    "AvoidJudder": "Avoid Judder",
-    "SpeakerLayout": "Speaker layout",
-    "Stereo": "Stereo",
+    "SmoothMotionMode": "Mode fluidit\u00e9 de mouvements",
+    "Always": "Toujours",
+    "AlmostAlways": "Presque toujours",
+    "AvoidJudder": "\u00c9viter les saccades",
+    "SpeakerLayout": "Disposition des hauts-parleurs",
+    "Stereo": "St\u00e9r\u00e9o",
     "Quadraphonic": "Quadraphonic",
     "Surround": "Surround",
-    "DynamicRangeCompression": "Dynamic range compression"
+    "DynamicRangeCompression": "Compression sur une gamme dynamique"
 }

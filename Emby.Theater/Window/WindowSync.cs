@@ -40,7 +40,7 @@ namespace Emby.Theater.Window
                 _syncTimer = null;
             }
 
-            SyncWindowSize();
+            SyncWindowSize(false);
         }
 
         public void OnElectronWindowStateChanged(string newWindowState)
@@ -52,8 +52,6 @@ namespace Emby.Theater.Window
                 timer.Dispose();
                 _syncTimer = null;
             }
-
-            _logger.Info("Setting window state to {0}", newWindowState.ToString());
 
             SyncWindowState(newWindowState);
         }
@@ -75,15 +73,23 @@ namespace Emby.Theater.Window
                     break;
             }
 
-            SyncWindowSize();
+            SyncWindowSize(true);
         }
 
-        private void SyncWindowSize()
+        private void SyncWindowSize(bool log)
         {
             try
             {
                 RECT rect = new RECT();
                 NativeWindowMethods.GetWindowRect(_windowHandle, ref rect);
+
+                var width = rect.Right - rect.Left;
+                var height = rect.Bottom - rect.Top;
+
+                if (log)
+                {
+                    _logger.Info("SyncWindowSize Top={0} Left={1} Width={2} Height={3}", rect.Top, rect.Left, width, height);
+                }
 
                 _form.InvokeIfRequired(() =>
                 {
@@ -104,6 +110,8 @@ namespace Emby.Theater.Window
 
         private void SyncWindowState(string newWindowState)
         {
+            _logger.Info("Setting window state to {0}", newWindowState);
+            
             try
             {
                 FormWindowState newState;

@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Emby.Theater.Window;
 using MediaBrowser.Common.Configuration;
 
 namespace Emby.Theater
@@ -19,7 +20,7 @@ namespace Emby.Theater
         private static Mutex _singleInstanceMutex;
         private static ApplicationHost _appHost;
         private static ILogger _logger;
-        
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -27,7 +28,7 @@ namespace Emby.Theater
         static void Main()
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            
+
             bool createdNew;
 
             _singleInstanceMutex = new Mutex(true, @"Local\" + typeof(Program).Assembly.GetName().Name, out createdNew);
@@ -69,6 +70,20 @@ namespace Emby.Theater
 
             _logger = logManager.GetLogger("App");
 
+            bool supportsTransparency;
+
+            try
+            {
+                 supportsTransparency = NativeWindowMethods.DwmIsCompositionEnabled();
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error in DwmIsCompositionEnabled", ex);
+                supportsTransparency = true;
+            }
+
+            _logger.Info("OS Supports window transparency?: {0}", supportsTransparency);
+
             try
             {
                 _appHost = new ApplicationHost(appPaths, logManager);
@@ -76,11 +91,11 @@ namespace Emby.Theater
                 var initTask = _appHost.Init(new Progress<Double>());
                 Task.WaitAll(initTask);
 
-                var electronTask = StartElectron(appPaths);
+                var electronTask = StartElectron(appPaths, supportsTransparency);
                 Task.WaitAll(electronTask);
 
                 var electronProcess = electronTask.Result;
-                
+
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
@@ -102,7 +117,7 @@ namespace Emby.Theater
             }
         }
 
-        private static async Task<Process> StartElectron(IApplicationPaths appPaths)
+        private static async Task<Process> StartElectron(IApplicationPaths appPaths, bool supportsTransparency)
         {
             var appDirectoryPath = Path.GetDirectoryName(appPaths.ApplicationPath);
 
@@ -117,7 +132,7 @@ namespace Emby.Theater
                     UseShellExecute = false,
 
                     FileName = electronExePath,
-                    Arguments = string.Format("\"{0}\"", electronAppPath)
+                    Arguments = string.Format("\"{0}\" {1}", electronAppPath, supportsTransparency.ToString().ToLower())
                 },
 
                 EnableRaisingEvents = true,
@@ -128,7 +143,7 @@ namespace Emby.Theater
             process.Start();
             process.Exited += process_Exited;
 
-            process.WaitForInputIdle(3000);
+            //process.WaitForInputIdle(3000);
 
             while (process.MainWindowHandle.Equals(IntPtr.Zero))
             {

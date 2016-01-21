@@ -46,6 +46,12 @@ namespace Emby.Theater.DirectShowPlayer
             _isVideo = isVideo;
 
             var forcedVideoRenderer = isFullScreen ? null : "evr";
+
+            if (_player.PlayState != PlayState.Idle)
+            {
+                _player.Stop();
+            }
+
             _player.Play(path, startPositionTicks, isVideo, item, mediaSource, forcedVideoRenderer);
         }
 
@@ -222,7 +228,22 @@ namespace Emby.Theater.DirectShowPlayer
             }
         }
 
+        private readonly SemaphoreSlim _requestSemaphore = new SemaphoreSlim(1, 1);
         public async Task ProcessRequest(HttpListenerContext context, string localPath)
+        {
+            await _requestSemaphore.WaitAsync().ConfigureAwait(false);
+
+            try
+            {
+                ProcessRequestInternal(context, localPath);
+            }
+            finally
+            {
+                _requestSemaphore.Release();
+            }
+        }
+
+        private void ProcessRequestInternal(HttpListenerContext context, string localPath)
         {
             var command = localPath.Split('/').LastOrDefault();
             long? positionTicks = null;

@@ -32,6 +32,9 @@ namespace Emby.Theater.Window
         [DllImport("user32.dll")]
         public static extern IntPtr GetWindowLong(IntPtr hWnd, int nIndex);
 
+        [DllImport("dwmapi.dll", PreserveSig = false)]
+        public static extern bool DwmIsCompositionEnabled();
+
         public static IntPtr SetWindowLong(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
         {
             int error = 0;

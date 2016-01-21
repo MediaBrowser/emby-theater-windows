@@ -1,4 +1,4 @@
-﻿define([], function () {
+﻿define(['apphost'], function (appHost) {
 
     return function () {
 
@@ -29,28 +29,30 @@
                 thumbImage: ''
             });
 
-            routes.push({
-                path: Emby.PluginManager.mapPath(self, 'directshowplayer/video.html'),
-                transition: 'slide',
-                dependencies: [
-                    'emby-dropdown-menu'
-                ],
-                controller: Emby.PluginManager.mapPath(self, 'directshowplayer/video.js'),
-                type: 'settings',
-                title: 'Video',
-                category: 'Playback',
-                thumbImage: ''
-            });
+            if (appHost.supports('windowtransparency')) {
+                routes.push({
+                    path: Emby.PluginManager.mapPath(self, 'directshowplayer/video.html'),
+                    transition: 'slide',
+                    dependencies: [
+                        'emby-dropdown-menu'
+                    ],
+                    controller: Emby.PluginManager.mapPath(self, 'directshowplayer/video.js'),
+                    type: 'settings',
+                    title: 'Video',
+                    category: 'Playback',
+                    thumbImage: ''
+                });
 
-            routes.push({
-                path: Emby.PluginManager.mapPath(self, 'directshowplayer/madvr.html'),
-                transition: 'slide',
-                dependencies: [
-                    'emby-dropdown-menu'
-                ],
-                controller: Emby.PluginManager.mapPath(self, 'directshowplayer/madvr.js'),
-                thumbImage: ''
-            });
+                routes.push({
+                    path: Emby.PluginManager.mapPath(self, 'directshowplayer/madvr.html'),
+                    transition: 'slide',
+                    dependencies: [
+                        'emby-dropdown-menu'
+                    ],
+                    controller: Emby.PluginManager.mapPath(self, 'directshowplayer/madvr.js'),
+                    thumbImage: ''
+                });
+            }
 
             return routes;
         };
@@ -99,7 +101,11 @@
 
         self.canPlayMediaType = function (mediaType) {
 
-            return (mediaType || '').toLowerCase() == 'audio' || (mediaType || '').toLowerCase() == 'video';
+            if ((mediaType || '').toLowerCase() == 'video') {
+
+                return appHost.supports('windowtransparency');
+            }
+            return (mediaType || '').toLowerCase() == 'audio';
         };
 
         self.getDeviceProfile = function () {

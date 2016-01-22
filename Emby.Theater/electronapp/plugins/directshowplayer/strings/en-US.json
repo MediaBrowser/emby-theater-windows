@@ -1,4 +1,6 @@
 {
+    "ExpandMono": "Expand mono",
+    "ExpandSixToSeven": "Expand 6.1 to 7.1",
     "HardwareAccelerationMode": "Hardware acceleration mode",
     "Auto": "Auto",
     "Disabled": "Disabled",
@@ -16,7 +18,5 @@
     "Stereo": "Stereo",
     "Quadraphonic": "Quadraphonic",
     "Surround": "Surround",
-    "DynamicRangeCompression": "Dynamic range compression",
-    "ExpandMono": "Expand mono",
-    "ExpandSixToSeven": "Expand 6.1 to 7.1"
+    "DynamicRangeCompression": "Dynamic range compression"
 }

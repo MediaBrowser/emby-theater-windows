@@ -1,4 +1,4 @@
-﻿define(['loading'], function (loading) {
+﻿define(['loading', 'pluginManager'], function (loading, pluginManager) {
 
     return function (view, params) {
 
@@ -25,7 +25,7 @@
         });
 
         function onMadvrClick() {
-            Emby.Page.show(Emby.PluginManager.mapPath('directshowplayer', 'directshowplayer/madvr.html'));
+            Emby.Page.show(pluginManager.mapPath('directshowplayer', 'directshowplayer/madvr.html'));
         }
 
         function saveSettings() {

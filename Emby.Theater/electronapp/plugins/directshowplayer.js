@@ -1,4 +1,4 @@
-﻿define(['apphost'], function (appHost) {
+﻿define(['apphost', 'pluginManager'], function (appHost, pluginManager) {
 
     return function () {
 
@@ -17,12 +17,12 @@
             var routes = [];
 
             routes.push({
-                path: Emby.PluginManager.mapPath(self, 'directshowplayer/audio.html'),
+                path: pluginManager.mapPath(self, 'directshowplayer/audio.html'),
                 transition: 'slide',
                 dependencies: [
                     'emby-dropdown-menu'
                 ],
-                controller: Emby.PluginManager.mapPath(self, 'directshowplayer/audio.js'),
+                controller: pluginManager.mapPath(self, 'directshowplayer/audio.js'),
                 type: 'settings',
                 title: 'Audio',
                 category: 'Playback',
@@ -31,12 +31,12 @@
 
             if (appHost.supports('windowtransparency')) {
                 routes.push({
-                    path: Emby.PluginManager.mapPath(self, 'directshowplayer/video.html'),
+                    path: pluginManager.mapPath(self, 'directshowplayer/video.html'),
                     transition: 'slide',
                     dependencies: [
                         'emby-dropdown-menu'
                     ],
-                    controller: Emby.PluginManager.mapPath(self, 'directshowplayer/video.js'),
+                    controller: pluginManager.mapPath(self, 'directshowplayer/video.js'),
                     type: 'settings',
                     title: 'Video',
                     category: 'Playback',
@@ -44,12 +44,12 @@
                 });
 
                 routes.push({
-                    path: Emby.PluginManager.mapPath(self, 'directshowplayer/madvr.html'),
+                    path: pluginManager.mapPath(self, 'directshowplayer/madvr.html'),
                     transition: 'slide',
                     dependencies: [
                         'emby-dropdown-menu'
                     ],
-                    controller: Emby.PluginManager.mapPath(self, 'directshowplayer/madvr.js'),
+                    controller: pluginManager.mapPath(self, 'directshowplayer/madvr.js'),
                     thumbImage: ''
                 });
             }
@@ -63,37 +63,37 @@
 
             files.push({
                 lang: 'en-us',
-                path: Emby.PluginManager.mapPath(self, 'directshowplayer/strings/en-US.json')
+                path: pluginManager.mapPath(self, 'directshowplayer/strings/en-US.json')
             });
 
             files.push({
                 lang: 'fr',
-                path: Emby.PluginManager.mapPath(self, 'directshowplayer/strings/fr.json')
+                path: pluginManager.mapPath(self, 'directshowplayer/strings/fr.json')
             });
 
             files.push({
                 lang: 'nl',
-                path: Emby.PluginManager.mapPath(self, 'directshowplayer/strings/nl.json')
+                path: pluginManager.mapPath(self, 'directshowplayer/strings/nl.json')
             });
 
             files.push({
                 lang: 'pt-BR',
-                path: Emby.PluginManager.mapPath(self, 'directshowplayer/strings/pt-BR.json')
+                path: pluginManager.mapPath(self, 'directshowplayer/strings/pt-BR.json')
             });
 
             files.push({
                 lang: 'pt-PT',
-                path: Emby.PluginManager.mapPath(self, 'directshowplayer/strings/pt-PT.json')
+                path: pluginManager.mapPath(self, 'directshowplayer/strings/pt-PT.json')
             });
 
             files.push({
                 lang: 'ru',
-                path: Emby.PluginManager.mapPath(self, 'directshowplayer/strings/ru.json')
+                path: pluginManager.mapPath(self, 'directshowplayer/strings/ru.json')
             });
 
             files.push({
                 lang: 'sv',
-                path: Emby.PluginManager.mapPath(self, 'directshowplayer/strings/sv.json')
+                path: pluginManager.mapPath(self, 'directshowplayer/strings/sv.json')
             });
 
             return files;

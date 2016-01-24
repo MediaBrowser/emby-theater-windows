@@ -7,6 +7,7 @@
         self.name = 'Windows Player';
         self.type = 'mediaplayer';
         self.packageName = 'directshowplayer';
+        self.id = 'directshowplayer';
 
         var currentSrc;
         var playerState = {};

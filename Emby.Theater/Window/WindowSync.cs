@@ -164,7 +164,10 @@ namespace Emby.Theater.Window
                     //NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
                 }
 
-                NativeWindowMethods.SetForegroundWindow(_windowHandle);
+                if (newState != FormWindowState.Minimized)
+                {
+                    NativeWindowMethods.SetForegroundWindow(_windowHandle);
+                }
             }
             catch (Exception ex)
             {

@@ -116,7 +116,7 @@ namespace Emby.Theater.DirectShow.Configuration
 
         public bool ShowTrayIcon { get; set; }
 
-        public bool UseCustomPresenter { get; set; }
+        public bool EnableCustomPresenter { get; set; }
         public int NominalRange { get; set; }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace Emby.Theater.DirectShow.Configuration
             HwaResolution = -1;
             HwaMode = -1;
 
-            UseCustomPresenter = false;
+            EnableCustomPresenter = true;
             NominalRange = 1; //MFNominalRange_16_235
 
             AutoChangeRefreshRate = false;

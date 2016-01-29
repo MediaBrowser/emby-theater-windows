@@ -37,7 +37,7 @@
 
                 var selectVideoRenderer = view.querySelector('.selectVideoRenderer');
                 config.VideoConfig.EnableMadvr = selectVideoRenderer.getValue() == 'madVR';
-                config.VideoConfig.UseCustomPresenter = selectVideoRenderer.getValue() == 'EVRCP';
+                config.VideoConfig.EnableCustomPresenter = selectVideoRenderer.getValue() == 'EVRCP';
 
                 var selectRefreshRateMode = view.querySelector('.selectRefreshRateMode');
                 config.VideoConfig.AutoChangeRefreshRate = selectRefreshRateMode.getValue();
@@ -55,7 +55,7 @@
                 selectHwaMode.setValue(config.VideoConfig.HwaMode);
 
                 var selectVideoRenderer = view.querySelector('.selectVideoRenderer');
-                var videoRenderer = config.VideoConfig.EnableMadvr ? 'madVR' : config.VideoConfig.UseCustomPresenter ? 'EVRCP' : 'EVR';
+                var videoRenderer = config.VideoConfig.EnableMadvr ? 'madVR' : config.VideoConfig.EnableCustomPresenter ? 'EVRCP' : 'EVR';
                 selectVideoRenderer.setValue(videoRenderer);
 
                 var selectRefreshRateMode = view.querySelector('.selectRefreshRateMode');

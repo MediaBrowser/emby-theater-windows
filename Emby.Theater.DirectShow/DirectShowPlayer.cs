@@ -1628,7 +1628,7 @@ namespace Emby.Theater.DirectShow
             //try to load the custom presenter
             IMFVideoPresenter pPresenter = null;
 
-            if (_config.VideoConfig.UseCustomPresenter && !string.Equals(forcedVideoRenderer, "evr", StringComparison.OrdinalIgnoreCase))
+            if (_config.VideoConfig.EnableCustomPresenter && !string.Equals(forcedVideoRenderer, "evr", StringComparison.OrdinalIgnoreCase))
             {
                 IMFVideoRenderer pRenderer = pEvr as IMFVideoRenderer;
                 pPresenter = URCOMLoader.Instance.GetObject("EVR Presenter (babgvant)", false) as IMFVideoPresenter;

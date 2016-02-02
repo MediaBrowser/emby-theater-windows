@@ -70,20 +70,6 @@ namespace Emby.Theater
 
             _logger = logManager.GetLogger("App");
 
-            bool supportsTransparency;
-
-            try
-            {
-                 supportsTransparency = NativeWindowMethods.DwmIsCompositionEnabled();
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error in DwmIsCompositionEnabled", ex);
-                supportsTransparency = true;
-            }
-
-            _logger.Info("OS Supports window transparency?: {0}", supportsTransparency);
-
             try
             {
                 _appHost = new ApplicationHost(appPaths, logManager);
@@ -91,7 +77,7 @@ namespace Emby.Theater
                 var initTask = _appHost.Init(new Progress<Double>());
                 Task.WaitAll(initTask);
 
-                var electronTask = StartElectron(appPaths, supportsTransparency);
+                var electronTask = StartElectron(appPaths);
                 Task.WaitAll(electronTask);
 
                 var electronProcess = electronTask.Result;
@@ -117,7 +103,7 @@ namespace Emby.Theater
             }
         }
 
-        private static async Task<Process> StartElectron(IApplicationPaths appPaths, bool supportsTransparency)
+        private static async Task<Process> StartElectron(IApplicationPaths appPaths)
         {
             var appDirectoryPath = Path.GetDirectoryName(appPaths.ApplicationPath);
 
@@ -132,7 +118,7 @@ namespace Emby.Theater
                     UseShellExecute = false,
 
                     FileName = electronExePath,
-                    Arguments = string.Format("\"{0}\" {1}", electronAppPath, supportsTransparency.ToString().ToLower())
+                    Arguments = string.Format("\"{0}\"", electronAppPath)
                 },
 
                 EnableRaisingEvents = true,

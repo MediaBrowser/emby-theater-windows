@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Emby.Theater.Common;
@@ -192,6 +193,26 @@ namespace Emby.Theater
                 else if (localPath.StartsWith("directshowplayer", StringComparison.OrdinalIgnoreCase))
                 {
                     await _dsPlayerBridge.ProcessRequest(context, localPath).ConfigureAwait(false);
+                }
+                else if (localPath.StartsWith("fileexists", StringComparison.OrdinalIgnoreCase))
+                {
+                    using (var reader = new StreamReader(context.Request.InputStream))
+                    {
+                        var path = reader.ReadToEnd();
+                        var bytes = Encoding.UTF8.GetBytes(File.Exists(path).ToString().ToLower());
+                        context.Response.ContentLength64 = bytes.Length;
+                        context.Response.OutputStream.Write(bytes, 0, bytes.Length);
+                    }
+                }
+                else if (localPath.StartsWith("directoryexists", StringComparison.OrdinalIgnoreCase))
+                {
+                    using (var reader = new StreamReader(context.Request.InputStream))
+                    {
+                        var path = reader.ReadToEnd();
+                        var bytes = Encoding.UTF8.GetBytes(Directory.Exists(path).ToString().ToLower());
+                        context.Response.ContentLength64 = bytes.Length;
+                        context.Response.OutputStream.Write(bytes, 0, bytes.Length);
+                    }
                 }
             }
             finally

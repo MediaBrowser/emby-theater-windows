@@ -265,11 +265,12 @@ namespace Emby.Theater.DirectShow
             {
                 bool isFS = false;
 
-                Rectangle scrRect = System.Windows.Forms.Screen.GetBounds(_hostForm);
-                if (_hostForm.Height == scrRect.Bottom && _hostForm.Width == scrRect.Right)
+                //Multimonitor support
+                Screen screen = Screen.FromControl(_hostForm);
+                if (_hostForm.Height == screen.Bounds.Height && _hostForm.Width == screen.Bounds.Width)
                     isFS = true;
 
-                _logger.Debug("IsFullScreen: W: {0} H: {1} Top: {2} Bottom: {3} Left: {4} Right: {5}", _hostForm.Width, _hostForm.Height, scrRect.Top, scrRect.Bottom, scrRect.Left, scrRect.Right);
+                _logger.Debug("IsFullScreen: W: {0} H: {1} Top: {2} Bottom: {3} Left: {4} Right: {5}", _hostForm.Width, _hostForm.Height, screen.Bounds.Top, screen.Bounds.Bottom, screen.Bounds.Left, screen.Bounds.Right);
 
                 return isFS;
             }
@@ -495,7 +496,7 @@ namespace Emby.Theater.DirectShow
                         {
                             if (ms.Type == MediaStreamType.Video)
                             {
-                                _startResolution = Display.GetCurrentResolution();
+                                _startResolution = Display.GetCurrentResolution(_hostForm);
                                 if (ms.RealFrameRate.HasValue && !ms.IsInterlaced)
                                 {
                                     int videoRate = (int)ms.RealFrameRate;
@@ -512,7 +513,7 @@ namespace Emby.Theater.DirectShow
                                     {
                                         Resolution desiredRes = new Resolution(_startResolution.ToString());
                                         desiredRes.Rate = videoRate;
-                                        if (Display.ChangeResolution(desiredRes, false))
+                                        if (Display.ChangeResolution(_hostForm, desiredRes, false))
                                             _logger.Info("Changed resolution from {0} to {1}", _startResolution, desiredRes);
                                         else
                                         {
@@ -2137,7 +2138,7 @@ namespace Emby.Theater.DirectShow
             if (_startResolution != null)
             {
                 _logger.Info("Change resolution back to {0}", _startResolution);
-                Display.ChangeResolution(_startResolution, false);
+                Display.ChangeResolution(_hostForm, _startResolution, false);
             }
 
             DsError.ThrowExceptionForHR(hr);

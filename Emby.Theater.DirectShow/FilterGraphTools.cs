@@ -1352,7 +1352,9 @@ namespace DirectShowLib.Utils
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern int ChangeDisplaySettings(ref DEVMODE devMode, CDS flags);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern int ChangeDisplaySettings(IntPtr devMode, CDS flags);
+        public static extern DISP_CHANGE ChangeDisplaySettings(IntPtr devMode, CDS flags);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern DISP_CHANGE ChangeDisplaySettingsEx(string lpszDeviceName, ref DEVMODE lpDevMode, IntPtr hwnd, CDS dwflags, IntPtr lParam);
 
         [DllImport("user32.dll")]
         public static extern IntPtr FindWindow(string className, string windowName);
@@ -1371,6 +1373,18 @@ namespace DirectShowLib.Utils
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr GetForegroundWindow();
+    }
+
+    enum DISP_CHANGE : int
+    {
+        Successful = 0,
+        Restart = 1,
+        Failed = -1,
+        BadMode = -2,
+        NotUpdated = -3,
+        BadFlags = -4,
+        BadParam = -5,
+        BadDualView = -6
     }
 
     public enum CDS

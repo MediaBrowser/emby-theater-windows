@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DirectShowLib.Utils;
+using System.Windows.Forms;
 
 namespace Emby.Theater.DirectShow
 {
@@ -79,21 +80,26 @@ namespace Emby.Theater.DirectShow
             return _modes;
         }
 
-        public static Resolution GetCurrentResolution()
+        public static Screen GetScreenFromControl(Control control)
+        {
+            return Screen.FromControl(control);
+        }
+
+        public static Resolution GetCurrentResolution(Form host)
         {
             DEVMODE cDm = new DEVMODE();
             //cDm.dmDeviceName = new String(new char[32]);
             //cDm.dmFormName = new String(new char[32]);
             cDm.dmSize = (short)Marshal.SizeOf(cDm);
 
-            NativeMethods.EnumDisplaySettings(null, NativeMethods.ENUM_CURRENT_SETTINGS, ref cDm);
+            NativeMethods.EnumDisplaySettings(GetScreenFromControl(host).DeviceName, NativeMethods.ENUM_CURRENT_SETTINGS, ref cDm);
 
             Resolution res = new Resolution(cDm.dmPelsWidth, cDm.dmPelsHeight, cDm.dmDisplayFrequency, ((cDm.dmDisplayFlags & NativeMethods.DM_INTERLACED) == NativeMethods.DM_INTERLACED), cDm.dmDisplayFixedOutput, cDm.dmBitsPerPel);
 
             return res;
         }
 
-        public static bool ChangeResolution(Resolution res, bool permanent)
+        public static bool ChangeResolution(Form host, Resolution res, bool permanent)
         {
             int i = 0;
 
@@ -102,8 +108,9 @@ namespace Emby.Theater.DirectShow
             //cDm.dmFormName = new String(new char[32]);
             cDm.dmSize = (short)Marshal.SizeOf(cDm);
             //FileLogger.Log("DEVMODE Size: {0}", Marshal.SizeOf(cDm));
+            Screen hostScreen = GetScreenFromControl(host);
 
-            NativeMethods.EnumDisplaySettings(null, NativeMethods.ENUM_CURRENT_SETTINGS, ref cDm);
+            NativeMethods.EnumDisplaySettings(hostScreen.DeviceName, NativeMethods.ENUM_CURRENT_SETTINGS, ref cDm);
 
             if (cDm.dmBitsPerPel == res.PixelDepth
                     && cDm.dmPelsWidth == res.Width
@@ -120,7 +127,7 @@ namespace Emby.Theater.DirectShow
             //dm.dmFormName = new String(new char[32]);
             dm.dmSize = (short)Marshal.SizeOf(dm);
 
-            while (0 != NativeMethods.EnumDisplaySettings(null, i, ref dm))
+            while (0 != NativeMethods.EnumDisplaySettings(hostScreen.DeviceName, i, ref dm))
             {
                 if (dm.dmBitsPerPel == res.PixelDepth
                     && dm.dmPelsWidth == res.Width
@@ -129,15 +136,15 @@ namespace Emby.Theater.DirectShow
                     && ((dm.dmDisplayFlags & NativeMethods.DM_INTERLACED) == NativeMethods.DM_INTERLACED) == res.Interlaced
                     && dm.dmDisplayFixedOutput == res.FixedOutput)
                 {
-                    int iRet = NativeMethods.ChangeDisplaySettings(ref dm, CDS.Test);
+                    DISP_CHANGE iRet = NativeMethods.ChangeDisplaySettingsEx(hostScreen.DeviceName, ref dm, IntPtr.Zero, CDS.Test, IntPtr.Zero);
 
-                    if (iRet == NativeMethods.DISP_CHANGE_SUCCESSFUL)
+                    if (iRet == DISP_CHANGE.Successful)
                     {
                         if (permanent)
-                            iRet = NativeMethods.ChangeDisplaySettings(ref dm, CDS.UpdateRegistry);
+                            iRet = NativeMethods.ChangeDisplaySettingsEx(hostScreen.DeviceName, ref dm, IntPtr.Zero, CDS.UpdateRegistry, IntPtr.Zero);
                         else
                         {
-                            iRet = NativeMethods.ChangeDisplaySettings(ref dm, CDS.Dynamic);
+                            iRet = NativeMethods.ChangeDisplaySettingsEx(hostScreen.DeviceName, ref dm, IntPtr.Zero, CDS.Dynamic, IntPtr.Zero);
                             //IntPtr nRes = IntPtr.Zero;
                             //try
                             //{
@@ -153,7 +160,7 @@ namespace Emby.Theater.DirectShow
                         }
                     }
 
-                    return iRet == NativeMethods.DISP_CHANGE_SUCCESSFUL;
+                    return iRet == DISP_CHANGE.Successful;
                 }
 
                 i++;

@@ -17,7 +17,7 @@
             var routes = [];
 
             routes.push({
-                path: pluginManager.mapPath(self, 'directshowplayer/audio.html'),
+                path: 'directshowplayer/audio.html',
                 transition: 'slide',
                 dependencies: [
                     'emby-dropdown-menu'
@@ -31,7 +31,7 @@
 
             if (appHost.supports('windowtransparency')) {
                 routes.push({
-                    path: pluginManager.mapPath(self, 'directshowplayer/video.html'),
+                    path: 'directshowplayer/video.html',
                     transition: 'slide',
                     dependencies: [
                         'emby-dropdown-menu'
@@ -44,7 +44,7 @@
                 });
 
                 routes.push({
-                    path: pluginManager.mapPath(self, 'directshowplayer/madvr.html'),
+                    path: 'directshowplayer/madvr.html',
                     transition: 'slide',
                     dependencies: [
                         'emby-dropdown-menu'

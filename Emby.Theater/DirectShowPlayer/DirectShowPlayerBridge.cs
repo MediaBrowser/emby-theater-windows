@@ -52,6 +52,8 @@ namespace Emby.Theater.DirectShowPlayer
                 _player.Stop();
             }
 
+            _logger.Info("Playing media source {0}", _json.SerializeToString(mediaSource));
+
             _player.Play(path, startPositionTicks, isVideo, item, mediaSource, forcedVideoRenderer);
         }
 

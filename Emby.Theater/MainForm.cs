@@ -199,7 +199,9 @@ namespace Emby.Theater
                     using (var reader = new StreamReader(context.Request.InputStream))
                     {
                         var path = reader.ReadToEnd();
-                        var bytes = Encoding.UTF8.GetBytes(File.Exists(path).ToString().ToLower());
+                        var exists = File.Exists(path);
+                        exists = false;
+                        var bytes = Encoding.UTF8.GetBytes(exists.ToString().ToLower());
                         context.Response.ContentLength64 = bytes.Length;
                         context.Response.OutputStream.Write(bytes, 0, bytes.Length);
                     }
@@ -209,7 +211,8 @@ namespace Emby.Theater
                     using (var reader = new StreamReader(context.Request.InputStream))
                     {
                         var path = reader.ReadToEnd();
-                        var bytes = Encoding.UTF8.GetBytes(Directory.Exists(path).ToString().ToLower());
+                        var exists = Directory.Exists(path);
+                        var bytes = Encoding.UTF8.GetBytes(exists.ToString().ToLower());
                         context.Response.ContentLength64 = bytes.Length;
                         context.Response.OutputStream.Write(bytes, 0, bytes.Length);
                     }

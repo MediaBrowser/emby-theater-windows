@@ -25,7 +25,7 @@
         });
 
         function onMadvrClick() {
-            Emby.Page.show(pluginManager.mapPath('directshowplayer', 'directshowplayer/madvr.html'));
+            Emby.Page.show(pluginManager.mapRoute('directshowplayer', 'directshowplayer/madvr.html'));
         }
 
         function saveSettings() {

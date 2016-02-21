@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using CoreAudioApi;
@@ -16,6 +17,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Emby.Theater.App;
 using Emby.Theater.DirectShow.Configuration;
+using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.MediaInfo;
 using SocketHttpListener.Net;
 
 namespace Emby.Theater.DirectShowPlayer
@@ -44,6 +47,25 @@ namespace Emby.Theater.DirectShowPlayer
         {
             _isFadingOut = false;
             _isVideo = isVideo;
+
+            if (mediaSource.Protocol == MediaProtocol.File && mediaSource.VideoType.HasValue)
+            {
+                if (mediaSource.VideoType.Value == VideoType.VideoFile ||
+                    mediaSource.VideoType.Value == VideoType.Iso)
+                {
+                    if (File.Exists(mediaSource.Path))
+                    {
+                        path = mediaSource.Path;
+                    }
+                }
+                else
+                {
+                    if (Directory.Exists(mediaSource.Path))
+                    {
+                        path = mediaSource.Path;
+                    }
+                }
+            }
 
             var forcedVideoRenderer = isFullScreen ? null : "evr";
 

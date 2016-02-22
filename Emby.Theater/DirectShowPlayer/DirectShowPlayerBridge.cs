@@ -296,6 +296,17 @@ namespace Emby.Theater.DirectShowPlayer
                 response.ContentLength64 = bytes.Length;
                 response.OutputStream.Write(bytes, 0, bytes.Length);
                 return;
+            } 
+            else if (string.Equals(command, "getaudiodevices", StringComparison.OrdinalIgnoreCase))
+            {
+                var response = context.Response;
+                var jsnString = _json.SerializeToString(AudioConfigurationUtils.GetAudioDevices());
+                var bytes = Encoding.UTF8.GetBytes(jsnString);
+
+                response.ContentType = "application/json";
+                response.ContentLength64 = bytes.Length;
+                response.OutputStream.Write(bytes, 0, bytes.Length);
+                return;
             }
             if (string.Equals(command, "play", StringComparison.OrdinalIgnoreCase))
             {

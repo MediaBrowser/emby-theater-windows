@@ -41,6 +41,9 @@
 
                 config.AudioConfig.ExpandMono = view.querySelector('.selectExpandMono').getValue() == 'true';
                 config.AudioConfig.Expand61 = view.querySelector('.selectExpandSixToSeven').getValue() == 'true';
+                
+                var selectAudioEndPoint = view.querySelector('.selectAudioEndPoint');
+                config.AudioConfig.AudioDevice = selectAudioEndPoint.getValue();
 
                 saveConfiguration(config);
             });
@@ -48,22 +51,38 @@
         }
 
         function renderSettings() {
+            getAudioDevices().then(function (audioDevices) {
+                getConfiguration().then(function (config) {
 
-            getConfiguration().then(function (config) {
+                    var selectAudioBitstreamingMode = view.querySelector('.selectAudioBitstreamingMode');
+                    selectAudioBitstreamingMode.setValue(config.AudioConfig.AudioBitstreaming);
 
-                var selectAudioBitstreamingMode = view.querySelector('.selectAudioBitstreamingMode');
-                selectAudioBitstreamingMode.setValue(config.AudioConfig.AudioBitstreaming);
+                    var selectAudioRenderer = view.querySelector('.selectAudioRenderer');
+                    selectAudioRenderer.setValue(config.AudioConfig.Renderer);
 
-                var selectAudioRenderer = view.querySelector('.selectAudioRenderer');
-                selectAudioRenderer.setValue(config.AudioConfig.Renderer);
+                    view.querySelector('.selectSpeakerLayout').setValue(config.AudioConfig.SpeakerLayout);
 
-                view.querySelector('.selectSpeakerLayout').setValue(config.AudioConfig.SpeakerLayout);
+                    view.querySelector('.selectDrc').setValue(config.AudioConfig.EnableDRC ? config.AudioConfig.DRCLevel : '');
 
-                view.querySelector('.selectDrc').setValue(config.AudioConfig.EnableDRC ? config.AudioConfig.DRCLevel : '');
+                    view.querySelector('.selectExpandMono').setValue(config.AudioConfig.ExpandMono);
+                    view.querySelector('.selectExpandSixToSeven').setValue(config.AudioConfig.Expand61);
 
-                view.querySelector('.selectExpandMono').setValue(config.AudioConfig.ExpandMono);
-                view.querySelector('.selectExpandSixToSeven').setValue(config.AudioConfig.Expand61);
+                    var selectAudioEndPoint = view.querySelector('.selectAudioEndPoint');
+                    for (i = 0; i < audioDevices.length; i++) {
+                        var opt = document.createElement('div');
+                        opt.setAttribute("class", "dropdownItem");
+                        opt.setAttribute("data-value", audioDevices[i].ID);
+                        opt.appendChild(document.createTextNode(audioDevices[i].Name));
+                        selectAudioEndPoint.querySelector('.dropdown-content').appendChild(opt);
+                    }
+                    selectAudioEndPoint.setValue(config.AudioConfig.AudioDevice);
+                })
             });
+        }
+
+        function getAudioDevices() {
+
+            return sendCommand('getaudiodevices');
         }
 
         function getConfiguration() {

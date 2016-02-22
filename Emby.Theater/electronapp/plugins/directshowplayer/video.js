@@ -42,6 +42,9 @@
                 var selectRefreshRateMode = view.querySelector('.selectRefreshRateMode');
                 config.VideoConfig.AutoChangeRefreshRate = selectRefreshRateMode.getValue();
 
+                var selectFilterSet = view.querySelector('.selectFilterSet');
+                config.FilterSet = selectFilterSet.getValue();
+
                 saveConfiguration(config);
             });
 
@@ -60,6 +63,9 @@
 
                 var selectRefreshRateMode = view.querySelector('.selectRefreshRateMode');
                 selectRefreshRateMode.setValue(config.VideoConfig.AutoChangeRefreshRate);
+
+                var selectFilterSet = view.querySelector('.selectFilterSet');
+                selectFilterSet.setValue(config.FilterSet);
             });
         }
 

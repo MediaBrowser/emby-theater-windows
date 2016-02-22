@@ -67,20 +67,26 @@ namespace Emby.Theater.DirectShow
 
     public static class AudioConfigurationUtils
     {
-        public static Dictionary<string, string> GetAudioDevices()
+        public static List<AudioDevice> GetAudioDevices()        
         {
-            Dictionary<string, string> audioDevices = new Dictionary<string, string>();
+            List<AudioDevice> audioDevices = new List<AudioDevice>();
 
-            audioDevices["Default Device"] = string.Empty;
+            audioDevices.Add(new AudioDevice(){ Name = "Default Device", ID = string.Empty});
 
             MMDeviceEnumerator DevEnum = new MMDeviceEnumerator();
             MMDeviceCollection dc = DevEnum.EnumerateAudioEndPoints(EDataFlow.eRender, EDeviceState.DEVICE_STATE_ACTIVE);
             for (int i = 0; i < dc.Count; i++)
             {
-                audioDevices[dc[i].FriendlyName] = dc[i].ID;
+                audioDevices.Add(new AudioDevice() { Name = dc[i].FriendlyName, ID = dc[i].ID });
             }
 
             return audioDevices;
         }
+    }
+
+    public class AudioDevice
+    {
+        public string Name { get; set; }
+        public string ID { get; set; }
     }
 }

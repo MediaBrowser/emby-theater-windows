@@ -62,7 +62,7 @@ namespace Emby.Theater.DirectShowPlayer
                 {
                     if (Directory.Exists(mediaSource.Path))
                     {
-                        path = mediaSource.Path;
+                        path = GetFolderRipPath(mediaSource.VideoType.Value, mediaSource.Path);
                     }
                 }
             }
@@ -77,6 +77,37 @@ namespace Emby.Theater.DirectShowPlayer
             _logger.Info("Playing media source {0}", _json.SerializeToString(mediaSource));
 
             _player.Play(path, startPositionTicks, isVideo, item, mediaSource, forcedVideoRenderer);
+        }
+
+        private static string GetFolderRipPath(VideoType videoType, string root)
+        {
+            if (videoType == VideoType.BluRay)
+            {
+                return GetBlurayPath(root);
+            }
+
+            return root;
+        }
+
+        private static string GetBlurayPath(string root)
+        {
+            var file = new DirectoryInfo(root)
+                .EnumerateFiles("index.bdmv", SearchOption.AllDirectories)
+                .FirstOrDefault();
+
+            if (file != null)
+            {
+                Uri uri;
+
+                if (Uri.TryCreate(file.FullName, UriKind.RelativeOrAbsolute, out uri))
+                {
+                    return uri.OriginalString;
+                }
+
+                return file.FullName;
+            }
+
+            return root;
         }
 
         /// <summary>

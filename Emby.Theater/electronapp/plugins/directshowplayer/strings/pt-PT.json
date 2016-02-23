@@ -18,5 +18,7 @@
     "Stereo": "Est\u00e9reo",
     "Quadraphonic": "Quadraphonic",
     "Surround": "Surround",
-    "DynamicRangeCompression": "Dynamic range compression"
+    "DynamicRangeCompression": "Dynamic range compression",
+    "AudioEndPoint": "WASAPI Audio Device",
+    "FilterSet": "Filter Set"
 }

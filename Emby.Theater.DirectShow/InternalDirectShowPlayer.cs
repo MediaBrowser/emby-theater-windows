@@ -35,7 +35,7 @@ namespace Emby.Theater.DirectShow
         private readonly IZipClient _zipClient;
         private URCOMLoader _privateCom = null;
         private readonly IConfigurationManager _config;
-
+        IApplicationPaths _appPaths = null;
         //public URCOMLoader PrivateCom
         //{
         //    get
@@ -64,6 +64,7 @@ namespace Emby.Theater.DirectShow
             _isoManager = isoManager;
             //_inputManager = inputManager;
             _zipClient = zipClient;
+            _appPaths = appPaths;
 
             var config = GetConfiguration();
 
@@ -87,7 +88,13 @@ namespace Emby.Theater.DirectShow
 
         public void UpdateConfiguration(DirectShowPlayerConfiguration config)
         {
+            var curConfig = GetConfiguration();            
             _config.SaveConfiguration("directshowplayer", config);
+            if (string.Compare(curConfig.FilterSet, config.FilterSet, true) != 0)
+            {
+                //update filters
+                URCOMLoader.Instance.EnsureObjects(_appPaths.ProgramDataPath, _zipClient, false, true);
+            }
         }
 
         private void EnsureMediaFilters(string appProgramDataPath)

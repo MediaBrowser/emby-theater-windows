@@ -86,6 +86,15 @@ namespace Emby.Theater.DirectShowPlayer
                 return GetBlurayPath(root);
             }
 
+            if (videoType == VideoType.Dvd)
+            {
+                var videoTsPath = Path.Combine(root, "video_ts");
+                if (Directory.Exists(videoTsPath))
+                {
+                    return videoTsPath;
+                }
+            }
+
             return root;
         }
 
@@ -327,7 +336,7 @@ namespace Emby.Theater.DirectShowPlayer
                 response.ContentLength64 = bytes.Length;
                 response.OutputStream.Write(bytes, 0, bytes.Length);
                 return;
-            } 
+            }
             else if (string.Equals(command, "getaudiodevices", StringComparison.OrdinalIgnoreCase))
             {
                 var response = context.Response;

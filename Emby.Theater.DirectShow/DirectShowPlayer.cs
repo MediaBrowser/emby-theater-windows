@@ -536,7 +536,7 @@ namespace Emby.Theater.DirectShow
                 var isDvd = ((item.MediaSource.VideoType ?? VideoType.VideoFile) == VideoType.Dvd ||
                              (item.MediaSource.IsoType ?? IsoType.BluRay) == IsoType.Dvd);
 
-                Initialize(item.PlayablePath, _isDvd, forcedVideoRenderer);
+                Initialize(item.PlayablePath, isDvd, forcedVideoRenderer);
 
                 //_hiddenWindow.OnWMGRAPHNOTIFY = HandleGraphEvent;
                 //_hiddenWindow.OnDVDEVENT = HandleDvdEvent;

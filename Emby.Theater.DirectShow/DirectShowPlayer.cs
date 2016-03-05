@@ -696,15 +696,17 @@ namespace Emby.Theater.DirectShow
                             hr = lss.SetUseAudioForHearingVisuallyImpaired(_config.SplitterConfig.UseAudioForHearingVisuallyImpaired);
                             DsError.ThrowExceptionForHR(hr);
 
-                            _logger.Debug("SetMaxQueueMemSize: {0}", _config.SplitterConfig.MaxQueueMemSize);
+                            int MaxQueueMemSize = lss.GetMaxQueueMemSize();
+
+                            _logger.Debug("SetMaxQueueMemSize: from {0} to {1}", MaxQueueMemSize, _config.SplitterConfig.MaxQueueMemSize);
                             hr = lss.SetMaxQueueMemSize(_config.SplitterConfig.MaxQueueMemSize);
                             DsError.ThrowExceptionForHR(hr);
 
                             _logger.Debug("SetTrayIcon: {0}", _config.SplitterConfig.ShowTrayIcon);
                             hr = lss.SetTrayIcon(_config.SplitterConfig.ShowTrayIcon);
                             DsError.ThrowExceptionForHR(hr);
-
-                            _logger.Debug("SetPreferHighQualityAudioStreams: {0}", _config.SplitterConfig.PreferHighQualityAudioStreams);
+                            
+                            _logger.Debug("SetPreferHighQualityAudioStreams: from {0}", _config.SplitterConfig.PreferHighQualityAudioStreams);
                             hr = lss.SetPreferHighQualityAudioStreams(_config.SplitterConfig.PreferHighQualityAudioStreams);
                             DsError.ThrowExceptionForHR(hr);
 
@@ -712,8 +714,16 @@ namespace Emby.Theater.DirectShow
                             hr = lss.SetLoadMatroskaExternalSegments(_config.SplitterConfig.LoadMatroskaExternalSegments);
                             DsError.ThrowExceptionForHR(hr);
 
-                            _logger.Debug("SetNetworkStreamAnalysisDuration: {0}", _config.SplitterConfig.NetworkStreamAnalysisDuration);
+                            int NetworkStreamAnalysisDuration = lss.GetMaxQueueMemSize();
+
+                            _logger.Debug("SetNetworkStreamAnalysisDuration: from {0} to {1}", NetworkStreamAnalysisDuration, _config.SplitterConfig.NetworkStreamAnalysisDuration);
                             hr = lss.SetNetworkStreamAnalysisDuration(_config.SplitterConfig.NetworkStreamAnalysisDuration);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            int MaxQueueSize = lss.GetMaxQueueSize();
+
+                            _logger.Debug("SetMaxQueueSize: from {0} to {1}", MaxQueueSize, _config.SplitterConfig.MaxQueueSize);
+                            hr = lss.SetMaxQueueSize(_config.SplitterConfig.MaxQueueSize);
                             DsError.ThrowExceptionForHR(hr);
                         }
 

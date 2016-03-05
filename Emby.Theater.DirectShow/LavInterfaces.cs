@@ -58,6 +58,16 @@ namespace Emby.Theater.DirectShow
         Snow,
         FFV1,
         v210,
+        JPEG2000,
+        VMNC,
+        FLIC,
+        G2M,
+        ICOD,
+        THP,
+        HEVC,
+        VP9,
+        TrueMotion,
+        VP7,
 
         NB            // Number of entrys (do not use when dynamically linking)
     }
@@ -70,8 +80,10 @@ namespace Emby.Theater.DirectShow
         MPEG2 = LAVVideoCodec.MPEG2,
         MPEG4 = LAVVideoCodec.MPEG4,
         MPEG2DVD,
+        HEVC,
+        VP9,
 
-        NB = MPEG2DVD + 1
+        NB = VP9 + 1
     }
 
     // Flags for HW Resolution support
@@ -105,7 +117,9 @@ namespace Emby.Theater.DirectShow
     public enum LAVSWDeintModes
     {
         None,
-        YADIF
+        YADIF,
+        W3FDIF_Simple,
+        W3FDIF_Complex
     }
 
     // Deinterlacing processing mode
@@ -157,6 +171,8 @@ namespace Emby.Theater.DirectShow
 
         YV16,            // 4:2:2, 8-bit, planar
         YV24,
+
+        RGB48, // 48-bit RGB (16-bit per pixel, BGR)
 
         NB               // Number of formats
     }
@@ -380,6 +396,30 @@ namespace Emby.Theater.DirectShow
         // Get the Deint Mode
         [PreserveSig]
         LAVDeintMode GetDeinterlacingMode();
+
+        // Set the index of the GPU to be used for hardware decoding
+        // Only supported for CUVID and DXVA2 copy-back. If the device is not valid, it'll fallback to auto-detection
+        // Must be called before an input is connected to LAV Video, and the setting is non-persistent
+        // NOTE: For CUVID, the index defines the index of the CUDA capable device, while for DXVA2, the list includes all D3D9 devices
+        [PreserveSig]
+        int SetGPUDeviceIndex(int dwDevice);
+
+        // Get the number of available devices for the specified HWAccel
+        [PreserveSig]
+        int GetHWAccelNumDevices(LAVHWAccel hwAccel);
+
+        // Get a list of available HWAccel devices for the specified HWAccel
+        [PreserveSig]
+        int GetHWAccelDeviceInfo(LAVHWAccel hwAccel, int dwIndex, [In, MarshalAs(UnmanagedType.LPWStr)] string pstrDeviceName, out int pdwDeviceIdentifier);
+
+        // Get/Set the device for a specified HWAccel
+        // In contrast to SetGPUDeviceIndex, this setting is hwaccel-specific and persistent
+        // dwDeviceIdentifier is an optional parameter that identifies the selected device (ie. its device id), set to 0 if not used
+        //#define LAVHWACCEL_DEVICE_DEFAULT ((DWORD)-1)
+        [PreserveSig]
+        int GetHWAccelDeviceIndex(LAVHWAccel hwAccel, out int pdwDeviceIdentifier);
+        [PreserveSig]
+        int SetHWAccelDeviceIndex(LAVHWAccel hwAccel, int dwIndex, int dwDeviceIdentifier);
     }
 
     #endregion
@@ -415,6 +455,7 @@ namespace Emby.Theater.DirectShow
         MSPCM,
         Truespeech,
         TAK,
+        ATRAC,
 
         NB            // Number of entrys (do not use when dynamically linking)
     }
@@ -596,6 +637,19 @@ InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         int SetSampleConvertDithering(bool bEnabled);
         [PreserveSig]
         bool GetSampleConvertDithering();
+
+        // Suppress sample format changes. This will allow channel count to increase, but not to reduce, instead adding empty channels
+        // This option is NOT persistent
+        [PreserveSig]
+        int SetSuppressFormatChanges(bool bEnabled);
+        [PreserveSig]
+        bool GetSuppressFormatChanges();
+
+        // Use 5.1 legacy layout (using back channels instead of side)
+        [PreserveSig]
+        bool GetOutput51LegacyLayout();
+        [PreserveSig]
+        int SetOutput51LegacyLayout(bool b51Legacy);
     }
 
     [ComImport,
@@ -839,6 +893,14 @@ InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         // Get the duration (in ms) of analysis for network streams (to find the streams and codec parameters)
         [PreserveSig]
         int GetNetworkStreamAnalysisDuration();
+
+        // Set the maximum queue size, in number of packets
+        [PreserveSig]
+        int SetMaxQueueSize(int dwMaxSize);
+
+        // Get the maximum queue size, in number of packets
+        [PreserveSig]
+        int GetMaxQueueSize();
     }
     #endregion
 }

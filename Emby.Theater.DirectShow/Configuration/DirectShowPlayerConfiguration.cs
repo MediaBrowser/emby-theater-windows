@@ -348,6 +348,7 @@ namespace Emby.Theater.DirectShow.Configuration
                 EnabledCodecs.Add("MSPCM");
                 EnabledCodecs.Add("Truespeech");
                 EnabledCodecs.Add("TAK");
+                EnabledCodecs.Add("ATRAC");
             }
         }
     }

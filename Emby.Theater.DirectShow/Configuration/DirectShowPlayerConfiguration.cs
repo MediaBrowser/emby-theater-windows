@@ -175,6 +175,8 @@ namespace Emby.Theater.DirectShow.Configuration
                 HwaEnabledCodecs.Add("MPEG2");
                 //HwaEnabledCodecs.Add("MPEG2DVD");
                 //HwaEnabledCodecs.Add("MPEG4");
+                //HwaEnabledCodecs.Add("HEVC");
+                //HwaEnabledCodecs.Add("VP9");
             }
 
             if (EnabledCodecs.Count == 0)
@@ -220,6 +222,17 @@ namespace Emby.Theater.DirectShow.Configuration
                 EnabledCodecs.Add("VCR1");
                 EnabledCodecs.Add("Snow");
                 EnabledCodecs.Add("FFV1");
+                EnabledCodecs.Add("v210");
+                EnabledCodecs.Add("JPEG2000");
+                EnabledCodecs.Add("VMNC");
+                EnabledCodecs.Add("FLIC");
+                EnabledCodecs.Add("G2M");
+                EnabledCodecs.Add("ICOD");
+                EnabledCodecs.Add("THP");
+                EnabledCodecs.Add("HEVC");
+                EnabledCodecs.Add("VP9");
+                EnabledCodecs.Add("TrueMotion");
+                EnabledCodecs.Add("VP7");
             }
         }
     }

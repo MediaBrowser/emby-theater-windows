@@ -16,6 +16,7 @@
                 renderSettings();
 
                 view.querySelector('.btnMadvr').addEventListener('click', onMadvrClick);
+                view.querySelector('.btnReset').addEventListener('click', onResetClick);
             }
         });
 
@@ -26,6 +27,10 @@
 
         function onMadvrClick() {
             Emby.Page.show(pluginManager.mapRoute('directshowplayer', 'directshowplayer/madvr.html'));
+        }
+
+        function onResetClick() {
+            return sendCommand('configresetdefaults-video');
         }
 
         function saveSettings() {

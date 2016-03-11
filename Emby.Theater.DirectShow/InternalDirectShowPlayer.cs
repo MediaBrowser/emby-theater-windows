@@ -97,6 +97,20 @@ namespace Emby.Theater.DirectShow
             }
         }
 
+        public void ResetConfiguration(string section)
+        {
+            var curConfig = GetConfiguration();
+            switch (section)
+            {
+                case "video":
+                    curConfig.VideoConfig.ResetDefaults();
+                    break;
+                case "audio":
+                    curConfig.AudioConfig.ResetDefaults();
+                    break;
+            }
+        }
+
         private void EnsureMediaFilters(string appProgramDataPath)
         {
             Task.Run(() =>

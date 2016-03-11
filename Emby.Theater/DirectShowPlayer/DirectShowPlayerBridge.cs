@@ -20,6 +20,7 @@ using Emby.Theater.DirectShow.Configuration;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.MediaInfo;
 using SocketHttpListener.Net;
+using System.Text.RegularExpressions;
 
 namespace Emby.Theater.DirectShowPlayer
 {
@@ -348,6 +349,24 @@ namespace Emby.Theater.DirectShowPlayer
                 response.OutputStream.Write(bytes, 0, bytes.Length);
                 return;
             }
+            else if (Regex.IsMatch(command, "configresetdefaults-\\w+$", RegexOptions.IgnoreCase))
+            {
+                Match configType = Regex.Match(command, "configresetdefaults-(\\w+)$", RegexOptions.IgnoreCase);
+                
+                if (configType.Success)
+                {
+                    _player.ResetConfiguration(configType.Groups[1].Value);
+                }
+
+                var response = context.Response;
+                var bytes = Encoding.UTF8.GetBytes(_json.SerializeToString(_player.GetConfiguration()));
+
+                response.ContentType = "application/json";
+                response.ContentLength64 = bytes.Length;
+                response.OutputStream.Write(bytes, 0, bytes.Length);
+                return;
+            }
+
             if (string.Equals(command, "play", StringComparison.OrdinalIgnoreCase))
             {
                 var playRequest = _json.DeserializeFromStream<PlayRequest>(context.Request.InputStream);

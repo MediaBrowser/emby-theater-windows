@@ -1,6 +1,10 @@
 {
-    "ExpandMono": "Expand mono",
-    "ExpandSixToSeven": "Expand 6.1 to 7.1",
+    "ExpandMono": "Mono uitbreiden",
+    "ExpandSixToSeven": "Uitbreiden 6.1 naar 7.1",
+    "FilterSet": "Filter set",
+    "Edge": "Edge",
+    "AudioEndPoint": "WASAPI audio device",
+    "Stable": "Stable",
     "HardwareAccelerationMode": "Hardware acceleratie mode",
     "Auto": "Automatisch",
     "Disabled": "Uitgeschakeld",
@@ -16,9 +20,7 @@
     "AvoidJudder": "Vermijd trillingen",
     "SpeakerLayout": "Speaker indeling",
     "Stereo": "Stereo",
-    "Quadraphonic": "Quadrophonisch",
+    "Quadraphonic": "Quadrofonisch",
     "Surround": "Surround",
-    "DynamicRangeCompression": "Dynamisch bereik compressie",
-    "AudioEndPoint": "WASAPI Audio Device",
-    "FilterSet": "Filter Set"
+    "DynamicRangeCompression": "Dynamisch bereik compressie"
 }

@@ -1,6 +1,10 @@
 {
     "ExpandMono": "Expand mono",
     "ExpandSixToSeven": "Expand 6.1 to 7.1",
+    "FilterSet": "Filter set",
+    "Edge": "Edge",
+    "AudioEndPoint": "WASAPI audio device",
+    "Stable": "Stable",
     "HardwareAccelerationMode": "Hardware acceleration mode",
     "Auto": "Auto",
     "Disabled": "Disabled",
@@ -18,9 +22,5 @@
     "Stereo": "Stereo",
     "Quadraphonic": "Quadraphonic",
     "Surround": "Surround",
-    "DynamicRangeCompression": "Dynamic range compression",
-    "AudioEndPoint": "WASAPI audio device",
-    "FilterSet": "Filter set",
-    "Edge": "Edge",
-    "Stable": "Stable"
+    "DynamicRangeCompression": "Dynamic range compression"
 }

@@ -946,29 +946,30 @@ namespace Emby.Theater.DirectShow
                                             DsError.ThrowExceptionForHR(hr);
                                         }
 
-                                        foreach (string c in DirectShowPlayer.GetLAVVideoCodecs())
-                                        {
-                                            LAVVideoCodec codec = (LAVVideoCodec)Enum.Parse(typeof(LAVVideoCodec), c);
+                                        //TODO: add this back when CODECs are surfaced through the config UI
+                                        //foreach (string c in DirectShowPlayer.GetLAVVideoCodecs())
+                                        //{
+                                        //    LAVVideoCodec codec = (LAVVideoCodec)Enum.Parse(typeof(LAVVideoCodec), c);
 
-                                            bool isEnabled = vsett.GetFormatConfiguration(codec);
-                                            if (
-                                                _config.VideoConfig.EnabledCodecs
-                                                    .Contains(c))
-                                            {
-                                                if (!isEnabled)
-                                                {
-                                                    _logger.Debug("Enable support for: {0}", c);
-                                                    hr = vsett.SetFormatConfiguration(codec, true);
-                                                    DsError.ThrowExceptionForHR(hr);
-                                                }
-                                            }
-                                            else if (isEnabled)
-                                            {
-                                                _logger.Debug("Disable support for: {0}", c);
-                                                hr = vsett.SetFormatConfiguration(codec, false);
-                                                DsError.ThrowExceptionForHR(hr);
-                                            }
-                                        }
+                                        //    bool isEnabled = vsett.GetFormatConfiguration(codec);
+                                        //    if (
+                                        //        _config.VideoConfig.EnabledCodecs
+                                        //            .Contains(c))
+                                        //    {
+                                        //        if (!isEnabled)
+                                        //        {
+                                        //            _logger.Debug("Enable support for: {0}", c);
+                                        //            hr = vsett.SetFormatConfiguration(codec, true);
+                                        //            DsError.ThrowExceptionForHR(hr);
+                                        //        }
+                                        //    }
+                                        //    else if (isEnabled)
+                                        //    {
+                                        //        _logger.Debug("Disable support for: {0}", c);
+                                        //        hr = vsett.SetFormatConfiguration(codec, false);
+                                        //        DsError.ThrowExceptionForHR(hr);
+                                        //    }
+                                        //}
 
                                         foreach (string hwaCodec in DirectShowPlayer.GetLAVVideoHwaCodecs())
                                         {
@@ -1219,29 +1220,30 @@ namespace Emby.Theater.DirectShow
                                         hr = asett.SetRuntimeConfig(true);
                                         DsError.ThrowExceptionForHR(hr);
 
-                                        foreach (string c in DirectShowPlayer.GetLAVAudioCodecs())
-                                        {
-                                            LAVAudioCodec codec = (LAVAudioCodec)Enum.Parse(typeof(LAVAudioCodec), c);
+                                        //TODO: add this back when CODECs are surfaced through the config UI
+                                        //foreach (string c in DirectShowPlayer.GetLAVAudioCodecs())
+                                        //{
+                                        //    LAVAudioCodec codec = (LAVAudioCodec)Enum.Parse(typeof(LAVAudioCodec), c);
 
-                                            bool isEnabled = asett.GetFormatConfiguration(codec);
-                                            if (
-                                                _config.AudioConfig.EnabledCodecs.Contains(
-                                                    c))
-                                            {
-                                                if (!isEnabled)
-                                                {
-                                                    _logger.Debug("Enable support for: {0}", c);
-                                                    hr = asett.SetFormatConfiguration(codec, true);
-                                                    DsError.ThrowExceptionForHR(hr);
-                                                }
-                                            }
-                                            else if (isEnabled)
-                                            {
-                                                _logger.Debug("Disable support for: {0}", c);
-                                                hr = asett.SetFormatConfiguration(codec, false);
-                                                DsError.ThrowExceptionForHR(hr);
-                                            }
-                                        }
+                                        //    bool isEnabled = asett.GetFormatConfiguration(codec);
+                                        //    if (
+                                        //        _config.AudioConfig.EnabledCodecs.Contains(
+                                        //            c))
+                                        //    {
+                                        //        if (!isEnabled)
+                                        //        {
+                                        //            _logger.Debug("Enable support for: {0}", c);
+                                        //            hr = asett.SetFormatConfiguration(codec, true);
+                                        //            DsError.ThrowExceptionForHR(hr);
+                                        //        }
+                                        //    }
+                                        //    else if (isEnabled)
+                                        //    {
+                                        //        _logger.Debug("Disable support for: {0}", c);
+                                        //        hr = asett.SetFormatConfiguration(codec, false);
+                                        //        DsError.ThrowExceptionForHR(hr);
+                                        //    }
+                                        //}
 
                                         //enable/disable bitstreaming
                                         if ((_config.AudioConfig.AudioBitstreaming &

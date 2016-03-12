@@ -7,17 +7,11 @@
 
     function showMessage() {
 
-        require(['dialog'], function (dialog) {
-            dialog({
+        require(['alert'], function (alert) {
+            alert({
                 title: 'Enable Windows DWM',
                 text: "We've detected that the Microsoft Desktop Window Manager has been disabled. If you need advanced features such as audio bitstreaming or MadVr, then you'll need to enable the Microsoft Desktop Window Manager. If you do not need these features then you can ignore this message.",
-                buttons: ['Learn More', 'OK'],
-                callback: function (index) {
-                    if (index == 0) {
-                        openHelp();
-                    }
-                }
-            });
+            }).then(openHelp);
         });
     }
 

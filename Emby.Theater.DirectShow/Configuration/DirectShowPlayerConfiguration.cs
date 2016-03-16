@@ -149,6 +149,13 @@ namespace Emby.Theater.DirectShow.Configuration
             TryEnableFSE = false;
         }
 
+        public void ResetDefaults()
+        {
+            HwaEnabledCodecs.Clear();
+            EnabledCodecs.Clear();
+            SetDefaults();
+        }
+
         public void SetDefaults()
         {
             //if (HwaMode < 0 || HwaResolution < 0)
@@ -320,6 +327,12 @@ namespace Emby.Theater.DirectShow.Configuration
             Ac3EncodingMode = 0; //disabled
             UseWasapiEventMode = true;
             OutputBufferSize = 500;
+        }
+
+        public void ResetDefaults()
+        {
+            EnabledCodecs.Clear();
+            SetDefaults();
         }
 
         public void SetDefaults()

@@ -2016,8 +2016,7 @@ namespace Emby.Theater.DirectShow
 
                 _mPDisplay.SetVideoPosition(sRect, dRect);
             }
-
-            if (_madvr != null)
+            else if (_madvr != null)
             {
                 //configure madVR to figure out AR & window size
                 IMadVRCommand _madCmd = _madvr as IMadVRCommand;
@@ -2041,65 +2040,66 @@ namespace Emby.Theater.DirectShow
                     hr = _madCmd.SendCommandString("setZoomMode", zoomMode);
                 }
             }
-            else
-            {
-                // Get Aspect Ratio
-                int aspectX;
-                int aspectY;
+            //this shouldn't be necessary anymore. EVR & EVR+ are configured via _mPDisplay, and madVR via IMadVRCommand
+            //else
+            //{
+            //    // Get Aspect Ratio
+            //    int aspectX;
+            //    int aspectY;
 
-                if (ratio.HasValue)
-                {
-                    aspectX = ratio.Value.Width;
-                    aspectY = ratio.Value.Height;
-                }
-                else
-                {
-                    var basicVideo2 = (IBasicVideo2)m_graph;
-                    basicVideo2.GetPreferredAspectRatio(out aspectX, out aspectY);
+            //    if (ratio.HasValue)
+            //    {
+            //        aspectX = ratio.Value.Width;
+            //        aspectY = ratio.Value.Height;
+            //    }
+            //    else
+            //    {
+            //        var basicVideo2 = (IBasicVideo2)m_graph;
+            //        basicVideo2.GetPreferredAspectRatio(out aspectX, out aspectY);
 
-                    var sourceHeight = 0;
-                    var sourceWidth = 0;
+            //        var sourceHeight = 0;
+            //        var sourceWidth = 0;
 
-                    _basicVideo.GetVideoSize(out sourceWidth, out sourceHeight);
+            //        _basicVideo.GetVideoSize(out sourceWidth, out sourceHeight);
 
-                    if (aspectX == 0 || aspectY == 0 || sourceWidth > 0 || sourceHeight > 0)
-                    {
-                        aspectX = sourceWidth;
-                        aspectY = sourceHeight;
-                    }
-                }
+            //        if (aspectX == 0 || aspectY == 0 || sourceWidth > 0 || sourceHeight > 0)
+            //        {
+            //            aspectX = sourceWidth;
+            //            aspectY = sourceHeight;
+            //        }
+            //    }
 
-                // Adjust Video Size
-                var iAdjustedHeight = 0;
+            //    // Adjust Video Size
+            //    var iAdjustedHeight = 0;
 
-                if (aspectX > 0 && aspectY > 0)
-                {
-                    double adjustedHeight = aspectY * screenWidth;
-                    adjustedHeight /= aspectX;
+            //    if (aspectX > 0 && aspectY > 0)
+            //    {
+            //        double adjustedHeight = aspectY * screenWidth;
+            //        adjustedHeight /= aspectX;
 
-                    iAdjustedHeight = Convert.ToInt32(Math.Round(adjustedHeight));
-                }
+            //        iAdjustedHeight = Convert.ToInt32(Math.Round(adjustedHeight));
+            //    }
 
-                if (screenHeight > iAdjustedHeight && iAdjustedHeight > 0)
-                {
-                    double totalMargin = (screenHeight - iAdjustedHeight);
-                    var topMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
+            //    if (screenHeight > iAdjustedHeight && iAdjustedHeight > 0)
+            //    {
+            //        double totalMargin = (screenHeight - iAdjustedHeight);
+            //        var topMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
 
-                    _basicVideo.SetDestinationPosition(0, topMargin, screenWidth, iAdjustedHeight);
-                }
-                else if (iAdjustedHeight > 0)
-                {
-                    double adjustedWidth = aspectX * screenHeight;
-                    adjustedWidth /= aspectY;
+            //        _basicVideo.SetDestinationPosition(0, topMargin, screenWidth, iAdjustedHeight);
+            //    }
+            //    else if (iAdjustedHeight > 0)
+            //    {
+            //        double adjustedWidth = aspectX * screenHeight;
+            //        adjustedWidth /= aspectY;
 
-                    var iAdjustedWidth = Convert.ToInt32(Math.Round(adjustedWidth));
+            //        var iAdjustedWidth = Convert.ToInt32(Math.Round(adjustedWidth));
 
-                    double totalMargin = (screenWidth - iAdjustedWidth);
-                    var leftMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
+            //        double totalMargin = (screenWidth - iAdjustedWidth);
+            //        var leftMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
 
-                    _basicVideo.SetDestinationPosition(leftMargin, 0, iAdjustedWidth, screenHeight);
-                }
-            }
+            //        _basicVideo.SetDestinationPosition(leftMargin, 0, iAdjustedWidth, screenHeight);
+            //    }
+            //}
 
             if (setVideoWindow)
             {

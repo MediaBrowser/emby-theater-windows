@@ -1640,7 +1640,7 @@ namespace Emby.Theater.DirectShow
 
             //try to load the custom presenter
             IMFVideoPresenter pPresenter = null;
-
+            _logger.Debug("InitializeEvr EnableCustomPresenter: {0} forcedVideoRenderer: {1}", _config.VideoConfig.EnableCustomPresenter, forcedVideoRenderer);
             if (_config.VideoConfig.EnableCustomPresenter && !string.Equals(forcedVideoRenderer, "evr", StringComparison.OrdinalIgnoreCase))
             {
                 IMFVideoRenderer pRenderer = pEvr as IMFVideoRenderer;
@@ -1650,6 +1650,7 @@ namespace Emby.Theater.DirectShow
                 {
                     if (pPresenter != null)
                     {
+                        _logger.Debug("Got EVR Presenter (babgvant)");
                         hr = pRenderer.InitializeRenderer(null, pPresenter);
                         if (hr > -1)
                         {
@@ -1657,10 +1658,30 @@ namespace Emby.Theater.DirectShow
                             IEVRCPConfig cp = pPresenter as IEVRCPConfig;
                             if (cp != null)
                             {
+                                int nRange;
+                                bool bCr;
+
                                 hr = cp.SetInt(EVRCPSetting.NOMINAL_RANGE, _config.VideoConfig.NominalRange);
                                 DsError.ThrowExceptionForHR(hr);
+                                hr = cp.SetBool(EVRCPSetting.CORRECT_AR, true);
+                                DsError.ThrowExceptionForHR(hr);
+
+                                hr = cp.GetInt(EVRCPSetting.NOMINAL_RANGE, out nRange);
+                                DsError.ThrowExceptionForHR(hr);
+                                hr = cp.GetBool(EVRCPSetting.CORRECT_AR, out bCr);
+                                DsError.ThrowExceptionForHR(hr);
+
+                                _logger.Debug("IEVRCPConfig Nominal Range: {0} Correct AR: {1}", nRange, bCr);
+                            }
+                            else
+                            {
+                                _logger.Debug("Couldn't get IEVRCPConfig");
                             }
                         }
+                    }
+                    else
+                    {
+                        _logger.Error("Couldn't get EVR Presenter (babgvant)");
                     }
                 }
                 finally
@@ -2013,6 +2034,7 @@ namespace Emby.Theater.DirectShow
                     //dRect.right = dRect.right + (ps.OverscanWidth / 2);//this.Width;
                     //dRect.bottom = dRect.bottom + (ps.OverscanHeight / 2);//this.Height;
                 }
+                _logger.Debug("Source Rect T: {0} L: {1} B: {2} R: {3} Dest Rect T: {4} L: {5} B: {6} R: {7}", sRect.top, sRect.left, sRect.bottom, sRect.right, dRect.top, dRect.left, dRect.bottom, dRect.right);
 
                 _mPDisplay.SetVideoPosition(sRect, dRect);
             }
@@ -2100,6 +2122,7 @@ namespace Emby.Theater.DirectShow
             //        _basicVideo.SetDestinationPosition(leftMargin, 0, iAdjustedWidth, screenHeight);
             //    }
             //}
+            _logger.Debug("Screen Width: {0} Screen Height: {1}", screenWidth, screenHeight);
 
             if (setVideoWindow)
             {

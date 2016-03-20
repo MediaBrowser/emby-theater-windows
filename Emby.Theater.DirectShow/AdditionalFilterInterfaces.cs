@@ -17,7 +17,7 @@ namespace Emby.Theater.DirectShow
         SUBTITLE_ALPHA,
         USE_MF_TIME_CALC,
         FRAME_DROP_THRESHOLD,
-        EVRCP_SETTING_CORRECT_AR
+        CORRECT_AR
     }
 
     [ComImport, System.Security.SuppressUnmanagedCodeSecurity,

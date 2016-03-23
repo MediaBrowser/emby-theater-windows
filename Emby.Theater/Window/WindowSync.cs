@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using MediaBrowser.Model.Logging;
+using Microsoft.Win32;
 
 namespace Emby.Theater.Window
 {
@@ -26,8 +27,23 @@ namespace Emby.Theater.Window
                 // Until the electron window starts reporting window changes, use a timer to keep them in sync
                 //_syncTimer = new System.Threading.Timer(OnTimerCallback, null, 10, 10);
             }));
-            
-             OnTimerCallback(null);
+
+            OnTimerCallback(null);
+            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
+            SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
+        }
+
+        void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
+        {
+            SyncAllStates();
+        }
+
+        void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+        {
+            if (e.Mode == PowerModes.Resume)
+            {
+                SyncAllStates();
+            }
         }
 
         public void OnElectronWindowSizeChanged()
@@ -57,6 +73,11 @@ namespace Emby.Theater.Window
         }
 
         private void OnTimerCallback(object state)
+        {
+            SyncAllStates();
+        }
+
+        private void SyncAllStates()
         {
             var placement = NativeWindowMethods.GetPlacement(_windowHandle);
 
@@ -111,7 +132,7 @@ namespace Emby.Theater.Window
         private void SyncWindowState(string newWindowState)
         {
             _logger.Info("Setting window state to {0}", newWindowState);
-            
+
             try
             {
                 FormWindowState newState;

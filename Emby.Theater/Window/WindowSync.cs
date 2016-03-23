@@ -35,14 +35,14 @@ namespace Emby.Theater.Window
 
         void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
         {
-            SyncAllStates();
+            RestoreMaximizeIfNeeded();
         }
 
         void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
         {
             if (e.Mode == PowerModes.Resume)
             {
-                SyncAllStates();
+                RestoreMaximizeIfNeeded();
             }
         }
 
@@ -75,6 +75,20 @@ namespace Emby.Theater.Window
         private void OnTimerCallback(object state)
         {
             SyncAllStates();
+        }
+
+        private void RestoreMaximizeIfNeeded()
+        {
+            FormWindowState state = FormWindowState.Normal;
+            _form.InvokeIfRequired(() =>
+            {
+                state = _form.WindowState;
+            });
+
+            if (state == FormWindowState.Maximized)
+            {
+                SyncWindowState("Maximized");
+            }
         }
 
         private void SyncAllStates()

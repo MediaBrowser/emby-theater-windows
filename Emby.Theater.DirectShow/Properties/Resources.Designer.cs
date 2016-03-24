@@ -71,12 +71,34 @@ namespace Emby.Theater.DirectShow.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 3/5/2016 10:50:44 AM
+        ///2.0.0
+        ///.
+        /// </summary>
+        internal static string babgvant_txt {
+            get {
+                return ResourceManager.GetString("babgvant_txt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] LAV {
             get {
                 object obj = ResourceManager.GetObject("LAV", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 2/1/2016 11:44:38 AM
+        ///2.0.0
+        ///.
+        /// </summary>
+        internal static string LAV_txt {
+            get {
+                return ResourceManager.GetString("LAV_txt", resourceCulture);
             }
         }
         
@@ -91,12 +113,34 @@ namespace Emby.Theater.DirectShow.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 2/24/2016 9:12:51 AM
+        ///2.0.0
+        ///.
+        /// </summary>
+        internal static string madVR_txt {
+            get {
+                return ResourceManager.GetString("madVR_txt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] mpaudio {
             get {
                 object obj = ResourceManager.GetObject("mpaudio", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1/31/2016 9:04:46 PM
+        ///2.0.0
+        ///.
+        /// </summary>
+        internal static string mpaudio_txt {
+            get {
+                return ResourceManager.GetString("mpaudio_txt", resourceCulture);
             }
         }
         
@@ -111,12 +155,34 @@ namespace Emby.Theater.DirectShow.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 1/31/2016 9:04:46 PM
+        ///2.0.0
+        ///.
+        /// </summary>
+        internal static string xy_VSFilter_txt {
+            get {
+                return ResourceManager.GetString("xy_VSFilter_txt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] XySubFilter {
             get {
                 object obj = ResourceManager.GetObject("XySubFilter", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 2/24/2016 9:12:51 AM
+        ///2.0.0
+        ///.
+        /// </summary>
+        internal static string XySubFilter_txt {
+            get {
+                return ResourceManager.GetString("XySubFilter_txt", resourceCulture);
             }
         }
     }

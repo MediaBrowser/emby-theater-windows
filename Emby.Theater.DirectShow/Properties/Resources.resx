@@ -121,19 +121,37 @@
   <data name="babgvant" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\FilterZips\babgvant.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="babgvant_txt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\FilterZips\babgvant.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="LAV" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\FilterZips\LAV.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LAV_txt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\FilterZips\LAV.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="madVR" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\FilterZips\madVR.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="madVR_txt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\FilterZips\madVR.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="mpaudio" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\FilterZips\mpaudio.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="mpaudio_txt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\FilterZips\mpaudio.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="XySubFilter" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\FilterZips\XySubFilter.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="XySubFilter_txt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\FilterZips\XySubFilter.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="xy_VSFilter" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\FilterZips\xy-VSFilter.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="xy_VSFilter_txt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\FilterZips\xy-VSFilter.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

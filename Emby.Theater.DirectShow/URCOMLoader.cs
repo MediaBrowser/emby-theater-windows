@@ -84,6 +84,14 @@ namespace Emby.Theater.DirectShow
             }
         }
 
+        private void WriteResource(string comBin, string dlPath)
+        {            
+            using (StreamWriter sw = new StreamWriter(dlPath, false))
+            {
+                sw.Write(comBin);
+            }
+        }
+
         private void ExtractBytes(byte[] comBin, string dlPath, IZipClient zipClient)
         {
             using (MemoryStream ms = new MemoryStream(comBin))
@@ -120,6 +128,13 @@ namespace Emby.Theater.DirectShow
                     ExtractBytes(Emby.Theater.DirectShow.Properties.Resources.mpaudio, objPath, zipClient);
                     ExtractBytes(Emby.Theater.DirectShow.Properties.Resources.XySubFilter, objPath, zipClient);
                     ExtractBytes(Emby.Theater.DirectShow.Properties.Resources.xy_VSFilter, objPath, zipClient);
+                    //extract embedded tracking files
+                    WriteResource(Emby.Theater.DirectShow.Properties.Resources.babgvant_txt, Path.Combine(objPath, "babgvant.txt"));
+                    WriteResource(Emby.Theater.DirectShow.Properties.Resources.LAV_txt, Path.Combine(objPath, "LAV.txt"));
+                    WriteResource(Emby.Theater.DirectShow.Properties.Resources.madVR_txt, Path.Combine(objPath, "madVR.txt"));
+                    WriteResource(Emby.Theater.DirectShow.Properties.Resources.mpaudio_txt, Path.Combine(objPath, "mpaudio.txt"));
+                    WriteResource(Emby.Theater.DirectShow.Properties.Resources.XySubFilter_txt, Path.Combine(objPath, "XySubFilter.txt"));
+                    WriteResource(Emby.Theater.DirectShow.Properties.Resources.xy_VSFilter_txt, Path.Combine(objPath, "xy-VSFilter.txt"));
                 }
                 else if (redownload)
                 {

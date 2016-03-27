@@ -1032,6 +1032,7 @@ namespace Emby.Theater.DirectShow
 
                                     if (enableXySubFilter) //this flag indicates whether we should handle subtitle rendering
                                     {
+                                        _logger.Debug("Enable XySubFilter.");
                                         var xySubFilterSucceeded = false;
 
                                         // Load xySubFilter if configured and if madvr succeeded
@@ -1048,6 +1049,8 @@ namespace Emby.Theater.DirectShow
                                                 }
 
                                                 xySubFilterSucceeded = true;
+
+                                                _logger.Debug("Enable XySubFilter : {0}.", xySubFilterSucceeded);
                                             }
                                             catch (Exception ex)
                                             {
@@ -1058,6 +1061,7 @@ namespace Emby.Theater.DirectShow
                                         // Fallback to xyVsFilter
                                         if (!xySubFilterSucceeded)
                                         {
+                                            _logger.Debug("Fallback xyVsFilter.");
                                             try
                                             {
                                                 _xyVsFilter = URCOMLoader.Instance.GetObject(typeof(XYVSFilter).GUID, true); //new XYVSFilter();
@@ -1066,6 +1070,8 @@ namespace Emby.Theater.DirectShow
                                                 {
                                                     hr = m_graph.AddFilter(vxyVsFilter, "xy-VSFilter");
                                                     DsError.ThrowExceptionForHR(hr);
+
+                                                    _logger.Debug("Added xy-VSFilter");
                                                 }
                                             }
                                             catch (Exception ex)
@@ -1076,6 +1082,7 @@ namespace Emby.Theater.DirectShow
 
                                         if (_xyVsFilter != null) //If using VSFilter
                                         {
+                                            _logger.Debug("insert xyVsFilter b/w LAV Video and the renderer");
                                             //insert xyVsFilter b/w LAV Video and the renderer
                                             rendIn = DsFindPin.ByName((DirectShowLib.IBaseFilter)_xyVsFilter, "Video");
 
@@ -1399,9 +1406,11 @@ namespace Emby.Theater.DirectShow
                                 _logger.ErrorException("Error adding LAV Audio filter", ex);
                             }
 
+                            _logger.Log(LogSeverity.Debug, "Connect Audio decoder to renderer");
                             decIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavaudio, PinDirection.Input, 0);
                             if (decIn != null)
                             {
+                                _logger.Log(LogSeverity.Debug, "Got Audio decoder out pin");
                                 hr = _filterGraph.ConnectDirect(pins[0], decIn, null);
                                 if (hr < 0) //LAV cannot handle this audio type
                                 {
@@ -1441,22 +1450,33 @@ namespace Emby.Theater.DirectShow
                             /*DirectShowLib.MediaType.Subtitle*/)
                         {
                             #region subtitles
+                            _logger.Log(LogSeverity.Debug, "Connect subtitle filter");
 
                             if (_xySubFilter != null)
                             {
+                                _logger.Log(LogSeverity.Debug, "Using xySubFilter");
                                 rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_xySubFilter,
                                     PinDirection.Input, 0);
                             }
                             else if (_xyVsFilter != null)
                             {
+                                _logger.Log(LogSeverity.Debug, "Using xyVsFilter");
                                 rendIn = DsFindPin.ByName((DirectShowLib.IBaseFilter)_xyVsFilter, "Input");
                             }
 
                             if (rendIn != null)
                             {
-                                hr = _filterGraph.ConnectDirect(pins[0], rendIn, null);
-                                DsError.ThrowExceptionForHR(hr);
+                                _logger.Log(LogSeverity.Debug, "Connect subtitle pin to subtitle renderer");
 
+                                try
+                                {
+                                    hr = _filterGraph.ConnectDirect(pins[0], rendIn, null);
+                                    DsError.ThrowExceptionForHR(hr);
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.Warn("Error rendering subtites {0} : {1}", hr, ex.Message);
+                                }
                                 needsRender = false;
                                 break;
                             }
@@ -1465,14 +1485,23 @@ namespace Emby.Theater.DirectShow
                         else if (mediaTypes[m] == DvdSubpictureMediaType)
                         {
                             #region DVD Subpicture
+                            _logger.Log(LogSeverity.Debug, "Connect DVD Subpicture");
                             if (_lavvideo != null)
                             {
                                 rendIn = DsFindPin.ByName((DirectShowLib.IBaseFilter)_lavvideo, "Subtitle Input");
                                 if (rendIn != null)
                                 {
-                                    hr = _filterGraph.ConnectDirect(pins[0], rendIn, null);
-                                    DsError.ThrowExceptionForHR(hr);
+                                    _logger.Log(LogSeverity.Debug, "Connect dvd subtitle pin to subtitle renderer");
 
+                                    try
+                                    {
+                                        hr = _filterGraph.ConnectDirect(pins[0], rendIn, null);
+                                        DsError.ThrowExceptionForHR(hr);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        _logger.Warn("Error rendering subtites {0} : {1}", hr, ex.Message);
+                                    }
                                     needsRender = false;
                                     break;
                                 }

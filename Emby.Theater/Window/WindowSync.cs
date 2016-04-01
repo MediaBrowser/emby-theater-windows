@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using MediaBrowser.Model.Logging;
 using Microsoft.Win32;
@@ -77,8 +78,10 @@ namespace Emby.Theater.Window
             SyncAllStates();
         }
 
-        private void RestoreMaximizeIfNeeded()
+        private async void RestoreMaximizeIfNeeded()
         {
+            await Task.Delay(5000);
+
             FormWindowState state = FormWindowState.Normal;
             _form.InvokeIfRequired(() =>
             {

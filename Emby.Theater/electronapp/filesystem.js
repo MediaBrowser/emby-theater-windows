@@ -12,7 +12,13 @@
                     reject();
                 }
             };
-            xhr.setRequestHeader('Content-Length', path.length);
+
+            try {
+                //xhr.setRequestHeader('Content-Length', path.length);
+            } catch (err) {
+                //console.log(err);
+            }
+
             xhr.setRequestHeader('Content-Type', 'text/plain');
             xhr.onerror = reject;
             xhr.send(path);

@@ -190,6 +190,22 @@ namespace Emby.Theater
                 {
                     _windowSync.OnElectronWindowSizeChanged();
                 }
+                else if (string.Equals(localPath, "runatstartup-true", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!_config.Configuration.RunAtStartup)
+                    {
+                        _config.Configuration.RunAtStartup = true;
+                        _config.SaveConfiguration();
+                    }
+                }
+                else if (string.Equals(localPath, "runatstartup-false", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (_config.Configuration.RunAtStartup)
+                    {
+                        _config.Configuration.RunAtStartup = false;
+                        _config.SaveConfiguration();
+                    }
+                }
                 else if (localPath.StartsWith("directshowplayer", StringComparison.OrdinalIgnoreCase))
                 {
                     await _dsPlayerBridge.ProcessRequest(context, localPath).ConfigureAwait(false);

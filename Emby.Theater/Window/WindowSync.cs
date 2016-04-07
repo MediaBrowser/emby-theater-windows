@@ -80,7 +80,7 @@ namespace Emby.Theater.Window
 
         private async void RestoreMaximizeIfNeeded()
         {
-            await Task.Delay(5000);
+            await Task.Delay(10000);
 
             FormWindowState state = FormWindowState.Normal;
             _form.InvokeIfRequired(() =>

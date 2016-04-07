@@ -213,61 +213,56 @@
 
         self.play = function (options) {
 
-            return new Promise(function (resolve, reject) {
+            ignoreEnded = false;
+            currentSrc = options.url;
 
-                ignoreEnded = false;
-                currentSrc = options.url;
+            //var isVideo = options.mimeType.toLowerCase('video').indexOf() == 0;
+            var isVideo = options.item.MediaType == 'Video';
 
-                //var isVideo = options.mimeType.toLowerCase('video').indexOf() == 0;
-                var isVideo = options.item.MediaType == 'Video';
+            var enableFullscreen = options.fullscreen !== false;
 
-                var enableFullscreen = options.fullscreen !== false;
+            var mediaSource = JSON.parse(JSON.stringify(options.mediaSource));
 
-                var mediaSource = JSON.parse(JSON.stringify(options.mediaSource));
+            // Update the text url in the media source with the full url from the options object
+            mediaSource.MediaStreams.forEach(function (ms) {
+                var textTrack = options.tracks.filter(function (t) {
+                    return t.index == ms.Index;
 
-                // Update the text url in the media source with the full url from the options object
-                mediaSource.MediaStreams.forEach(function (ms) {
-                    var textTrack = options.textTracks.filter(function (t) {
-                        return t.index == ms.Index;
+                })[0];
 
-                    })[0];
+                if (textTrack) {
+                    ms.DeliveryUrl = textTrack.url;
+                }
+            });
 
-                    if (textTrack) {
-                        ms.DeliveryUrl = textTrack.url;
+            var requestBody = {
+                url: options.url,
+                isVideo: isVideo,
+                item: options.item,
+                mediaSource: mediaSource,
+                startPositionTicks: options.playerStartPositionTicks,
+                fullscreen: enableFullscreen
+            };
+
+            return sendCommand('play', requestBody).then(function () {
+
+                if (isVideo) {
+                    if (enableFullscreen) {
+
+                        Emby.Page.showVideoOsd();
+
+                    } else {
+                        Emby.Page.setTransparency(Emby.TransparencyLevel.Backdrop);
                     }
-                });
+                }
 
-                var requestBody = {
-                    url: options.url,
-                    isVideo: isVideo,
-                    item: options.item,
-                    mediaSource: mediaSource,
-                    startPositionTicks: options.playerStartPositionTicks,
-                    fullscreen: enableFullscreen
-                };
+                startTimeUpdateInterval();
 
-                sendCommand('play', requestBody).then(function () {
+                return Promise.resolve();
 
-                    Events.trigger(self, 'started');
-
-                    if (isVideo) {
-                        if (enableFullscreen) {
-
-                            Emby.Page.showVideoOsd();
-
-                        } else {
-                            Emby.Page.setTransparency(Emby.TransparencyLevel.Backdrop);
-                        }
-                    }
-
-                    startTimeUpdateInterval();
-
-                    resolve();
-
-                }, function () {
-                    stopTimeUpdateInterval();
-                    reject();
-                });
+            }, function (err) {
+                stopTimeUpdateInterval();
+                throw err;
             });
         };
 
@@ -284,7 +279,7 @@
 
         self.duration = function (val) {
 
-            return playerState.durationTicks;
+            return playerState.durationTicks / 10000;
         };
 
         self.stop = function (destroyPlayer, reportEnded) {

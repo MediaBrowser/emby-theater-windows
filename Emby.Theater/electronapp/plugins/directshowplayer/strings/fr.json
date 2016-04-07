@@ -1,9 +1,9 @@
 {
     "ExpandMono": "\u00c9tendre le son mono",
     "ExpandSixToSeven": "\u00c9tendre le son 6.1 vers 7.1",
-    "FilterSet": "Filter set",
+    "FilterSet": "Jeu de filtres",
     "Edge": "Edge",
-    "AudioEndPoint": "WASAPI audio device",
+    "AudioEndPoint": "WASAPI p\u00e9riph\u00e9rique audio",
     "Stable": "Stable",
     "HardwareAccelerationMode": "Mode d'acc\u00e9l\u00e9ration mat\u00e9rielle",
     "Auto": "Automatique",

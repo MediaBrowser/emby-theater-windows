@@ -264,6 +264,10 @@
       <Link>electronapp\apphost.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\Emby.Theater.Electron\filesystem.js">
+      <Link>electronapp\filesystem.js</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\Emby.Theater.Electron\index.html">
       <Link>electronapp\index.html</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -306,9 +310,6 @@
     </Content>
     <Content Include="..\Tools\Installation\MediaBrowser.Updater.exe">
       <Link>MediaBrowser.Updater.exe</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="electronapp\filesystem.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="electronapp\plugins\directshowplayer\madvr.html">

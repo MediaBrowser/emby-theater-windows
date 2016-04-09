@@ -216,7 +216,6 @@ namespace Emby.Theater
                     {
                         var path = reader.ReadToEnd();
                         var exists = File.Exists(path);
-                        exists = false;
                         var bytes = Encoding.UTF8.GetBytes(exists.ToString().ToLower());
                         context.Response.ContentLength64 = bytes.Length;
                         context.Response.OutputStream.Write(bytes, 0, bytes.Length);

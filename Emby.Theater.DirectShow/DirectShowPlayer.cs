@@ -3182,7 +3182,7 @@ namespace Emby.Theater.DirectShow
 
         private async void LoadExternalSubtitleFromStream(SelectableMediaStream stream)
         {
-            _logger.Debug("LoadExternalSubtitleFromStream: {0}", stream);
+            _logger.Debug("LoadExternalSubtitleFromStream: {0}", stream.Path);
             var path = stream.Path;
 
             if (path.StartsWith("http", StringComparison.OrdinalIgnoreCase))
@@ -3197,9 +3197,16 @@ namespace Emby.Theater.DirectShow
                         Progress = new Progress<double>()
                     });
 
+                    _logger.Debug("Downloaded subtitle to {0}", tempFile);
+
+                    path = path.Split('?')[0];
+                    path = path.Substring(path.LastIndexOf('/') + 1);
+
                     var pathWithExtension = Path.ChangeExtension(tempFile, Path.GetExtension(path));
+                    _logger.Debug("Saving subtitle to {0}", pathWithExtension);
                     File.Move(tempFile, pathWithExtension);
                     path = pathWithExtension;
+                    _logger.Debug("Saved subtitle to {0}", pathWithExtension);
                 }
                 catch
                 {

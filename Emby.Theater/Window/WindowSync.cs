@@ -29,21 +29,36 @@ namespace Emby.Theater.Window
                 //_syncTimer = new System.Threading.Timer(OnTimerCallback, null, 10, 10);
             }));
 
-            OnTimerCallback(null);
+            var placement = NativeWindowMethods.GetPlacement(_windowHandle);
+            switch (placement.showCmd)
+            {
+                case ShowWindowCommands.Maximized:
+                    SyncWindowState("Maximized");
+                    break;
+                case ShowWindowCommands.Minimized:
+                    SyncWindowState("Minimized");
+                    break;
+                case ShowWindowCommands.Normal:
+                    SyncWindowState("Normal");
+                    break;
+            }
+
+            SyncWindowSize(true);
+
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
             SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
         }
 
         void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
         {
-            RestoreMaximizeIfNeeded();
+            ResyncWindow();
         }
 
         void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
         {
             if (e.Mode == PowerModes.Resume)
             {
-                RestoreMaximizeIfNeeded();
+                ResyncWindow();
             }
         }
 
@@ -73,45 +88,14 @@ namespace Emby.Theater.Window
             SyncWindowState(newWindowState);
         }
 
-        private void OnTimerCallback(object state)
-        {
-            SyncAllStates();
-        }
-
-        private async void RestoreMaximizeIfNeeded()
+        public async void ResyncWindow()
         {
             await Task.Delay(10000);
 
-            FormWindowState state = FormWindowState.Normal;
             _form.InvokeIfRequired(() =>
             {
-                state = _form.WindowState;
+                SyncWindowState(_form.WindowState.ToString());
             });
-
-            if (state == FormWindowState.Maximized)
-            {
-                SyncWindowState("Maximized");
-            }
-        }
-
-        public void SyncAllStates()
-        {
-            var placement = NativeWindowMethods.GetPlacement(_windowHandle);
-
-            switch (placement.showCmd)
-            {
-                case ShowWindowCommands.Maximized:
-                    SyncWindowState("Maximized");
-                    break;
-                case ShowWindowCommands.Minimized:
-                    SyncWindowState("Minimized");
-                    break;
-                case ShowWindowCommands.Normal:
-                    SyncWindowState("Normal");
-                    break;
-            }
-
-            SyncWindowSize(true);
         }
 
         private void SyncWindowSize(bool log)

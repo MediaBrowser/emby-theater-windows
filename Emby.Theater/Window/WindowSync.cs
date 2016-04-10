@@ -94,7 +94,7 @@ namespace Emby.Theater.Window
             }
         }
 
-        private void SyncAllStates()
+        public void SyncAllStates()
         {
             var placement = NativeWindowMethods.GetPlacement(_windowHandle);
 
@@ -176,31 +176,31 @@ namespace Emby.Theater.Window
                 _form.InvokeIfRequired(() =>
                 {
                     _form.WindowState = newState;
-                });
 
-                if (fullscreen)
-                {
-                    NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
-                    //var placement = new WINDOWPLACEMENT();
-                    //placement.showCmd = ShowWindowCommands.Maximized;
-                    //placement.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
-                    //NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
-                }
-                else if (newState == FormWindowState.Maximized)
-                {
-                    //NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
-                    var placement = new WINDOWPLACEMENT();
-                    placement.showCmd = ShowWindowCommands.Maximized;
-                    placement.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
-                    NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
-                }
-                else if (newState == FormWindowState.Normal)
-                {
-                    var placement = new WINDOWPLACEMENT();
-                    placement.showCmd = ShowWindowCommands.Normal;
-                    NativeWindowMethods.SetWindowPos(_windowHandle, -2, _form.Left, _form.Top, _form.Width, _form.Height, 0);
-                    //NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
-                }
+                    if (fullscreen)
+                    {
+                        NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
+                        //var placement = new WINDOWPLACEMENT();
+                        //placement.showCmd = ShowWindowCommands.Maximized;
+                        //placement.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
+                        //NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
+                    }
+                    else if (newState == FormWindowState.Maximized)
+                    {
+                        //NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
+                        var placement = new WINDOWPLACEMENT();
+                        placement.showCmd = ShowWindowCommands.Maximized;
+                        placement.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
+                        NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
+                    }
+                    else if (newState == FormWindowState.Normal)
+                    {
+                        var placement = new WINDOWPLACEMENT();
+                        placement.showCmd = ShowWindowCommands.Normal;
+                        NativeWindowMethods.SetWindowPos(_windowHandle, -2, _form.Left, _form.Top, _form.Width, _form.Height, 0);
+                        //NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
+                    }
+                });
 
                 if (newState != FormWindowState.Minimized)
                 {

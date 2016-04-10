@@ -72,11 +72,11 @@ namespace Emby.Theater
 
             int serverPort = StartServer();
 
+            _windowSync = new WindowSync(this, _electronProcess.MainWindowHandle, _logger);
+
             _dsPlayerBridge = new DirectShowPlayerBridge(_appHost.LogManager, this, _config.CommonApplicationPaths,
                 _appHost.GetIsoManager(), _appHost.GetZipClient(), _appHost.GetHttpClient(), _config,
-                _appHost.JsonSerializer);
-
-            _windowSync = new WindowSync(this, _electronProcess.MainWindowHandle, _logger);
+                _appHost.JsonSerializer, _windowSync);
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -166,7 +166,11 @@ namespace Emby.Theater
             var response = context.Response;
 
             var localPath = request.Url.LocalPath.Trim('/');
-            _logger.Info("Http {0} {1}", request.HttpMethod, localPath);
+
+            if (!string.Equals(localPath, "directshowplayer/refresh", StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.Info("Http {0} {1}", request.HttpMethod, localPath);
+            }
 
             try
             {

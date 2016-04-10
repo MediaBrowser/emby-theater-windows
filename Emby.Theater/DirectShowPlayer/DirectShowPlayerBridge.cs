@@ -21,6 +21,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.MediaInfo;
 using SocketHttpListener.Net;
 using System.Text.RegularExpressions;
+using Emby.Theater.Window;
 
 namespace Emby.Theater.DirectShowPlayer
 {
@@ -29,6 +30,7 @@ namespace Emby.Theater.DirectShowPlayer
         private readonly InternalDirectShowPlayer _player;
         private readonly IJsonSerializer _json;
         private readonly ILogger _logger;
+        private readonly WindowSync _windowSync;
         private bool _isVideo;
 
         public DirectShowPlayerBridge(ILogManager logManager
@@ -37,11 +39,22 @@ namespace Emby.Theater.DirectShowPlayer
             , IIsoManager isoManager
             , IZipClient zipClient
             , IHttpClient httpClient,
-            IConfigurationManager configurationManager, IJsonSerializer json)
+            IConfigurationManager configurationManager, IJsonSerializer json, WindowSync windowSync)
         {
             _json = json;
+            _windowSync = windowSync;
             _logger = logManager.GetLogger("DirectShowPlayerBridge");
             _player = new InternalDirectShowPlayer(logManager, hostForm, appPaths, isoManager, zipClient, httpClient, configurationManager);
+
+            _player.PlayStateChanged += _player_PlayStateChanged;
+        }
+
+        private void _player_PlayStateChanged(object sender, EventArgs e)
+        {
+            if (_player.PlayState == PlayState.Idle)
+            {
+                _windowSync.SyncAllStates();
+            }
         }
 
         public void Play(string path, long startPositionTicks, bool isVideo, MediaSourceInfo mediaSource, BaseItemDto item, bool isFullScreen)
@@ -352,7 +365,7 @@ namespace Emby.Theater.DirectShowPlayer
             else if (Regex.IsMatch(command, "configresetdefaults-\\w+$", RegexOptions.IgnoreCase))
             {
                 Match configType = Regex.Match(command, "configresetdefaults-(\\w+)$", RegexOptions.IgnoreCase);
-                
+
                 if (configType.Success)
                 {
                     _player.ResetConfiguration(configType.Groups[1].Value);

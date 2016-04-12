@@ -74,13 +74,13 @@ namespace Emby.Theater
 
             try
             {
-                var task = InstallFrameworkV46IfNeeded(_logger);
-                Task.WaitAll(task);
-
                 _appHost = new ApplicationHost(appPaths, logManager);
 
                 var initTask = _appHost.Init(new Progress<Double>());
                 Task.WaitAll(initTask);
+
+                var task = InstallFrameworkV46IfNeeded(_logger);
+                Task.WaitAll(task);
 
                 var electronTask = StartElectron(appPaths);
                 Task.WaitAll(electronTask);

@@ -71,8 +71,8 @@ namespace Emby.Theater.DirectShow.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 3/5/2016 10:50:44 AM
-        ///2.0.0
+        ///   Looks up a localized string similar to 3/25/2016 6:39:37 PM
+        ///2.1.9
         ///.
         /// </summary>
         internal static string babgvant_txt {
@@ -92,8 +92,8 @@ namespace Emby.Theater.DirectShow.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2/1/2016 11:44:38 AM
-        ///2.0.0
+        ///   Looks up a localized string similar to 3/25/2016 6:39:37 PM
+        ///2.1.9
         ///.
         /// </summary>
         internal static string LAV_txt {
@@ -113,8 +113,8 @@ namespace Emby.Theater.DirectShow.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2/24/2016 9:12:51 AM
-        ///2.0.0
+        ///   Looks up a localized string similar to 3/25/2016 6:39:37 PM
+        ///2.1.9
         ///.
         /// </summary>
         internal static string madVR_txt {
@@ -134,8 +134,8 @@ namespace Emby.Theater.DirectShow.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 1/31/2016 9:04:46 PM
-        ///2.0.0
+        ///   Looks up a localized string similar to 3/25/2016 6:39:37 PM
+        ///2.1.9
         ///.
         /// </summary>
         internal static string mpaudio_txt {
@@ -155,8 +155,8 @@ namespace Emby.Theater.DirectShow.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 1/31/2016 9:04:46 PM
-        ///2.0.0
+        ///   Looks up a localized string similar to 3/25/2016 6:39:37 PM
+        ///2.1.9
         ///.
         /// </summary>
         internal static string xy_VSFilter_txt {
@@ -176,8 +176,8 @@ namespace Emby.Theater.DirectShow.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2/24/2016 9:12:51 AM
-        ///2.0.0
+        ///   Looks up a localized string similar to 3/25/2016 6:39:37 PM
+        ///2.1.9
         ///.
         /// </summary>
         internal static string XySubFilter_txt {

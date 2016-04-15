@@ -85,7 +85,7 @@ namespace Emby.Theater.DirectShow
         }
 
         private void WriteResource(string comBin, string dlPath)
-        {            
+        {
             using (StreamWriter sw = new StreamWriter(dlPath, false))
             {
                 sw.Write(comBin);
@@ -329,10 +329,17 @@ namespace Emby.Theater.DirectShow
             IntPtr lib = IntPtr.Zero;
             string fullDllPath = Path.Combine(SearchPath, dllPath);
 
+            _logger.Debug("CreateObjectFromPath: {0} - {1} - {2} - {3}", fullDllPath, clsid, setSearchPath, comFallback);
+
             if (File.Exists(fullDllPath) && (_preferURObjects || !comFallback))
             {
+                FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(fullDllPath);
+                _logger.Debug("Load: {0} Version: {1}", fileVersionInfo.FileDescription, fileVersionInfo.FileVersion);
                 if (_libsLoaded.ContainsKey(dllPath))
+                {
+                    _logger.Debug("Load: {0} from cache", dllPath);
                     lib = _libsLoaded[dllPath];
+                }
                 else
                 {
                     //some dlls have external dependancies, setting the search path to its location should assist with this
@@ -366,16 +373,19 @@ namespace Emby.Theater.DirectShow
                             if (pCF != null)
                             {
                                 hr = pCF.CreateInstance(null, IID_IUnknown, out createdObject);
+                                _logger.Debug("CreateInstance {0}: {1}", fileVersionInfo.FileDescription, hr);
                             }
                         }
                     }
                     else
                     {
+                        _logger.Debug("Couldn't load {0}", fileVersionInfo.FileDescription);
                         throw new Win32Exception();
                     }
                 }
                 else if (comFallback)
                 {
+                    _logger.Debug("No lib, load from Global COM {0}", clsid);
                     Type type = Type.GetTypeFromCLSID(clsid);
                     return Activator.CreateInstance(type);
                 }
@@ -386,10 +396,12 @@ namespace Emby.Theater.DirectShow
             }
             else if (comFallback)
             {
+                _logger.Debug("Load from Global COM {0}", clsid);
                 Type type = Type.GetTypeFromCLSID(clsid);
                 return Activator.CreateInstance(type);
             }
 
+            _logger.Debug("Got Object {0} from {1}", createdObject, clsid);
             return createdObject;
         }
 
@@ -418,7 +430,7 @@ namespace Emby.Theater.DirectShow
                 //TODO: might be better to call _mreFilterBlock.WaitOne with a small value (e.g. 1000) and surface an actionalbe result if it fails so the UI can signal a potentially long running process
                 if (_mreFilterBlock.WaitOne(GetConfiguration().COMConfig.LoadWait))
                 {
-                    _logger.Debug("URCOMLoader is not blocking");
+                    _logger.Debug("URCOMLoader is not blocking.");
                     return this.CreateObjectFromPath(kf.ObjectPath, kf.Clsid, true, comFallback);
                 }
                 else

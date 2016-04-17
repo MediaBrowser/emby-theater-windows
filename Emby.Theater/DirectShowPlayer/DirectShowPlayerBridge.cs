@@ -49,14 +49,10 @@ namespace Emby.Theater.DirectShowPlayer
             _player.PlayStateChanged += _player_PlayStateChanged;
         }
 
-        private async void _player_PlayStateChanged(object sender, EventArgs e)
+        private void _player_PlayStateChanged(object sender, EventArgs e)
         {
             if (_player.PlayState == PlayState.Idle)
             {
-                _windowSync.ResyncWindow();
-
-                // Do it again after refresh rate has switched back
-                await Task.Delay(5000);
                 _windowSync.ResyncWindow();
             }
         }

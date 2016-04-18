@@ -714,7 +714,7 @@ namespace Emby.Theater.DirectShow
                             hr = lss.SetLoadMatroskaExternalSegments(_config.SplitterConfig.LoadMatroskaExternalSegments);
                             DsError.ThrowExceptionForHR(hr);
 
-                            int NetworkStreamAnalysisDuration = lss.GetMaxQueueMemSize();
+                            int NetworkStreamAnalysisDuration = lss.GetNetworkStreamAnalysisDuration();
 
                             _logger.Debug("SetNetworkStreamAnalysisDuration: from {0} to {1}", NetworkStreamAnalysisDuration, _config.SplitterConfig.NetworkStreamAnalysisDuration);
                             hr = lss.SetNetworkStreamAnalysisDuration(_config.SplitterConfig.NetworkStreamAnalysisDuration);

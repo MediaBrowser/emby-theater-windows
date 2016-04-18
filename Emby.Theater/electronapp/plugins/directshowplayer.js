@@ -186,6 +186,10 @@
                 Method: 'Embed'
             });
             profile.SubtitleProfiles.push({
+                Format: 'dvbsub',
+                Method: 'Embed'
+            });
+            profile.SubtitleProfiles.push({
                 Format: 'vtt',
                 Method: 'Embed'
             });

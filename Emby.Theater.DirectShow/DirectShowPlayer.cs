@@ -878,20 +878,20 @@ namespace Emby.Theater.DirectShow
                                                         .MadVrSmoothMotionMode);
                                             }
                                             MFNominalRange levels = (MFNominalRange)_config.VideoConfig.NominalRange;
-                                            //string madVrLevelInitial = msett.GetString("levels");
-                                            //switch (levels)
-                                            //{
-                                            //    case MFNominalRange.MFNominalRange_0_255:
-                                            //        msett.SetString("levels", "PC Levels");
-                                            //        break;
-                                            //    case MFNominalRange.MFNominalRange_16_235:
-                                            //        msett.SetString("levels", "TV Levels");
-                                            //        break;
-                                            //}
-                                            //string madVrLevel = msett.GetString("levels");
+                                            string madVrLevelInitial = msett.GetString("levels");
+                                            switch (levels)
+                                            {
+                                                case MFNominalRange.MFNominalRange_0_255:
+                                                    msett.SetString("levels", "PC Levels");
+                                                    break;
+                                                case MFNominalRange.MFNominalRange_16_235:
+                                                    msett.SetString("levels", "TV Levels");
+                                                    break;
+                                            }
+                                            string madVrLevel = msett.GetString("levels");
 
-                                            //if (string.Compare(madVrLevel, madVrLevelInitial, false) != 0)
-                                            //    _logger.Debug("Changed madVR levels from {0} to {1}", madVrLevelInitial, madVrLevel);
+                                            if (string.Compare(madVrLevel, madVrLevelInitial, false) != 0)
+                                                _logger.Debug("Changed madVR levels from {0} to {1}", madVrLevelInitial, madVrLevel);
                                         }
                                         catch (Exception ex)
                                         {

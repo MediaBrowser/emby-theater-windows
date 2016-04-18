@@ -50,6 +50,9 @@
                 var selectFilterSet = view.querySelector('.selectFilterSet');
                 config.FilterSet = selectFilterSet.getValue();
 
+                var selectNominalRange = view.querySelector('.selectNominalRange');
+                config.VideoConfig.NominalRange = selectNominalRange.getValue();
+
                 saveConfiguration(config);
             });
 
@@ -71,6 +74,9 @@
 
                 var selectFilterSet = view.querySelector('.selectFilterSet');
                 selectFilterSet.setValue(config.FilterSet);
+
+                var selectNominalRange = view.querySelector('.selectNominalRange');
+                selectNominalRange.setValue(config.VideoConfig.NominalRange);
             });
         }
 

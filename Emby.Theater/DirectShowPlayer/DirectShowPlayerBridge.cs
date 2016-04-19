@@ -445,27 +445,7 @@ namespace Emby.Theater.DirectShowPlayer
                 }
             }
 
-            ResetStandby();
             SendResponse(context, positionTicks);
-        }
-
-        private DateTime _lastStandbyCall;
-        private void ResetStandby()
-        {
-            if ((DateTime.Now - _lastStandbyCall).TotalMinutes < 3)
-            {
-                return;
-            }
-
-            try
-            {
-                Standby.PreventSystemStandby();
-                _lastStandbyCall = DateTime.Now;
-            }
-            catch
-            {
-
-            }
         }
 
         private void SendResponse(HttpListenerContext context, long? positionTicks)

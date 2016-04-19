@@ -110,6 +110,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ResolutionChanger.cs" />
+    <Compile Include="Standby.cs" />
     <Compile Include="Streaming\MediaBrowserTheaterProfile.cs" />
     <Compile Include="StringProcessing.cs" />
     <Compile Include="Subtitles.cs" />

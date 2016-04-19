@@ -88,7 +88,7 @@ namespace Emby.Theater.DirectShow
 
         public void UpdateConfiguration(DirectShowPlayerConfiguration config)
         {
-            var curConfig = GetConfiguration();            
+            var curConfig = GetConfiguration();
             _config.SaveConfiguration("directshowplayer", config);
             if (string.Compare(curConfig.FilterSet, config.FilterSet, true) != 0)
             {
@@ -264,6 +264,15 @@ namespace Emby.Theater.DirectShow
                     _mediaPlayer = new DirectShowPlayer(this, _hostForm, _logger, GetConfiguration(), _httpClient);
                     _mediaPlayer.Play(playableItem, forcedVideoRenderer);
 
+                    try
+                    {
+                        Standby.PreventSleepAndMonitorOff();
+                    }
+                    catch
+                    {
+
+                    }
+
                 }, true);
             }
             catch
@@ -430,6 +439,18 @@ namespace Emby.Theater.DirectShow
         internal async void OnPlaybackStopped(PlayableItem media, long? positionTicks, TrackCompletionReason reason, int? newTrackIndex)
         {
             DisposeMount(media);
+
+            try
+            {
+                InvokeOnPlayerThread(() =>
+                {
+                    Standby.AllowSleep();
+                });
+            }
+            catch
+            {
+                
+            }
 
             // TODO
             // Notify

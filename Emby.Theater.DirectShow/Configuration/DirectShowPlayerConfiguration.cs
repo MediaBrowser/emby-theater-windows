@@ -408,7 +408,8 @@ namespace Emby.Theater.DirectShow.Configuration
             ShowTrayIcon = false;
             PreferHighQualityAudioStreams = true;
             LoadMatroskaExternalSegments = true;
-            NetworkStreamAnalysisDuration = 256;
+            NetworkStreamAnalysisDuration = 1000;
+            MaxQueueMemSize = 256;
             MaxQueueSize = 350;
         }
 

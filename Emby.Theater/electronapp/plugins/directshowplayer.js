@@ -133,7 +133,7 @@
             profile.TranscodingProfiles.push({
                 Container: 'mkv',
                 Type: 'Video',
-                AudioCodec: 'aac,mp3,ac3',
+                AudioCodec: 'mp3,ac3,aac',
                 VideoCodec: 'h264',
                 Context: 'Streaming'
             });

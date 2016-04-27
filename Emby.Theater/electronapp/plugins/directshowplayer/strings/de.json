@@ -5,6 +5,7 @@
     "Edge": "Edge",
     "AudioEndPoint": "WASAPI audio device",
     "Stable": "Stable",
+    "OutputRange": "Output range",
     "HardwareAccelerationMode": "Hardwarebeschleunigungsmodus:",
     "Auto": "Auto",
     "Disabled": "Deaktiviert",

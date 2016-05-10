@@ -489,11 +489,6 @@ namespace Emby.Theater.DirectShow
             InvokeOnPlayerThread(() => _mediaPlayer.SetAudioStreamIndex(audioStreamIndex));
         }
 
-        public void NextAudioStream()
-        {
-            InvokeOnPlayerThread(() => _mediaPlayer.NextAudioStream());
-        }
-
         public void ChangeSubtitleStream(SelectableMediaStream track)
         {
             InvokeOnPlayerThread(() => _mediaPlayer.SetSubtitleStream(track));

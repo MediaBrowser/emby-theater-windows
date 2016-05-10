@@ -641,42 +641,42 @@ namespace Emby.Theater.DirectShow
                         ILAVSplitterSettings lss = _sourceFilter as ILAVSplitterSettings;
                         if (lss != null)
                         {
-                            _logger.Debug("Configure LAV Splitter");
+                            _logger.Info("Configure LAV Splitter");
 
                             hr = lss.SetRuntimeConfig(true);
                             DsError.ThrowExceptionForHR(hr);
 
                             if (!string.IsNullOrWhiteSpace(_config.SplitterConfig.PreferredAudioLanguages))
                             {
-                                _logger.Debug("Set preferred audio lang: {0}", _config.SplitterConfig.PreferredAudioLanguages);
+                                _logger.Info("Set preferred audio lang: {0}", _config.SplitterConfig.PreferredAudioLanguages);
                                 hr = lss.SetPreferredLanguages(_config.SplitterConfig.PreferredAudioLanguages);
                                 DsError.ThrowExceptionForHR(hr);
                             }
 
                             if (!string.IsNullOrWhiteSpace(_config.SplitterConfig.PreferredSubtitleLanguages))
                             {
-                                _logger.Debug("Set preferred subs lang: {0}", _config.SplitterConfig.PreferredSubtitleLanguages);
+                                _logger.Info("Set preferred subs lang: {0}", _config.SplitterConfig.PreferredSubtitleLanguages);
                                 hr = lss.SetPreferredSubtitleLanguages(_config.SplitterConfig.PreferredSubtitleLanguages);
                                 DsError.ThrowExceptionForHR(hr);
                             }
 
                             if (!string.IsNullOrWhiteSpace(_config.SplitterConfig.AdvancedSubtitleConfig))
                             {
-                                _logger.Debug("Set preferred subs lang: {0}", _config.SplitterConfig.AdvancedSubtitleConfig);
+                                _logger.Info("Set preferred subs lang: {0}", _config.SplitterConfig.AdvancedSubtitleConfig);
                                 hr = lss.SetAdvancedSubtitleConfig(_config.SplitterConfig.AdvancedSubtitleConfig);
                                 DsError.ThrowExceptionForHR(hr);
                             }
 
-                            _logger.Debug("SetSubtitleMode: {0}", _config.SplitterConfig.PreferredSubtitleLanguages);
+                            _logger.Info("SetSubtitleMode: {0}", _config.SplitterConfig.PreferredSubtitleLanguages);
                             hr = lss.SetSubtitleMode((LAVSubtitleMode)Enum.Parse(typeof(LAVSubtitleMode), _config.SplitterConfig.SubtitleMode));
                             DsError.ThrowExceptionForHR(hr);
 
-                            _logger.Debug("SetPGSForcedStream: {0}", _config.SplitterConfig.PGSForcedStream);
+                            _logger.Info("SetPGSForcedStream: {0}", _config.SplitterConfig.PGSForcedStream);
                             //hr = lss.SetPGSForcedStream(_config.SplitterConfig.PGSForcedStream);
                             hr = lss.SetPGSForcedStream(false);
                             DsError.ThrowExceptionForHR(hr);
 
-                            _logger.Debug("SetPGSOnlyForced: {0}", _config.SplitterConfig.PGSOnlyForced);
+                            _logger.Info("SetPGSOnlyForced: {0}", _config.SplitterConfig.PGSOnlyForced);
                             hr = lss.SetPGSOnlyForced(_config.SplitterConfig.PGSOnlyForced);
                             DsError.ThrowExceptionForHR(hr);
 
@@ -705,7 +705,7 @@ namespace Emby.Theater.DirectShow
                             _logger.Debug("SetTrayIcon: {0}", _config.SplitterConfig.ShowTrayIcon);
                             hr = lss.SetTrayIcon(_config.SplitterConfig.ShowTrayIcon);
                             DsError.ThrowExceptionForHR(hr);
-                            
+
                             _logger.Debug("SetPreferHighQualityAudioStreams: from {0}", _config.SplitterConfig.PreferHighQualityAudioStreams);
                             hr = lss.SetPreferHighQualityAudioStreams(_config.SplitterConfig.PreferHighQualityAudioStreams);
                             DsError.ThrowExceptionForHR(hr);
@@ -931,7 +931,7 @@ namespace Emby.Theater.DirectShow
                                         hr = vsett.SetRuntimeConfig(true);
                                         DsError.ThrowExceptionForHR(hr);
 
-                                        _logger.Debug("GPU Model: {0}", VideoConfiguration.GpuModel);
+                                        _logger.Info("GPU Model: {0}", VideoConfiguration.GpuModel);
 
                                         LAVHWAccel configuredMode =
                                             VideoConfigurationUtils.GetHwaMode(
@@ -939,7 +939,7 @@ namespace Emby.Theater.DirectShow
                                                 _customEvrPresenterLoaded);
 
                                         LAVHWAccel testme = vsett.GetHWAccel();
-                                        _logger.Debug("Current HWA Mode: {0} Desired Mode: {1}", testme, configuredMode);
+                                        _logger.Info("Current HWA Mode: {0} Desired Mode: {1}", testme, configuredMode);
                                         if (testme != configuredMode)
                                         {
                                             hr = vsett.SetHWAccel(configuredMode);
@@ -2071,7 +2071,7 @@ namespace Emby.Theater.DirectShow
             {
                 //configure madVR to figure out AR & window size
                 IMadVRCommand _madCmd = _madvr as IMadVRCommand;
-                if(_madCmd != null)
+                if (_madCmd != null)
                 {
                     int hr = 0;
                     string zoomMode = "autoDetect";
@@ -3035,7 +3035,7 @@ namespace Emby.Theater.DirectShow
 
         public void LoadExternalSubtitle(string subtitleFile)
         {
-            _logger.Debug("LoadExternalSubtitle {0}", subtitleFile);
+            _logger.Info("LoadExternalSubtitle {0}", subtitleFile);
             IBaseFilter subtitleFilter = _xySubFilter != null ? _xySubFilter as IBaseFilter : _xyVsFilter as IBaseFilter;
 
             if (subtitleFilter != null)
@@ -3052,7 +3052,7 @@ namespace Emby.Theater.DirectShow
 
                     hr = extSubSource.get_LanguageCount(out iCount);
                     DsError.ThrowExceptionForHR(hr);
-                    _logger.Debug("LoadExternalSubtitle Count: {0}", iCount);
+                    _logger.Info("LoadExternalSubtitle Count: {0}", iCount);
 
                     for (int i = 0; i < iCount; i++)
                     {
@@ -3061,11 +3061,11 @@ namespace Emby.Theater.DirectShow
                         hr = extSubSource.get_LanguageName(i, out ppName);
                         DsError.ThrowExceptionForHR(hr);
 
-                        _logger.Debug("LoadExternalSubtitle SubName {0}", ppName);
+                        _logger.Info("LoadExternalSubtitle SubName {0}", ppName);
 
                         if (subName == ppName)
                         {
-                            _logger.Debug("LoadExternalSubtitle Select Stream {0}", i);
+                            _logger.Info("LoadExternalSubtitle Select Stream {0}", i);
 
                             hr = extSubSource.put_SelectedLanguage(i);
                             DsError.ThrowExceptionForHR(hr);
@@ -3074,7 +3074,7 @@ namespace Emby.Theater.DirectShow
                             hr = extSubSource.get_SelectedLanguage(ref iSelected);
                             DsError.ThrowExceptionForHR(hr);
 
-                            _logger.Debug("LoadExternalSubtitle Select Result: {0}", iSelected);
+                            _logger.Info("LoadExternalSubtitle Select Result: {0}", iSelected);
 
                             break;
                         }
@@ -3085,13 +3085,13 @@ namespace Emby.Theater.DirectShow
 
         private void ClearExternalSubtitles()
         {
-            _logger.Debug("ClearExternalSubtitles");
+            _logger.Info("ClearExternalSubtitles");
             LoadExternalSubtitle("");
         }
 
         public void ToggleHideSubtitles(bool hide)
         {
-            _logger.Debug("ToggleHideSubtitles {0}", hide);
+            _logger.Info("ToggleHideSubtitles {0}", hide);
             IBaseFilter subtitleFilter = _xySubFilter != null ? _xySubFilter as IBaseFilter : _xyVsFilter as IBaseFilter;
 
             if (subtitleFilter != null)
@@ -3126,6 +3126,11 @@ namespace Emby.Theater.DirectShow
         public void SetSubtitleStreamIndex(int subtitleStreamIndex)
         {
             // subtitleStreamIndex is based on server metadata
+            _logger.Info("SetSubtitleStreamIndex: {0}", subtitleStreamIndex);
+            var allSubtitleStreams = _item.MediaStreams.Where(i => i.Type == MediaStreamType.Subtitle).ToList();
+            var trackOffset = allSubtitleStreams.FindIndex(i => i.Index == subtitleStreamIndex);
+
+            _logger.Info("SetSubtitleStreamIndex {0}. Track offset: {1}", subtitleStreamIndex, trackOffset);
 
             if (subtitleStreamIndex == -1)
             {
@@ -3139,8 +3144,8 @@ namespace Emby.Theater.DirectShow
             }
             else
             {
-                var stream = _streams
-                    .FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.Index == subtitleStreamIndex);
+                var rawSubtitleStreams = _streams.Where(i => i.Type == MediaStreamType.Subtitle && !i.Name.ToLower().Contains("no subtitles")).ToList();
+                var stream = trackOffset == -1 ? null : rawSubtitleStreams.ElementAtOrDefault(trackOffset);
 
                 if (stream != null)
                 {
@@ -3151,7 +3156,7 @@ namespace Emby.Theater.DirectShow
 
         public void NextSubtitleStream()
         {
-            _logger.Debug("NextSubtitleStream");
+            _logger.Info("NextSubtitleStream");
 
             var subtitleStreams = _streams.Where(i => i.Type == MediaStreamType.Subtitle).ToList();
             var nextSubtitleStream = subtitleStreams.SkipWhile(i => !i.IsActive).Skip(1).FirstOrDefault() ??
@@ -3166,7 +3171,7 @@ namespace Emby.Theater.DirectShow
 
         public async void SetSubtitleStream(SelectableMediaStream stream)
         {
-            _logger.Debug("SetSubtitleStream {0} {1} {2} {3}", stream.Index, stream.Type, stream.Name, stream.Identifier);
+            _logger.Info("SetSubtitleStream {0} {1} {2} {3}", stream.Index, stream.Type, stream.Name, stream.Identifier);
             if (stream.Identifier == "external" || stream.Name.ToLower().Contains("no subtitles"))
             {
                 SetExternalSubtitleStream(stream);
@@ -3182,7 +3187,7 @@ namespace Emby.Theater.DirectShow
 
         private async void LoadExternalSubtitleFromStream(SelectableMediaStream stream)
         {
-            _logger.Debug("LoadExternalSubtitleFromStream: {0}", stream.Path);
+            _logger.Info("LoadExternalSubtitleFromStream: {0}", stream.Path);
             var path = stream.Path;
 
             if (path.StartsWith("http", StringComparison.OrdinalIgnoreCase))
@@ -3197,16 +3202,16 @@ namespace Emby.Theater.DirectShow
                         Progress = new Progress<double>()
                     });
 
-                    _logger.Debug("Downloaded subtitle to {0}", tempFile);
+                    _logger.Info("Downloaded subtitle to {0}", tempFile);
 
                     path = path.Split('?')[0];
                     path = path.Substring(path.LastIndexOf('/') + 1);
 
                     var pathWithExtension = Path.ChangeExtension(tempFile, Path.GetExtension(path));
-                    _logger.Debug("Saving subtitle to {0}", pathWithExtension);
+                    _logger.Info("Saving subtitle to {0}", pathWithExtension);
                     File.Move(tempFile, pathWithExtension);
                     path = pathWithExtension;
-                    _logger.Debug("Saved subtitle to {0}", pathWithExtension);
+                    _logger.Info("Saved subtitle to {0}", pathWithExtension);
                 }
                 catch
                 {
@@ -3214,13 +3219,13 @@ namespace Emby.Theater.DirectShow
                 }
             }
 
-            _logger.Debug("loadExternalSubtitleFromStream {0} {1} {2}", stream.Index, stream.Type, path);
+            _logger.Info("loadExternalSubtitleFromStream {0} {1} {2}", stream.Index, stream.Type, path);
             LoadExternalSubtitle(path);
         }
 
         private async void SetExternalSubtitleStream(SelectableMediaStream stream)
         {
-            _logger.Debug("SetExternalSubtitleStream: {0}", stream);
+            _logger.Info("SetExternalSubtitleStream: {0}", stream);
 
             if (stream.Name.ToLower().Contains("no subtitles"))
             {
@@ -3250,7 +3255,7 @@ namespace Emby.Theater.DirectShow
 
         private void UpdateStreamActiveSetting(string streamName, MediaStreamType streamType)
         {
-            _logger.Debug(String.Format("UpdateStreamActiveSetting name = '{0}'", streamName));
+            _logger.Info(String.Format("UpdateStreamActiveSetting name = '{0}'", streamName));
 
             foreach (var i in GetSelectableStreams().Where(s => s.Type == streamType))
             {
@@ -3274,7 +3279,7 @@ namespace Emby.Theater.DirectShow
 
         private void SetInternalStream(SelectableMediaStream stream)
         {
-            _logger.Debug("SetInternalStream {0} {1} {2}", stream.Index, stream.Type, stream.Name);
+            _logger.Info("SetInternalStream {0} {1} {2}", stream.Index, stream.Type, stream.Name);
 
             // if we are already playing an external subtitle, we have to clear it first or
             // we wont be able to swicth subtitles
@@ -3338,8 +3343,14 @@ namespace Emby.Theater.DirectShow
         {
             // audioStreamIndex is based on server metadata
 
-            _logger.Debug("SetAudioStreamIndex {0}", audioStreamIndex);
-            var stream = _streams.FirstOrDefault(i => i.Type == MediaStreamType.Audio && i.Index == audioStreamIndex);
+            _logger.Info("SetAudioStreamIndex {0}", audioStreamIndex);
+            var allAudioStreams = _item.MediaStreams.Where(i => i.Type == MediaStreamType.Audio).ToList();
+            var audioOffset = allAudioStreams.FindIndex(i => i.Index == audioStreamIndex);
+
+            _logger.Info("SetAudioStreamIndex {0}. Track offset: {1}", audioStreamIndex, audioOffset);
+
+            var internalAudioStreams = _streams.Where(i => i.Type == MediaStreamType.Audio).ToList();
+            var stream = audioOffset == -1 ? null : internalAudioStreams.ElementAtOrDefault(audioOffset);
 
             if (stream != null)
             {
@@ -3347,22 +3358,8 @@ namespace Emby.Theater.DirectShow
             }
             else
             {
-                _logger.Debug("Invalid audioStreamIndex {0}", audioStreamIndex);
+                _logger.Info("Invalid audioStreamIndex {0}", audioStreamIndex);
                 //throw new ApplicationException(String.Format("Invalid audioStreamIndex {0}", audioStreamIndex));
-            }
-        }
-
-        public void NextAudioStream()
-        {
-            _logger.Debug("NextAudioStream");
-
-            var audioStreams = _streams.Where(i => i.Type == MediaStreamType.Audio).ToList();
-            var nextAudioStream = audioStreams.SkipWhile(i => !i.IsActive).Skip(1).FirstOrDefault() ??
-                                  audioStreams.FirstOrDefault();
-
-            if (nextAudioStream != null)
-            {
-                SetInternalStream(nextAudioStream);
             }
         }
 

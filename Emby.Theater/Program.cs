@@ -117,12 +117,12 @@ namespace Emby.Theater
             {
                 var key = Environment.Is64BitProcess ? "3ee5e5bb-b7cc-4556-8861-a00a82977d6c" : "23daf363-3020-4059-b3ae-dc4ad39fed19";
 
-                using (RegistryKey ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)
+                using (RegistryKey ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default)
                     .OpenSubKey("SOFTWARE\\Classes\\Installer\\Dependencies\\{"+ key + "}"))
                 {
                     if (ndpKey != null && ndpKey.GetValue("Version") != null)
                     {
-                        if (((string)ndpKey.GetValue("Version")).StartsWith("14.0", StringComparison.OrdinalIgnoreCase))
+                        if (((string)ndpKey.GetValue("Version")).StartsWith("14", StringComparison.OrdinalIgnoreCase))
                         {
                             return;
                         }
@@ -132,6 +132,7 @@ namespace Emby.Theater
             catch (Exception ex)
             {
                 logger.ErrorException("Error getting .NET Framework version", ex);
+                return;
             }
 
             MessageBox.Show("The Visual C++ 2015 Redistributable is required. Click OK to open the Microsoft website where you can install it. When asked to select x64 or x64, select both. After you have completed the installation, please run Emby Theater again.");

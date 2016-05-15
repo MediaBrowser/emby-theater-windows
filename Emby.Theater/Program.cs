@@ -74,6 +74,9 @@ namespace Emby.Theater
 
             try
             {
+                var task = InstallVcredistIfNeeded(_appHost, _logger);
+                Task.WaitAll(task);
+
                 _appHost = new ApplicationHost(appPaths, logManager);
 
                 var initTask = _appHost.Init(new Progress<Double>());
@@ -103,6 +106,39 @@ namespace Emby.Theater
             {
                 ReleaseMutex();
             }
+        }
+
+        private static async Task InstallVcredistIfNeeded(ApplicationHost appHost, ILogger logger)
+        {
+            // Reference 
+            // http://stackoverflow.com/questions/12206314/detect-if-visual-c-redistributable-for-visual-studio-2012-is-installed
+
+            try
+            {
+                var key = Environment.Is64BitProcess ? "3ee5e5bb-b7cc-4556-8861-a00a82977d6c" : "23daf363-3020-4059-b3ae-dc4ad39fed19";
+
+                using (RegistryKey ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)
+                    .OpenSubKey("SOFTWARE\\Classes\\Installer\\Dependencies\\{"+ key + "}"))
+                {
+                    if (ndpKey != null && ndpKey.GetValue("Version") != null)
+                    {
+                        if (((string)ndpKey.GetValue("Version")).StartsWith("14.0", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorException("Error getting .NET Framework version", ex);
+            }
+
+            MessageBox.Show("The Visual C++ 2015 Redistributable is required. Click OK to open the Microsoft website where you can install it. When asked to select x64 or x64, select both. After you have completed the installation, please run Emby Theater again.");
+
+            Process.Start("https://www.microsoft.com/en-us/download/details.aspx?id=48145");
+
+            Environment.Exit(0);
         }
 
         private static async Task<Process> StartElectron(IApplicationPaths appPaths)

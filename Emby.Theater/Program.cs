@@ -115,7 +115,7 @@ namespace Emby.Theater
 
             try
             {
-                var key = Environment.Is64BitProcess ? "3ee5e5bb-b7cc-4556-8861-a00a82977d6c" : "23daf363-3020-4059-b3ae-dc4ad39fed19";
+                var key = Environment.Is64BitOperatingSystem ? "3ee5e5bb-b7cc-4556-8861-a00a82977d6c" : "23daf363-3020-4059-b3ae-dc4ad39fed19";
 
                 using (RegistryKey ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default)
                     .OpenSubKey("SOFTWARE\\Classes\\Installer\\Dependencies\\{"+ key + "}"))

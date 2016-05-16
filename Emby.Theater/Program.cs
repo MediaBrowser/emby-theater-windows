@@ -135,7 +135,7 @@ namespace Emby.Theater
                 return;
             }
 
-            MessageBox.Show("The Visual C++ 2015 Redistributable is required. Click OK to open the Microsoft website where you can install it. When asked to select x64 or x64, select both. After you have completed the installation, please run Emby Theater again.");
+            MessageBox.Show("The Visual C++ 2015 Redistributable is required. Click OK to open the Microsoft website where you can install it. When asked to select x64 or x86, select both. After you have completed the installation, please run Emby Theater again.");
 
             Process.Start("https://www.microsoft.com/en-us/download/details.aspx?id=49984");
 

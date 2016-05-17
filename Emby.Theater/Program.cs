@@ -117,12 +117,16 @@ namespace Emby.Theater
 
             try
             {
+                var subkey = Environment.Is64BitOperatingSystem
+                    ? "SOFTWARE\\WOW6432Node\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x64"
+                    : "SOFTWARE\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x86";
+
                 using (RegistryKey ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default)
-                    .OpenSubKey("SOFTWARE\\WOW6432Node\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\" + arch))
+                    .OpenSubKey(subkey))
                 {
                     if (ndpKey != null && ndpKey.GetValue("Version") != null)
                     {
-                        var installedVersion = ((string)ndpKey.GetValue("Version"));
+                        var installedVersion = ((string)ndpKey.GetValue("Version")).TrimStart('v');
                         if (installedVersion.StartsWith("14", StringComparison.OrdinalIgnoreCase))
                         {
                             return;

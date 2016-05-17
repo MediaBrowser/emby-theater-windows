@@ -113,16 +113,17 @@ namespace Emby.Theater
             // Reference 
             // http://stackoverflow.com/questions/12206314/detect-if-visual-c-redistributable-for-visual-studio-2012-is-installed
 
+            var arch = Environment.Is64BitOperatingSystem ? "x64" : "x86";
+
             try
             {
-                var key = Environment.Is64BitOperatingSystem ? "3ee5e5bb-b7cc-4556-8861-a00a82977d6c" : "23daf363-3020-4059-b3ae-dc4ad39fed19";
-
                 using (RegistryKey ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default)
-                    .OpenSubKey("SOFTWARE\\Classes\\Installer\\Dependencies\\{"+ key + "}"))
+                    .OpenSubKey("SOFTWARE\\WOW6432Node\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\" + arch))
                 {
                     if (ndpKey != null && ndpKey.GetValue("Version") != null)
                     {
-                        if (((string)ndpKey.GetValue("Version")).StartsWith("14", StringComparison.OrdinalIgnoreCase))
+                        var installedVersion = ((string)ndpKey.GetValue("Version"));
+                        if (installedVersion.StartsWith("14", StringComparison.OrdinalIgnoreCase))
                         {
                             return;
                         }
@@ -135,7 +136,6 @@ namespace Emby.Theater
                 return;
             }
 
-            var arch = Environment.Is64BitOperatingSystem ? "x64" : "x86";
             var msg = string.Format(
                     "The Visual C++ 2015 {0} Redistributable is required. Click OK to open the Microsoft website where you can install it. When asked to select x64 or x86, select {0}. After you have completed the installation, please run Emby Theater again.",
                     arch);

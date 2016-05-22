@@ -159,6 +159,8 @@ namespace Emby.Theater
             var electronExePath = Path.Combine(appDirectoryPath, architecture, "electron", "electron.exe");
             var electronAppPath = Path.Combine(appDirectoryPath, "electronapp");
 
+            var dataPath = Path.Combine(appPaths.DataPath, "electron");
+
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -166,7 +168,7 @@ namespace Emby.Theater
                     UseShellExecute = false,
 
                     FileName = electronExePath,
-                    Arguments = string.Format("\"{0}\"", electronAppPath)
+                    Arguments = string.Format("\"{0}\" \"{1}\"", electronAppPath, dataPath)
                 },
 
                 EnableRaisingEvents = true,

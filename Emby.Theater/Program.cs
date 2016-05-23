@@ -146,7 +146,7 @@ namespace Emby.Theater
 
             MessageBox.Show(msg);
 
-            Process.Start("https://www.microsoft.com/en-us/download/details.aspx?id=49984");
+            Process.Start("https://www.microsoft.com/en-us/download/details.aspx?id=48145");
 
             Environment.Exit(0);
         }

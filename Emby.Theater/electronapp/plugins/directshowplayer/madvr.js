@@ -27,8 +27,8 @@
             getConfiguration().then(function (config) {
 
                 var selectSmoothMotion = view.querySelector('.selectSmoothMotion');
-                config.VideoConfig.UseMadVrSmoothMotion = selectSmoothMotion.getValue() != '';
-                config.VideoConfig.MadVrSmoothMotionMode = selectSmoothMotion.getValue() || 'avoidJudder';
+                config.VideoConfig.UseMadVrSmoothMotion = selectSmoothMotion.value != '';
+                config.VideoConfig.MadVrSmoothMotionMode = selectSmoothMotion.value || 'avoidJudder';
                 saveConfiguration(config);
             });
 
@@ -39,7 +39,7 @@
             getConfiguration().then(function (config) {
 
                 var selectSmoothMotion = view.querySelector('.selectSmoothMotion');
-                selectSmoothMotion.setValue(config.VideoConfig.UseMadVrSmoothMotion ? config.VideoConfig.MadVrSmoothMotionMode : '');
+                selectSmoothMotion.value = config.VideoConfig.UseMadVrSmoothMotion ? config.VideoConfig.MadVrSmoothMotionMode : '';
             });
         }
 

@@ -1,13 +1,11 @@
 ﻿<div class="externalPageContainer">
     <div style="width: 50%; margin: auto;">
 
-        <emby-dropdown-menu class="selectSmoothMotion" label="${SmoothMotionMode}">
-            <div class="dropdown-content">
-                <div class="dropdownItem" data-value="">${None}</div>
-                <div class="dropdownItem" data-value="almostAlways">${AlmostAlways}</div>
-                <div class="dropdownItem" data-value="always">${Always}</div>
-                <div class="dropdownItem" data-value="avoidJudder">${AvoidJudder}</div>
-            </div>
-        </emby-dropdown-menu>
+        <select is="emby-select" class="selectSmoothMotion" label="${SmoothMotionMode}">
+            <option value="">${None}</option>
+            <option value="almostAlways">${AlmostAlways}</option>
+            <option value="always">${Always}</option>
+            <option value="avoidJudder">${AvoidJudder}</option>
+        </select>
     </div>
 </div>

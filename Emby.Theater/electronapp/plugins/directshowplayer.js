@@ -47,7 +47,7 @@
                     path: 'directshowplayer/madvr.html',
                     transition: 'slide',
                     dependencies: [
-                        'emby-dropdown-menu'
+                    'emby-select'
                     ],
                     controller: pluginManager.mapPath(self, 'directshowplayer/madvr.js'),
                     thumbImage: ''

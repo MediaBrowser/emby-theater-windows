@@ -34,7 +34,7 @@
                     path: 'directshowplayer/video.html',
                     transition: 'slide',
                     dependencies: [
-                        'emby-dropdown-menu'
+                        'emby-select'
                     ],
                     controller: pluginManager.mapPath(self, 'directshowplayer/video.js'),
                     type: 'settings',

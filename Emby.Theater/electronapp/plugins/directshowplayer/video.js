@@ -38,20 +38,20 @@
             getConfiguration().then(function (config) {
 
                 var selectHwaMode = view.querySelector('.selectHwaMode');
-                config.VideoConfig.HwaMode = selectHwaMode.getValue();
+                config.VideoConfig.HwaMode = selectHwaMode.value;
 
                 var selectVideoRenderer = view.querySelector('.selectVideoRenderer');
-                config.VideoConfig.EnableMadvr = selectVideoRenderer.getValue() == 'madVR';
-                config.VideoConfig.EnableCustomPresenter = selectVideoRenderer.getValue() == 'EVRCP';
+                config.VideoConfig.EnableMadvr = selectVideoRenderer.value == 'madVR';
+                config.VideoConfig.EnableCustomPresenter = selectVideoRenderer.value == 'EVRCP';
 
                 var selectRefreshRateMode = view.querySelector('.selectRefreshRateMode');
-                config.VideoConfig.AutoChangeRefreshRate = selectRefreshRateMode.getValue();
+                config.VideoConfig.AutoChangeRefreshRate = selectRefreshRateMode.value;
 
                 var selectFilterSet = view.querySelector('.selectFilterSet');
-                config.FilterSet = selectFilterSet.getValue();
+                config.FilterSet = selectFilterSet.value;
 
                 var selectNominalRange = view.querySelector('.selectNominalRange');
-                config.VideoConfig.NominalRange = selectNominalRange.getValue();
+                config.VideoConfig.NominalRange = selectNominalRange.value;
 
                 saveConfiguration(config);
             });
@@ -63,20 +63,20 @@
             getConfiguration().then(function (config) {
 
                 var selectHwaMode = view.querySelector('.selectHwaMode');
-                selectHwaMode.setValue(config.VideoConfig.HwaMode);
+                selectHwaMode.value = config.VideoConfig.HwaMode;
 
                 var selectVideoRenderer = view.querySelector('.selectVideoRenderer');
                 var videoRenderer = config.VideoConfig.EnableMadvr ? 'madVR' : config.VideoConfig.EnableCustomPresenter ? 'EVRCP' : 'EVR';
-                selectVideoRenderer.setValue(videoRenderer);
+                selectVideoRenderer.value = videoRenderer;
 
                 var selectRefreshRateMode = view.querySelector('.selectRefreshRateMode');
-                selectRefreshRateMode.setValue(config.VideoConfig.AutoChangeRefreshRate);
+                selectRefreshRateMode.value = config.VideoConfig.AutoChangeRefreshRate;
 
                 var selectFilterSet = view.querySelector('.selectFilterSet');
-                selectFilterSet.setValue(config.FilterSet);
+                selectFilterSet.value = config.FilterSet;
 
                 var selectNominalRange = view.querySelector('.selectNominalRange');
-                selectNominalRange.setValue(config.VideoConfig.NominalRange);
+                selectNominalRange.value = config.VideoConfig.NominalRange;
             });
         }
 

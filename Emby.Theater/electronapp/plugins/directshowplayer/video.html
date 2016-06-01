@@ -1,43 +1,33 @@
 ﻿<div class="externalPageContainer">
     <div style="width: 50%; margin: auto;">
 
-        <emby-dropdown-menu class="selectHwaMode" label="${HardwareAccelerationMode}">
-            <div class="dropdown-content">
-                <div class="dropdownItem" data-value="-1">${Auto}</div>
-                <div class="dropdownItem" data-value="0">${None}</div>
-                <div class="dropdownItem" data-value="2">Intel Quick Sync</div>
-                <div class="dropdownItem" data-value="3">DXVA2CopyBack</div>
-            </div>
-        </emby-dropdown-menu>
+        <select is="emby-select" class="selectHwaMode" label="${HardwareAccelerationMode}">
+            <option value="-1">${Auto}</option>
+            <option value="0">${None}</option>
+            <option value="2">Intel Quick Sync</option>
+            <option value="3">DXVA2CopyBack</option>
+        </select>
 
-        <emby-dropdown-menu class="selectVideoRenderer" label="${VideoRenderer}">
-            <div class="dropdown-content">
-                <div class="dropdownItem" data-value="EVR">EVR</div>
-                <div class="dropdownItem" data-value="EVRCP">EVR+</div>
-                <div class="dropdownItem" data-value="madVR">MadVr</div>
-            </div>
-        </emby-dropdown-menu>
+        <select is="emby-select" class="selectVideoRenderer" label="${VideoRenderer}">
+            <option value="EVR">EVR</option>
+            <option value="EVRCP">EVR+</option>
+            <option value="madVR">MadVr</option>
+        </select>
 
-        <emby-dropdown-menu class="selectNominalRange" label="${OutputRange}">
-            <div class="dropdown-content">
-                <div class="dropdownItem" data-value="1">PC (0-255)</div>
-                <div class="dropdownItem" data-value="2">Video (16-235)</div>
-            </div>
-        </emby-dropdown-menu>
+        <select is="emby-select" class="selectNominalRange" label="${OutputRange}">
+            <option value="1">PC (0-255)</option>
+            <option value="2">Video (16-235)</option>
+        </select>
 
-        <emby-dropdown-menu class="selectRefreshRateMode" label="${ChangeRefreshRate}">
-            <div class="dropdown-content">
-                <div class="dropdownItem" data-value="true">${Yes}</div>
-                <div class="dropdownItem" data-value="false">${No}</div>
-            </div>
-        </emby-dropdown-menu>
+        <select is="emby-select" class="selectRefreshRateMode" label="${ChangeRefreshRate}">
+            <option value="true">${Yes}</option>
+            <option value="false">${No}</option>
+        </select>
 
-        <emby-dropdown-menu class="selectFilterSet" label="${FilterSet}">
-            <div class="dropdown-content">
-                <div class="dropdownItem" data-value="">${Stable}</div>
-                <div class="dropdownItem" data-value="edge">${Edge}</div>
-            </div>
-        </emby-dropdown-menu>
+        <select is="emby-select" class="selectFilterSet" label="${FilterSet}">
+            <option value="">${Stable}</option>
+            <option value="edge">${Edge}</option>
+        </select>
 
         <br />
         <paper-button raised class="btnMadvr block">Madvr</paper-button>

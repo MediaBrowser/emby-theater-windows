@@ -20,7 +20,7 @@
                 path: 'directshowplayer/audio.html',
                 transition: 'slide',
                 dependencies: [
-                    'emby-dropdown-menu'
+                    'emby-select'
                 ],
                 controller: pluginManager.mapPath(self, 'directshowplayer/audio.js'),
                 type: 'settings',

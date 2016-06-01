@@ -28,23 +28,23 @@
             getConfiguration().then(function (config) {
 
                 var selectAudioBitstreamingMode = view.querySelector('.selectAudioBitstreamingMode');
-                config.AudioConfig.AudioBitstreaming = selectAudioBitstreamingMode.getValue();
+                config.AudioConfig.AudioBitstreaming = selectAudioBitstreamingMode.value;
 
                 var selectAudioRenderer = view.querySelector('.selectAudioRenderer');
-                config.AudioConfig.Renderer = selectAudioRenderer.getValue();
+                config.AudioConfig.Renderer = selectAudioRenderer.value;
 
                 var selectSpeakerLayout = view.querySelector('.selectSpeakerLayout');
-                config.AudioConfig.SpeakerLayout = selectSpeakerLayout.getValue();
+                config.AudioConfig.SpeakerLayout = selectSpeakerLayout.value;
 
                 var selectDrc = view.querySelector('.selectDrc');
-                config.AudioConfig.EnableDRC = selectDrc.getValue() != '';
-                config.AudioConfig.DRCLevel = selectDrc.getValue() || '100';
+                config.AudioConfig.EnableDRC = selectDrc.value != '';
+                config.AudioConfig.DRCLevel = selectDrc.value || '100';
 
-                config.AudioConfig.ExpandMono = view.querySelector('.selectExpandMono').getValue() == 'true';
-                config.AudioConfig.Expand61 = view.querySelector('.selectExpandSixToSeven').getValue() == 'true';
-                
+                config.AudioConfig.ExpandMono = view.querySelector('.selectExpandMono').value == 'true';
+                config.AudioConfig.Expand61 = view.querySelector('.selectExpandSixToSeven').value == 'true';
+
                 var selectAudioEndPoint = view.querySelector('.selectAudioEndPoint');
-                config.AudioConfig.AudioDevice = selectAudioEndPoint.getValue();
+                config.AudioConfig.AudioDevice = selectAudioEndPoint.value;
 
                 saveConfiguration(config);
             });
@@ -56,28 +56,24 @@
                 getConfiguration().then(function (config) {
 
                     var selectAudioBitstreamingMode = view.querySelector('.selectAudioBitstreamingMode');
-                    selectAudioBitstreamingMode.setValue(config.AudioConfig.AudioBitstreaming);
+                    selectAudioBitstreamingMode.value = config.AudioConfig.AudioBitstreaming;
 
                     var selectAudioRenderer = view.querySelector('.selectAudioRenderer');
-                    selectAudioRenderer.setValue(config.AudioConfig.Renderer);
+                    selectAudioRenderer.value = config.AudioConfig.Renderer;
 
-                    view.querySelector('.selectSpeakerLayout').setValue(config.AudioConfig.SpeakerLayout);
+                    view.querySelector('.selectSpeakerLayout').value = config.AudioConfig.SpeakerLayout;
 
-                    view.querySelector('.selectDrc').setValue(config.AudioConfig.EnableDRC ? config.AudioConfig.DRCLevel : '');
+                    view.querySelector('.selectDrc').value = config.AudioConfig.EnableDRC ? config.AudioConfig.DRCLevel : '';
 
-                    view.querySelector('.selectExpandMono').setValue(config.AudioConfig.ExpandMono);
-                    view.querySelector('.selectExpandSixToSeven').setValue(config.AudioConfig.Expand61);
+                    view.querySelector('.selectExpandMono').value = config.AudioConfig.ExpandMono;
+                    view.querySelector('.selectExpandSixToSeven').value = config.AudioConfig.Expand61;
 
                     var selectAudioEndPoint = view.querySelector('.selectAudioEndPoint');
-                    for (i = 0; i < audioDevices.length; i++) {
-                        var opt = document.createElement('div');
-                        opt.setAttribute("class", "dropdownItem");
-                        opt.setAttribute("data-value", audioDevices[i].ID);
-                        opt.appendChild(document.createTextNode(audioDevices[i].Name));
-                        selectAudioEndPoint.querySelector('.dropdown-content').appendChild(opt);
-                    }
-                    selectAudioEndPoint.setValue(config.AudioConfig.AudioDevice);
-                })
+                    selectAudioEndPoint.innerHTML = audioDevices.map(function (i) {
+                        return '<option value="' + i.ID + '">' + i.Name + '</option>';
+                    }).join('');
+                    selectAudioEndPoint.value = config.AudioConfig.AudioDevice;
+                });
             });
         }
 

@@ -7,6 +7,7 @@
         self.name = 'Windows Player';
         self.type = 'mediaplayer';
         self.id = 'directshowplayer';
+        self.requiresVideoTransparency = true;
 
         var currentSrc;
         var playerState = {};

@@ -1,4 +1,6 @@
-﻿require(['apphost'], function (apphost) {
+﻿require(['apphost', 'shell', 'events'], function (apphost, shell, events) {
+
+    var isExternalWindowOpen = false;
 
     function sendWindowStateCommand(e) {
 
@@ -11,7 +13,7 @@
         }
 
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://localhost:8154/windowstate-' + state, true);
+        xhr.open('POST', 'http://localhost:8154/windowstate-' + state + "?externalwindow=" + isExternalWindowOpen, true);
 
         xhr.send();
     }
@@ -46,7 +48,7 @@
         xhr.send();
     }
 
-    require(['appSettings', 'events'], function (appSettings, events) {
+    require(['appSettings'], function (appSettings) {
 
         events.on(appSettings, 'change', function (e, name) {
             if (name == 'runatstartup') {
@@ -54,4 +56,13 @@
             }
         });
     });
+
+    events.on(shell, 'exec', function (e) {
+        isExternalWindowOpen = true;
+    });
+
+    events.on(shell, 'closed', function (e) {
+        isExternalWindowOpen = false;
+    });
+
 });

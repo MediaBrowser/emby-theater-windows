@@ -53,7 +53,7 @@ namespace Emby.Theater.DirectShowPlayer
         {
             if (_player.PlayState == PlayState.Idle)
             {
-                _windowSync.ResyncWindow();
+                _windowSync.ResyncWindow(false);
             }
         }
 

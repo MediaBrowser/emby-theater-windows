@@ -176,19 +176,23 @@ namespace Emby.Theater
             {
                 if (string.Equals(localPath, "windowstate-maximized", StringComparison.OrdinalIgnoreCase))
                 {
-                    _windowSync.OnElectronWindowStateChanged("maximized");
+                    var isExternalWindowOpen = request.QueryString["externalwindow"] == "true";
+                    _windowSync.OnElectronWindowStateChanged("maximized", isExternalWindowOpen);
                 }
                 else if (string.Equals(localPath, "windowstate-normal", StringComparison.OrdinalIgnoreCase))
                 {
-                    _windowSync.OnElectronWindowStateChanged("normal");
+                    var isExternalWindowOpen = request.QueryString["externalwindow"] == "true";
+                    _windowSync.OnElectronWindowStateChanged("normal", isExternalWindowOpen);
                 }
                 else if (string.Equals(localPath, "windowstate-minimized", StringComparison.OrdinalIgnoreCase))
                 {
-                    _windowSync.OnElectronWindowStateChanged("minimized");
+                    var isExternalWindowOpen = request.QueryString["externalwindow"] == "true";
+                    _windowSync.OnElectronWindowStateChanged("minimized", isExternalWindowOpen);
                 }
                 else if (string.Equals(localPath, "windowstate-fullscreen", StringComparison.OrdinalIgnoreCase))
                 {
-                    _windowSync.OnElectronWindowStateChanged("fullscreen");
+                    var isExternalWindowOpen = request.QueryString["externalwindow"] == "true";
+                    _windowSync.OnElectronWindowStateChanged("fullscreen", isExternalWindowOpen);
                 }
                 else if (string.Equals(localPath, "windowsize", StringComparison.OrdinalIgnoreCase))
                 {

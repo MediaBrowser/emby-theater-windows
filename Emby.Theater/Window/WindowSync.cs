@@ -33,13 +33,13 @@ namespace Emby.Theater.Window
             switch (placement.showCmd)
             {
                 case ShowWindowCommands.Maximized:
-                    SyncWindowState("Maximized");
+                    SyncWindowState("Maximized", false);
                     break;
                 case ShowWindowCommands.Minimized:
-                    SyncWindowState("Minimized");
+                    SyncWindowState("Minimized", false);
                     break;
                 case ShowWindowCommands.Normal:
-                    SyncWindowState("Normal");
+                    SyncWindowState("Normal", false);
                     break;
             }
 
@@ -51,14 +51,14 @@ namespace Emby.Theater.Window
 
         void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
         {
-            ResyncWindow();
+            ResyncWindow(lastIsExternalWindowOpen);
         }
 
         void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
         {
             if (e.Mode == PowerModes.Resume)
             {
-                ResyncWindow();
+                ResyncWindow(false);
             }
         }
 
@@ -75,7 +75,7 @@ namespace Emby.Theater.Window
             SyncWindowSize(false);
         }
 
-        public void OnElectronWindowStateChanged(string newWindowState)
+        public void OnElectronWindowStateChanged(string newWindowState, bool isExternalWindowOpen)
         {
             // Now that the electron window is reporting changes, this timer is no longer needed
             var timer = _syncTimer;
@@ -85,16 +85,16 @@ namespace Emby.Theater.Window
                 _syncTimer = null;
             }
 
-            SyncWindowState(newWindowState);
+            SyncWindowState(newWindowState, isExternalWindowOpen);
         }
 
-        public async void ResyncWindow()
+        public async void ResyncWindow(bool isExternalWindowOpen)
         {
             await Task.Delay(10000);
 
             _form.InvokeIfRequired(() =>
             {
-                SyncWindowState(_form.WindowState.ToString());
+                SyncWindowState(_form.WindowState.ToString(), isExternalWindowOpen);
             });
         }
 
@@ -130,10 +130,13 @@ namespace Emby.Theater.Window
             }
         }
 
-        private void SyncWindowState(string newWindowState)
+        private bool lastIsExternalWindowOpen = false;
+        private void SyncWindowState(string newWindowState, bool isExternalWindowOpen)
         {
             _logger.Info("Setting window state to {0}", newWindowState);
+            lastIsExternalWindowOpen = isExternalWindowOpen;
 
+            _logger.Info("SyncWindowState isExternalWindowOpen: " + isExternalWindowOpen);
             try
             {
                 FormWindowState newState;
@@ -163,7 +166,10 @@ namespace Emby.Theater.Window
 
                     if (fullscreen)
                     {
-                        NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
+                        if (!isExternalWindowOpen)
+                        {
+                            NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
+                        }
                         //var placement = new WINDOWPLACEMENT();
                         //placement.showCmd = ShowWindowCommands.Maximized;
                         //placement.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
@@ -186,7 +192,7 @@ namespace Emby.Theater.Window
                     }
                 });
 
-                if (newState != FormWindowState.Minimized)
+                if (newState != FormWindowState.Minimized && !isExternalWindowOpen)
                 {
                     NativeWindowMethods.SetForegroundWindow(_windowHandle);
                 }

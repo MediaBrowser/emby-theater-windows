@@ -14,7 +14,6 @@
 
             if (!isRestored) {
                 renderSettings();
-                view.querySelector('.btnReset').addEventListener('click', onResetClick);
             }
         });
 
@@ -80,10 +79,6 @@
         function getAudioDevices() {
 
             return sendCommand('getaudiodevices');
-        }
-
-        function onResetClick() {
-            return sendCommand('configresetdefaults-audio');
         }
 
         function getConfiguration() {

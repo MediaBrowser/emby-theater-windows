@@ -1,6 +1,4 @@
-﻿require(['apphost', 'shell', 'events'], function (apphost, shell, events) {
-
-    var isExternalWindowOpen = false;
+﻿require(['apphost', 'events'], function (apphost, events) {
 
     function sendWindowStateCommand(e) {
 
@@ -13,7 +11,7 @@
         }
 
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://localhost:8154/windowstate-' + state + "?externalwindow=" + isExternalWindowOpen, true);
+        xhr.open('POST', 'http://localhost:8154/windowstate-' + state, true);
 
         xhr.send();
     }
@@ -55,14 +53,6 @@
                 sendRunAtStartupConfigValue(appSettings);
             }
         });
-    });
-
-    events.on(shell, 'exec', function (e) {
-        isExternalWindowOpen = true;
-    });
-
-    events.on(shell, 'closed', function (e) {
-        isExternalWindowOpen = false;
     });
 
 });

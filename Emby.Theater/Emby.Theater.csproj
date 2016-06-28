@@ -311,6 +311,26 @@
       <Link>electronapp\shell.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\ThirdParty\cec\cec-client.exe">
+      <Link>cec\cec-client.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\ThirdParty\cec\cec-client.x64.exe">
+      <Link>cec\cec-client.x64.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\ThirdParty\cec\cec.dll">
+      <Link>cec\cec.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\ThirdParty\cec\cec.x64.dll">
+      <Link>cec\cec.x64.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\ThirdParty\cec\p8-usbcec-driver-installer.exe">
+      <Link>cec\p8-usbcec-driver-installer.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\Tools\Installation\MediaBrowser.InstallUtil.dll">
       <Link>MediaBrowser.InstallUtil.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

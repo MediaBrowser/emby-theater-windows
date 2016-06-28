@@ -82,6 +82,8 @@ namespace Emby.Theater
                 var initTask = _appHost.Init(new Progress<Double>());
                 Task.WaitAll(initTask);
 
+                InstallCecDriver(appPaths);
+
                 var electronTask = StartElectron(appPaths);
                 Task.WaitAll(electronTask);
 
@@ -151,6 +153,59 @@ namespace Emby.Theater
             Environment.Exit(0);
         }
 
+        private static void InstallCecDriver(IApplicationPaths appPaths)
+        {
+            var path = Path.Combine(appPaths.ProgramDataPath, "cec-driver");
+            Directory.CreateDirectory(path);
+
+            if (File.Exists(Path.Combine(path, "p8usb-cec.inf")))
+            {
+                _logger.Info("HDMI CEC driver already installed.");
+                return;
+            }
+
+            var cancelPath = Path.Combine(path, "cancel");
+            if (File.Exists(cancelPath))
+            {
+                _logger.Info("HDMI CEC driver installation was previously cancelled.");
+                return;
+            }
+
+            var result = MessageBox.Show("Click OK to install the PulseEight HDMI CEC driver, which allows you to control Emby Theater with your HDTV remote control (compatible hardware required).", "HDMI CEC Driver", MessageBoxButtons.OKCancel);
+
+            if (result == DialogResult.Cancel)
+            {
+                File.Create(cancelPath);
+                return;
+            }
+
+            try
+            {
+                var installerPath = Path.Combine(Path.GetDirectoryName(appPaths.ApplicationPath), "cec", "p8-usbcec-driver-installer.exe");
+
+                using (var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        Arguments = " /S /D=" + path,
+                        FileName = installerPath,
+                        CreateNoWindow = true,
+                        WindowStyle = ProcessWindowStyle.Hidden,
+                        Verb = "runas",
+                        ErrorDialog = false
+                    }
+                })
+                {
+                    process.Start();
+                    process.WaitForExit();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error installing cec driver", ex);
+            }
+        }
+
         private static async Task<Process> StartElectron(IApplicationPaths appPaths)
         {
             var appDirectoryPath = Path.GetDirectoryName(appPaths.ApplicationPath);
@@ -161,6 +216,16 @@ namespace Emby.Theater
 
             var dataPath = Path.Combine(appPaths.DataPath, "electron");
 
+            var cecPath = Path.Combine(Path.GetDirectoryName(appPaths.ApplicationPath), "cec");
+            if (Environment.Is64BitOperatingSystem)
+            {
+                cecPath = Path.Combine(cecPath, "cec-client.x64.exe");
+            }
+            else
+            {
+                cecPath = Path.Combine(cecPath, "cec-client.exe");
+            }
+
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -168,7 +233,7 @@ namespace Emby.Theater
                     UseShellExecute = false,
 
                     FileName = electronExePath,
-                    Arguments = string.Format("\"{0}\" \"{1}\"", electronAppPath, dataPath)
+                    Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\"", electronAppPath, dataPath, cecPath)
                 },
 
                 EnableRaisingEvents = true,

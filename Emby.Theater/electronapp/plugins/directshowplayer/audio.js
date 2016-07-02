@@ -1,4 +1,4 @@
-﻿define(['loading'], function (loading) {
+﻿define(['loading', 'scrollHelper'], function (loading, scrollHelper) {
 
     return function (view, params) {
 
@@ -13,6 +13,7 @@
             loading.hide();
 
             if (!isRestored) {
+                scrollHelper.centerFocus.on(view.querySelector('.smoothScrollY'), false);
                 renderSettings();
             }
         });

@@ -1,4 +1,4 @@
-﻿define(['loading', 'pluginManager'], function (loading, pluginManager) {
+﻿define(['loading', 'pluginManager', 'scrollHelper'], function (loading, pluginManager, scrollHelper) {
 
     return function (view, params) {
 
@@ -13,6 +13,8 @@
             loading.hide();
 
             if (!isRestored) {
+                scrollHelper.centerFocus.on(view.querySelector('.smoothScrollY'), false);
+
                 renderSettings();
 
                 view.querySelector('.btnMadvr').addEventListener('click', onMadvrClick);

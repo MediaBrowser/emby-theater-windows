@@ -1410,7 +1410,7 @@ namespace Emby.Theater.DirectShow
                             decIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavaudio, PinDirection.Input, 0);
                             if (decIn != null)
                             {
-                                _logger.Log(LogSeverity.Debug, "Got Audio decoder out pin");
+                                _logger.Log(LogSeverity.Debug, "Got Audio decoder input pin");
                                 hr = _filterGraph.ConnectDirect(pins[0], decIn, null);
                                 if (hr < 0) //LAV cannot handle this audio type
                                 {
@@ -1436,6 +1436,35 @@ namespace Emby.Theater.DirectShow
                                             arSett.SetInt(MPARSetting.WASAPI_MODE, (int)AUDCLNT_SHAREMODE.SHARED);
                                             _logger.Warn("WASAPI AR failed to connected in exclusive mode, check device properties");
                                             hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
+                                        }
+                                    }
+                                    else if (hr == -2147220900) //audio format not supported
+                                    {
+                                        _logger.Warn("Couldn't connect to Audio Renderer, disable bit streaming and try again");
+                                        ILAVAudioSettings asett = _lavaudio as ILAVAudioSettings;
+                                        if (asett != null)
+                                        {
+                                            _logger.Log(LogSeverity.Debug, "Disconnect Audio decoder from splitter");
+                                            hr = pins[0].Disconnect();
+                                            DsError.ThrowExceptionForHR(hr);
+                                            hr = decIn.Disconnect();
+                                            DsError.ThrowExceptionForHR(hr);
+
+                                            for (int i = 0; i < (int)LAVBitstreamCodec.NB; i++)
+                                            {
+                                                LAVBitstreamCodec codec = (LAVBitstreamCodec)i;
+                                                asett.SetBitstreamConfig(codec, false);
+                                                _logger.Log(LogSeverity.Warn, "Disable {0} bitstreaming.", codec);
+                                                bool isEnabled = asett.GetBitstreamConfig(codec);
+                                                _logger.Log(LogSeverity.Warn, "{0} bitstreaming: {1}", codec, isEnabled);
+                                            }
+
+                                            _logger.Log(LogSeverity.Debug, "Reconnect Audio decoder to splitter");
+                                            hr = _filterGraph.ConnectDirect(pins[0], decIn, null);
+                                            DsError.ThrowExceptionForHR(hr);
+
+                                            hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
+                                            _logger.Log(LogSeverity.Warn, "Renderer reconnect result:{0}", hr);
                                         }
                                     }
                                     DsError.ThrowExceptionForHR(hr);

@@ -36,7 +36,8 @@
                     transition: 'slide',
                     dependencies: [
                         'emby-select',
-                        'emby-button'
+                        'emby-button',
+                        'emby-checkbox'
                     ],
                     controller: pluginManager.mapPath(self, 'directshowplayer/video.js'),
                     type: 'settings',

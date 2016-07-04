@@ -72,6 +72,20 @@ namespace Emby.Theater
 
             _logger = logManager.GetLogger("App");
 
+            bool supportsTransparency;
+
+            try
+            {
+                supportsTransparency = NativeWindowMethods.DwmIsCompositionEnabled();
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error in DwmIsCompositionEnabled", ex);
+                supportsTransparency = true;
+            }
+
+            _logger.Info("OS Supports window transparency?: {0}", supportsTransparency);
+
             try
             {
                 var task = InstallVcredistIfNeeded(_appHost, _logger);
@@ -82,9 +96,9 @@ namespace Emby.Theater
                 var initTask = _appHost.Init(new Progress<Double>());
                 Task.WaitAll(initTask);
 
-                InstallCecDriver(appPaths);
+                //InstallCecDriver(appPaths);
 
-                var electronTask = StartElectron(appPaths);
+                var electronTask = StartElectron(appPaths, supportsTransparency);
                 Task.WaitAll(electronTask);
 
                 var electronProcess = electronTask.Result;
@@ -206,7 +220,7 @@ namespace Emby.Theater
             }
         }
 
-        private static async Task<Process> StartElectron(IApplicationPaths appPaths)
+        private static async Task<Process> StartElectron(IApplicationPaths appPaths, bool supportsTransparency)
         {
             var appDirectoryPath = Path.GetDirectoryName(appPaths.ApplicationPath);
 
@@ -233,7 +247,7 @@ namespace Emby.Theater
                     UseShellExecute = false,
 
                     FileName = electronExePath,
-                    Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\"", electronAppPath, dataPath, cecPath)
+                    Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", electronAppPath, dataPath, supportsTransparency.ToString().ToLower(), cecPath)
                 },
 
                 EnableRaisingEvents = true,

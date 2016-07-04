@@ -1,4 +1,4 @@
-﻿define(['loading', 'pluginManager', 'scrollHelper', 'layoutManager'], function (loading, pluginManager, scrollHelper, layoutManager) {
+﻿define(['loading', 'pluginManager', 'scrollHelper'], function (loading, pluginManager, scrollHelper) {
 
     return function (view, params) {
 

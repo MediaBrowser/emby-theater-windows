@@ -8,6 +8,26 @@
             <option value="3">DXVA2CopyBack</option>
         </select>
 
+        <div class="checkboxList mediaTypeField" data-mediatype="selectHwaFor">
+            <h3>${HwaEnabledFor}:</h3>
+            <label>
+                <input type="checkbox" is="emby-checkbox" class="resType" data-type="-1" />
+                <span>${LAVDefault}</span>
+            </label>
+            <label>
+                <input type="checkbox" is="emby-checkbox" class="resType" data-type="1" />
+                <span>SD</span>
+            </label>
+            <label>
+                <input type="checkbox" is="emby-checkbox" class="resType" data-type="2" />
+                <span>HD</span>
+            </label>
+            <label>
+                <input type="checkbox" is="emby-checkbox" class="resType" data-type="4" />
+                <span>UHD</span>
+            </label>
+        </div>
+
         <select is="emby-select" class="selectVideoRenderer" label="${VideoRenderer}">
             <option value="EVR">EVR</option>
             <option value="EVRCP">EVR+</option>

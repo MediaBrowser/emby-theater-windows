@@ -23,5 +23,7 @@
     "Stereo": "Stereo",
     "Quadraphonic": "Quadraphonic",
     "Surround": "Surround",
-    "DynamicRangeCompression": "Dynamic range compression"
+    "DynamicRangeCompression": "Dynamic range compression",    
+    "HwaEnabledFor": "HWA Enabled Resolutions",
+    "LAVDefault": "Use LAV Video Default"
 }

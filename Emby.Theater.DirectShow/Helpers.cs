@@ -46,9 +46,9 @@ namespace Emby.Theater.DirectShow
                 return LAVHWAccel.DXVA2Native;
             else
             {
-                if (VideoConfiguration.GpuModel.IndexOf("Intel") > -1)
-                    return LAVHWAccel.QuickSync;
-                else
+                //if (VideoConfiguration.GpuModel.IndexOf("Intel") > -1)
+                //    return LAVHWAccel.QuickSync;
+                //else
                     return LAVHWAccel.DXVA2CopyBack;
             }
         }

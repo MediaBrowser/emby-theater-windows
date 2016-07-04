@@ -1,4 +1,4 @@
-﻿define(['loading', 'pluginManager', 'scrollHelper'], function (loading, pluginManager, scrollHelper) {
+﻿define(['loading', 'pluginManager', 'scrollHelper', 'layoutManager'], function (loading, pluginManager, scrollHelper, layoutManager) {
 
     return function (view, params) {
 
@@ -50,6 +50,28 @@
                 var selectNominalRange = view.querySelector('.selectNominalRange');
                 config.VideoConfig.NominalRange = selectNominalRange.value;
 
+                
+                var enableRes = 0;
+                var chkResTypes = view.querySelectorAll('.resType');
+                for (i = 0, length = chkResTypes.length; i < length; i++) {
+                        var chkResType = chkResTypes[i];
+                        var resValue = chkResType.getAttribute('data-type');
+                    
+                        if (chkResType.checked) {
+                                if (resValue == -1) {
+                                        enableRes = resValue;
+                                        break;
+                                    } else {
+                                    enableRes += parseInt(resValue);
+                                }
+                        }
+                }
+
+                if (enableRes == 0)
+                    enableRes = -1; //reset to defaults
+            
+                config.VideoConfig.HwaResolution = enableRes;
+
                 saveConfiguration(config);
             });
 
@@ -74,6 +96,22 @@
 
                 var selectNominalRange = view.querySelector('.selectNominalRange');
                 selectNominalRange.value = config.VideoConfig.NominalRange;
+
+                var chkResTypes = view.querySelectorAll('.resType');
+                for (var i = 0, length = chkResTypes.length; i < length; i++) {
+                        var chkResType = chkResTypes[i];
+                        var resValue = chkResType.getAttribute('data-type');
+                    
+                        if (config.VideoConfig.HwaResolution == -1) {
+                                if (resValue == -1) {
+                                        chkResType.checked = true;
+                                        break;
+                                    }
+                            } else {
+                            if(resValue != -1)
+                                chkResType.checked = (config.VideoConfig.HwaResolution & resValue) == resValue;
+                        }
+                }
             });
         }
 

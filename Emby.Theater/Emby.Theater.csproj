@@ -275,6 +275,10 @@
       <Link>electronapp\cec\cec.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\Emby.Theater.Electron\cec\command-map.js">
+      <Link>electronapp\cec\command-map.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\Emby.Theater.Electron\index.html">
       <Link>electronapp\index.html</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

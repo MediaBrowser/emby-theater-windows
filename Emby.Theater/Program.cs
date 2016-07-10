@@ -96,7 +96,7 @@ namespace Emby.Theater
                 var initTask = _appHost.Init(new Progress<Double>());
                 Task.WaitAll(initTask);
 
-                //InstallCecDriver(appPaths);
+                InstallCecDriver(appPaths);
 
                 var electronTask = StartElectron(appPaths, supportsTransparency);
                 Task.WaitAll(electronTask);

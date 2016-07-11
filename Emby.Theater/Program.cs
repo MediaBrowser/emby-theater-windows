@@ -88,7 +88,11 @@ namespace Emby.Theater
 
             try
             {
-                var task = InstallVcredistIfNeeded(_appHost, _logger);
+                // Needed by CEC
+                var task = InstallVcredist2013IfNeeded(_appHost, _logger);
+                Task.WaitAll(task);
+
+                task = InstallVcredist2015IfNeeded(_appHost, _logger);
                 Task.WaitAll(task);
 
                 _appHost = new ApplicationHost(appPaths, logManager);
@@ -124,12 +128,94 @@ namespace Emby.Theater
             }
         }
 
-        private static async Task InstallVcredistIfNeeded(ApplicationHost appHost, ILogger logger)
+        private static async Task InstallVcredist2013IfNeeded(ApplicationHost appHost, ILogger logger)
         {
             // Reference 
             // http://stackoverflow.com/questions/12206314/detect-if-visual-c-redistributable-for-visual-studio-2012-is-installed
 
-            var arch = Environment.Is64BitOperatingSystem ? "x64" : "x86";
+            try
+            {
+                var subkey = Environment.Is64BitOperatingSystem
+                    ? "SOFTWARE\\WOW6432Node\\Microsoft\\VisualStudio\\12.0\\VC\\Runtimes\\x64"
+                    : "SOFTWARE\\Microsoft\\VisualStudio\\12.0\\VC\\Runtimes\\x86";
+
+                using (RegistryKey ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default)
+                    .OpenSubKey(subkey))
+                {
+                    if (ndpKey != null && ndpKey.GetValue("Version") != null)
+                    {
+                        var installedVersion = ((string)ndpKey.GetValue("Version")).TrimStart('v');
+                        if (installedVersion.StartsWith("12", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorException("Error getting .NET Framework version", ex);
+                return;
+            }
+
+            try
+            {
+                await InstallVcredist2013().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorException("Error installing Visual Studio C++ runtime", ex);
+            }
+        }
+
+        private async static Task InstallVcredist2013()
+        {
+            var httpClient = _appHost.HttpClient;
+
+            var tmp = await httpClient.GetTempFile(new HttpRequestOptions
+            {
+                Url = GetVcredist2013Url(),
+                Progress = new Progress<double>()
+
+            }).ConfigureAwait(false);
+
+            var exePath = Path.ChangeExtension(tmp, ".exe");
+            File.Copy(tmp, exePath);
+
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = exePath,
+
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                Verb = "runas",
+                ErrorDialog = false
+            };
+
+            _logger.Info("Running {0}", startInfo.FileName);
+
+            using (var process = Process.Start(startInfo))
+            {
+                process.WaitForExit();
+            }
+        }
+
+        private static string GetVcredist2013Url()
+        {
+            if (Environment.Is64BitProcess)
+            {
+                return "https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2013/vcredist_x64.exe";
+            }
+
+            // TODO: ARM url - https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2013/vcredist_arm.exe
+
+            return "https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2013/vcredist_x86.exe";
+        }
+
+        private static async Task InstallVcredist2015IfNeeded(ApplicationHost appHost, ILogger logger)
+        {
+            // Reference 
+            // http://stackoverflow.com/questions/12206314/detect-if-visual-c-redistributable-for-visual-studio-2012-is-installed
 
             try
             {
@@ -155,6 +241,8 @@ namespace Emby.Theater
                 logger.ErrorException("Error getting .NET Framework version", ex);
                 return;
             }
+
+            var arch = Environment.Is64BitOperatingSystem ? "x64" : "x86";
 
             var msg = string.Format(
                     "The Visual C++ 2015 {0} Redistributable is required. Click OK to open the Microsoft website where you can install it. When asked to select x64 or x86, select {0}. After you have completed the installation, please run Emby Theater again.",

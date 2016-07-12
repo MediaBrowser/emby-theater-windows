@@ -88,11 +88,7 @@ namespace Emby.Theater
 
             try
             {
-                // Needed by CEC
-                var task = InstallVcredist2013IfNeeded(_appHost, _logger);
-                Task.WaitAll(task);
-
-                task = InstallVcredist2015IfNeeded(_appHost, _logger);
+                var task = InstallVcredist2015IfNeeded(_appHost, _logger);
                 Task.WaitAll(task);
 
                 _appHost = new ApplicationHost(appPaths, logManager);
@@ -100,7 +96,8 @@ namespace Emby.Theater
                 var initTask = _appHost.Init(new Progress<Double>());
                 Task.WaitAll(initTask);
 
-                InstallCecDriver(appPaths);
+                task = InstallCecDriver(appPaths);
+                Task.WaitAll(task);
 
                 var electronTask = StartElectron(appPaths, supportsTransparency);
                 Task.WaitAll(electronTask);
@@ -255,21 +252,25 @@ namespace Emby.Theater
             Environment.Exit(0);
         }
 
-        private static void InstallCecDriver(IApplicationPaths appPaths)
+        private static async Task InstallCecDriver(IApplicationPaths appPaths)
         {
             var path = Path.Combine(appPaths.ProgramDataPath, "cec-driver");
             Directory.CreateDirectory(path);
-
-            if (File.Exists(Path.Combine(path, "p8usb-cec.inf")))
-            {
-                _logger.Info("HDMI CEC driver already installed.");
-                return;
-            }
 
             var cancelPath = Path.Combine(path, "cancel");
             if (File.Exists(cancelPath))
             {
                 _logger.Info("HDMI CEC driver installation was previously cancelled.");
+                return;
+            }
+
+            if (File.Exists(Path.Combine(path, "p8usb-cec.inf")))
+            {
+                _logger.Info("HDMI CEC driver already installed.");
+
+                // Needed by CEC
+                await InstallVcredist2013IfNeeded(_appHost, _logger).ConfigureAwait(false);
+
                 return;
             }
 
@@ -280,6 +281,9 @@ namespace Emby.Theater
                 File.Create(cancelPath);
                 return;
             }
+
+            // Needed by CEC
+            await InstallVcredist2013IfNeeded(_appHost, _logger).ConfigureAwait(false);
 
             try
             {

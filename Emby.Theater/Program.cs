@@ -199,7 +199,7 @@ namespace Emby.Theater
 
         private static string GetVcredist2013Url()
         {
-            if (Environment.Is64BitProcess)
+            if (Environment.Is64BitOperatingSystem)
             {
                 return "https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2013/vcredist_x64.exe";
             }

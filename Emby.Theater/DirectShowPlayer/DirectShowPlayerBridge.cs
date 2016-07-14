@@ -81,8 +81,6 @@ namespace Emby.Theater.DirectShowPlayer
                 }
             }
 
-            var forcedVideoRenderer = isFullScreen ? null : "evr";
-
             if (_player.PlayState != PlayState.Idle)
             {
                 _player.Stop();
@@ -90,7 +88,7 @@ namespace Emby.Theater.DirectShowPlayer
 
             _logger.Info("Playing media source {0}", _json.SerializeToString(mediaSource));
 
-            _player.Play(path, startPositionTicks, isVideo, item, mediaSource, forcedVideoRenderer);
+            _player.Play(path, startPositionTicks, isVideo, item, mediaSource, isFullScreen);
         }
 
         private static string GetFolderRipPath(VideoType videoType, string root)

@@ -116,18 +116,14 @@ namespace Emby.Theater.DirectShow.Configuration
 
         public bool ShowTrayIcon { get; set; }
 
-        public bool EnableCustomPresenter { get; set; }
         public int NominalRange { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether [enable madvr].
-        /// </summary>
-        /// <value><c>true</c> if [enable madvr]; otherwise, <c>false</c>.</value>
-        public bool EnableMadvr { get; set; }
         public bool AutoChangeRefreshRate { get; set; }
         public int MinRefreshRateMin { get; set; }
         public int ScalingMode { get; set; }
         public bool TryEnableFSE { get; set; }
+
+        public string VideoRenderer { get; set; }
 
         public VideoConfiguration()
         {
@@ -140,7 +136,6 @@ namespace Emby.Theater.DirectShow.Configuration
             HwaResolution = -1;
             HwaMode = -1;
 
-            EnableCustomPresenter = true;
             NominalRange = 1; //MFNominalRange_16_235
 
             AutoChangeRefreshRate = false;

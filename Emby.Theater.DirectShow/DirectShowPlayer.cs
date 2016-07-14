@@ -459,21 +459,27 @@ namespace Emby.Theater.DirectShow
 
         private bool IsEvrAvailable()
         {
+            // TODO
             return true;
+        }
+
+        private bool IsIntelGPU()
+        {
+            return VideoConfiguration.GpuModel.IndexOf("Intel", StringComparison.OrdinalIgnoreCase) != -1;
         }
 
         public void Play(PlayableItem item, bool enableFullScreen)
         {
             try
             {
-                // TODO: Handle evr not being available
+                // Don't need madvr when not playing fullscreen
                 string videoRenderer = enableFullScreen ? 
                     _config.VideoConfig.VideoRenderer : 
                     (IsEvrAvailable() ? "evr" : "evrcp");
 
                 if (string.IsNullOrWhiteSpace(videoRenderer))
                 {
-                    videoRenderer = IsEvrAvailable() ? "evr" : "evrcp";
+                    videoRenderer = IsEvrAvailable() ? "evr" : (IsIntelGPU() ? "evrcpp" : "madvr");
                 }
 
                 var enableMadVr = string.Equals(videoRenderer, "madvr", StringComparison.OrdinalIgnoreCase);

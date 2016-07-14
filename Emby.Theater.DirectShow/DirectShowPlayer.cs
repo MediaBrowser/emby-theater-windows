@@ -479,7 +479,7 @@ namespace Emby.Theater.DirectShow
 
                 if (string.IsNullOrWhiteSpace(videoRenderer))
                 {
-                    videoRenderer = IsEvrAvailable() ? "evr" : (IsIntelGPU() ? "evrcpp" : "madvr");
+                    videoRenderer = IsEvrAvailable() ? "evr" : (IsIntelGPU() ? "evrcp" : "madvr");
                 }
 
                 var enableMadVr = string.Equals(videoRenderer, "madvr", StringComparison.OrdinalIgnoreCase);

@@ -162,7 +162,7 @@ namespace Emby.Theater.Window
 
                     if (fullscreen)
                     {
-                        NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
+                        //NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
                         //var placement = new WINDOWPLACEMENT();
                         //placement.showCmd = ShowWindowCommands.Maximized;
                         //placement.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
@@ -171,14 +171,14 @@ namespace Emby.Theater.Window
                     else if (newState == FormWindowState.Maximized)
                     {
                         //NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
-                        var placement = new WINDOWPLACEMENT();
-                        placement.showCmd = ShowWindowCommands.Maximized;
-                        placement.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
-                        NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
+                        //var placement = new WINDOWPLACEMENT();
+                        //placement.showCmd = ShowWindowCommands.Maximized;
+                        //placement.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
+                        //NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
                     }
                     else if (newState == FormWindowState.Normal)
                     {
-                        NativeWindowMethods.SetWindowPos(_windowHandle, -2, _form.Left, _form.Top, _form.Width, _form.Height, 0);
+                        //NativeWindowMethods.SetWindowPos(_windowHandle, -2, _form.Left, _form.Top, _form.Width, _form.Height, 0);
                         //NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
                     }
                 });

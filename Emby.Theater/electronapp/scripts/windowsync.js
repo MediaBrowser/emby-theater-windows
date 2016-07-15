@@ -1,13 +1,19 @@
 ﻿require(['apphost', 'events'], function (apphost, events) {
 
+    var windowDragRegion;
+
     function sendWindowStateCommand(e) {
 
         var state = e.detail.windowState;
 
+        if (!windowDragRegion) {
+            windowDragRegion = document.querySelector('.windowDragRegion');
+        }
+
         if (state.toLowerCase() == 'normal') {
-            document.querySelector('.windowDragRegion').classList.remove('nodrag');
+            windowDragRegion.classList.remove('nodrag');
         } else {
-            document.querySelector('.windowDragRegion').classList.add('nodrag');
+            windowDragRegion.classList.add('nodrag');
         }
 
         var xhr = new XMLHttpRequest();

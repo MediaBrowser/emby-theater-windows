@@ -13,8 +13,6 @@ namespace Emby.Theater.Window
         private readonly IntPtr _windowHandle;
         private readonly ILogger _logger;
 
-        private System.Threading.Timer _syncTimer;
-
         public WindowSync(Form form, IntPtr windowHandle, ILogger logger)
         {
             _form = form;
@@ -25,8 +23,6 @@ namespace Emby.Theater.Window
             {
                 _form.ShowInTaskbar = true;
                 NativeWindowMethods.SetWindowLong(_windowHandle, -8, _form.Handle);
-                // Until the electron window starts reporting window changes, use a timer to keep them in sync
-                //_syncTimer = new System.Threading.Timer(OnTimerCallback, null, 10, 10);
             }));
 
             var placement = NativeWindowMethods.GetPlacement(_windowHandle);
@@ -64,27 +60,11 @@ namespace Emby.Theater.Window
 
         public void OnElectronWindowSizeChanged()
         {
-            // Now that the electron window is reporting changes, this timer is no longer needed
-            var timer = _syncTimer;
-            if (timer != null)
-            {
-                timer.Dispose();
-                _syncTimer = null;
-            }
-
             SyncWindowSize(false);
         }
 
         public void OnElectronWindowStateChanged(string newWindowState)
         {
-            // Now that the electron window is reporting changes, this timer is no longer needed
-            var timer = _syncTimer;
-            if (timer != null)
-            {
-                timer.Dispose();
-                _syncTimer = null;
-            }
-
             SyncWindowState(newWindowState);
         }
 

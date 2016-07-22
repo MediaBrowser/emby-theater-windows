@@ -1,4 +1,4 @@
-﻿define(['apphost', 'pluginManager'], function (appHost, pluginManager) {
+﻿define(['apphost', 'pluginManager', 'events'], function (appHost, pluginManager, events) {
 
     return function () {
 
@@ -370,33 +370,33 @@
             stopTimeUpdateInterval();
 
             if (reportEnded) {
-                Events.trigger(self, 'stopped');
+                events.trigger(self, 'stopped');
             }
         }
 
         function onTimeUpdate() {
 
             updatePlayerState();
-            Events.trigger(self, 'timeupdate');
+            events.trigger(self, 'timeupdate');
         }
 
         function onVolumeChange() {
-            Events.trigger(self, 'volumechange');
+            events.trigger(self, 'volumechange');
         }
 
         function onPlaying() {
 
-            Events.trigger(self, 'playing');
+            events.trigger(self, 'playing');
         }
 
         function onPause() {
-            Events.trigger(self, 'pause');
+            events.trigger(self, 'pause');
         }
 
         function onError() {
 
             stopTimeUpdateInterval();
-            Events.trigger(self, 'error');
+            events.trigger(self, 'error');
         }
 
         function getFetchPromise(request) {

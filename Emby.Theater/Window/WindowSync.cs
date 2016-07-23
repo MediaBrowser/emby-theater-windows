@@ -45,6 +45,12 @@ namespace Emby.Theater.Window
             SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
         }
 
+        public void FocusElectron()
+        {
+            //_logger.Info("Ensuring the electron window has focus");
+            NativeWindowMethods.SetForegroundWindow(_windowHandle);
+        }
+
         void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
         {
             ResyncWindow();

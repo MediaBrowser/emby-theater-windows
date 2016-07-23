@@ -77,6 +77,35 @@ namespace Emby.Theater
             _dsPlayerBridge = new DirectShowPlayerBridge(_appHost.LogManager, this, _config.CommonApplicationPaths,
                 _appHost.GetIsoManager(), _appHost.GetZipClient(), _appHost.GetHttpClient(), _config,
                 _appHost.JsonSerializer, _windowSync);
+
+            Activated += MainForm_Activated;
+            GotFocus += MainForm_GotFocus;
+        }
+
+        private void MainForm_GotFocus(object sender, EventArgs e)
+        {
+            FocusElectron();
+        }
+
+        private void MainForm_Activated(object sender, EventArgs e)
+        {
+            FocusElectron();
+        }
+
+        protected override void OnActivated(EventArgs e)
+        {
+            base.OnActivated(e);
+            FocusElectron();
+        }
+
+        private void FocusElectron()
+        {
+            if (_windowSync == null)
+            {
+                return;
+            }
+
+            _windowSync.FocusElectron();
         }
 
         protected override void OnClosing(CancelEventArgs e)

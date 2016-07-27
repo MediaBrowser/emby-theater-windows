@@ -1,50 +1,48 @@
-﻿<div class="externalPageContainer smoothScrollY" style="padding-bottom:25%;">
-    <div style="width: 50%; margin: auto;">
+﻿<div class="pageContainer smoothScrollY vertical centered">
 
-        <select is="emby-select" class="selectSpeakerLayout" label="${SpeakerLayout}">
-            <option value="Stereo">${Stereo}</option>
-            <option value="Quad">${Quadraphonic}</option>
-            <option value="Surround">${Surround}</option>
-            <option value="FiveDotOneSurround">5.1</option>
-            <option value="SevenDotOneSurround">7.1</option>
-        </select>
+    <select is="emby-select" class="selectSpeakerLayout" label="${SpeakerLayout}">
+        <option value="Stereo">${Stereo}</option>
+        <option value="Quad">${Quadraphonic}</option>
+        <option value="Surround">${Surround}</option>
+        <option value="FiveDotOneSurround">5.1</option>
+        <option value="SevenDotOneSurround">7.1</option>
+    </select>
 
-        <select is="emby-select" class="selectAudioBitstreamingMode" label="${AudioBitstreamingMode}">
-            <option value="None">${None}</option>
-            <option value="HDMI">HDMI</option>
-            <option value="SPDIF">SPDIF</option>
-        </select>
+    <select is="emby-select" class="selectAudioBitstreamingMode" label="${AudioBitstreamingMode}">
+        <option value="None">${None}</option>
+        <option value="HDMI">HDMI</option>
+        <option value="SPDIF">SPDIF</option>
+    </select>
 
-        <select is="emby-select" class="selectAudioRenderer" label="${AudioRenderer}">
-            <option value="Default">${Default}</option>
-            <option value="Reclock">Reclock</option>
-            <option value="WASAPI">WASAPI</option>
-        </select>
+    <select is="emby-select" class="selectAudioRenderer" label="${AudioRenderer}">
+        <option value="Default">${Default}</option>
+        <option value="Reclock">Reclock</option>
+        <option value="WASAPI">WASAPI</option>
+    </select>
 
-        <select is="emby-select" class="selectDrc" label="${DynamicRangeCompression}">
-            <option value="">${None}</option>
-            <option value="10">10%</option>
-            <option value="20">20%</option>
-            <option value="30">30%</option>
-            <option value="40">40%</option>
-            <option value="50">50%</option>
-            <option value="60">60%</option>
-            <option value="70">70%</option>
-            <option value="80">80%</option>
-            <option value="90">90%</option>
-            <option value="100">100%</option>
-        </select>
+    <select is="emby-select" class="selectDrc" label="${DynamicRangeCompression}">
+        <option value="">${None}</option>
+        <option value="10">10%</option>
+        <option value="20">20%</option>
+        <option value="30">30%</option>
+        <option value="40">40%</option>
+        <option value="50">50%</option>
+        <option value="60">60%</option>
+        <option value="70">70%</option>
+        <option value="80">80%</option>
+        <option value="90">90%</option>
+        <option value="100">100%</option>
+    </select>
 
-        <select is="emby-select" class="selectExpandMono" label="${ExpandMono}">
-            <option value="true">${Yes}</option>
-            <option value="false">${No}</option>
-        </select>
+    <select is="emby-select" class="selectExpandMono" label="${ExpandMono}">
+        <option value="true">${Yes}</option>
+        <option value="false">${No}</option>
+    </select>
 
-        <select is="emby-select" class="selectExpandSixToSeven" label="${ExpandSixToSeven}">
-            <option value="true">${Yes}</option>
-            <option value="false">${No}</option>
-        </select>
+    <select is="emby-select" class="selectExpandSixToSeven" label="${ExpandSixToSeven}">
+        <option value="true">${Yes}</option>
+        <option value="false">${No}</option>
+    </select>
 
-        <select is="emby-select" class="selectAudioEndPoint" label="${AudioEndPoint}"></select>
-    </div>
+    <select is="emby-select" class="selectAudioEndPoint" label="${AudioEndPoint}"></select>
 </div>

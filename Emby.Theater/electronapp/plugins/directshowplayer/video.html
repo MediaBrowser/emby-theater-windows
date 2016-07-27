@@ -1,59 +1,57 @@
-﻿<div class="externalPageContainer smoothScrollY" style="padding-bottom:25%;">
-    <div style="width: 50%; margin: auto;">
+﻿<div class="pageContainer smoothScrollY vertical centered">
 
-        <select is="emby-select" class="selectHwaMode" label="${HardwareAccelerationMode}">
-            <option value="-1">${Auto}</option>
-            <option value="0">${None}</option>
-            <option value="2">Intel Quick Sync</option>
-            <option value="3">DXVA2CopyBack</option>
-        </select>
+    <select is="emby-select" class="selectHwaMode" label="${HardwareAccelerationMode}">
+        <option value="-1">${Auto}</option>
+        <option value="0">${None}</option>
+        <option value="2">Intel Quick Sync</option>
+        <option value="3">DXVA2CopyBack</option>
+    </select>
 
-        <div class="hide">
-            <div class="checkboxList">
-                <h3>${HwaEnabledFor}:</h3>
-                <label>
-                    <input type="checkbox" is="emby-checkbox" class="resType" data-type="-1" />
-                    <span>${LAVDefault}</span>
-                </label>
-                <label>
-                    <input type="checkbox" is="emby-checkbox" class="resType" data-type="1" />
-                    <span>SD</span>
-                </label>
-                <label>
-                    <input type="checkbox" is="emby-checkbox" class="resType" data-type="2" />
-                    <span>HD</span>
-                </label>
-                <label>
-                    <input type="checkbox" is="emby-checkbox" class="resType" data-type="4" />
-                    <span>UHD</span>
-                </label>
-            </div>
-            <br />
+    <div class="hide">
+        <div class="checkboxList">
+            <h3>${HwaEnabledFor}:</h3>
+            <label>
+                <input type="checkbox" is="emby-checkbox" class="resType" data-type="-1" />
+                <span>${LAVDefault}</span>
+            </label>
+            <label>
+                <input type="checkbox" is="emby-checkbox" class="resType" data-type="1" />
+                <span>SD</span>
+            </label>
+            <label>
+                <input type="checkbox" is="emby-checkbox" class="resType" data-type="2" />
+                <span>HD</span>
+            </label>
+            <label>
+                <input type="checkbox" is="emby-checkbox" class="resType" data-type="4" />
+                <span>UHD</span>
+            </label>
         </div>
-
-        <select is="emby-select" class="selectVideoRenderer" label="${VideoRenderer}">
-            <option value="">${Auto}</option>
-            <option value="evr">EVR</option>
-            <option value="evrcp">EVR+</option>
-            <option value="madvr">MadVr</option>
-        </select>
-
-        <select is="emby-select" class="selectNominalRange" label="${OutputRange}">
-            <option value="1">PC (0-255)</option>
-            <option value="2">Video (16-235)</option>
-        </select>
-
-        <select is="emby-select" class="selectRefreshRateMode" label="${ChangeRefreshRate}">
-            <option value="true">${Yes}</option>
-            <option value="false">${No}</option>
-        </select>
-
-        <select is="emby-select" class="selectFilterSet" label="${FilterSet}">
-            <option value="">${Stable}</option>
-            <option value="edge">${Edge}</option>
-        </select>
-
         <br />
-        <button is="emby-button" class="btnMadvr raised block">Madvr</button>
     </div>
+
+    <select is="emby-select" class="selectVideoRenderer" label="${VideoRenderer}">
+        <option value="">${Auto}</option>
+        <option value="evr">EVR</option>
+        <option value="evrcp">EVR+</option>
+        <option value="madvr">MadVr</option>
+    </select>
+
+    <select is="emby-select" class="selectNominalRange" label="${OutputRange}">
+        <option value="1">PC (0-255)</option>
+        <option value="2">Video (16-235)</option>
+    </select>
+
+    <select is="emby-select" class="selectRefreshRateMode" label="${ChangeRefreshRate}">
+        <option value="true">${Yes}</option>
+        <option value="false">${No}</option>
+    </select>
+
+    <select is="emby-select" class="selectFilterSet" label="${FilterSet}">
+        <option value="">${Stable}</option>
+        <option value="edge">${Edge}</option>
+    </select>
+
+    <br />
+    <button is="emby-button" class="btnMadvr raised block">Madvr</button>
 </div>

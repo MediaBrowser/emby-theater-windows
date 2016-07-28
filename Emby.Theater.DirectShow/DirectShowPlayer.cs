@@ -459,8 +459,7 @@ namespace Emby.Theater.DirectShow
 
         private bool IsEvrAvailable()
         {
-            // TODO
-            return true;
+            return FilterGraphTools.IsThisComObjectInstalled(typeof(EnhancedVideoRenderer).GUID);
         }
 
         private bool IsIntelGPU()

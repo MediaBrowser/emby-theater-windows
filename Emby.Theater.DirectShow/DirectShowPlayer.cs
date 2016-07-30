@@ -457,9 +457,15 @@ namespace Emby.Theater.DirectShow
             }
         }
 
+        private bool? _evrAvailable;
         private bool IsEvrAvailable()
         {
-            return FilterGraphTools.IsThisComObjectInstalled(typeof(EnhancedVideoRenderer).GUID);
+            if (!_evrAvailable.HasValue)
+            {
+                _evrAvailable = FilterGraphTools.IsThisComObjectInstalled(typeof(EnhancedVideoRenderer).GUID);
+            }
+
+            return _evrAvailable.Value;
         }
 
         private bool IsIntelGPU()

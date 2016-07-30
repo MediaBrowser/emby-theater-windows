@@ -89,13 +89,13 @@ namespace Emby.Theater
 
         private void MainForm_Activated(object sender, EventArgs e)
         {
-            FocusElectron();
+            //FocusElectron();
         }
 
         protected override void OnActivated(EventArgs e)
         {
             base.OnActivated(e);
-            FocusElectron();
+            //FocusElectron();
         }
 
         private void FocusElectron()

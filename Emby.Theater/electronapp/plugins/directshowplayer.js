@@ -80,8 +80,8 @@
             });
 
             files.push({
-                lang: 'pt-BR',
-                path: pluginManager.mapPath(self, 'directshowplayer/strings/pt-BR.json')
+                lang: 'pl',
+                path: pluginManager.mapPath(self, 'directshowplayer/strings/pl.json')
             });
 
             files.push({

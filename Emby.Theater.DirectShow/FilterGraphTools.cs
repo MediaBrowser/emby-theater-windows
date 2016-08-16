@@ -144,6 +144,35 @@ namespace DirectShowLib.Utils
             return filter;
         }
 
+        public static IBaseFilter AddFilterByName(IFilterGraph2 graphBuilder, Guid deviceCategory, string friendlyName)
+        {
+            int hr = 0;
+            IBaseFilter filter = null;
+
+            if (graphBuilder == null)
+                throw new ArgumentNullException("graphBuilder");
+
+            DsDevice[] devices = DsDevice.GetDevicesOfCat(deviceCategory);
+
+            for (int i = 0; i < devices.Length; i++)
+            {
+                if (string.IsNullOrEmpty(devices[i].Name)) //if the name is empty ignore the filter
+                    continue;
+                else
+                {
+                    if (!devices[i].Name.Equals(friendlyName))
+                        continue;
+                }
+
+                hr = graphBuilder.AddSourceFilterForMoniker(devices[i].Mon, null, friendlyName, out filter);
+                DsError.ThrowExceptionForHR(hr);
+
+                break;
+            }
+
+            return filter;
+        }
+
         /// <summary>
         /// Add a filter to a DirectShow Graph using its Moniker's device path
         /// </summary>

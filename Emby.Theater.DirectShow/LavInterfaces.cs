@@ -662,11 +662,11 @@ InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 
         // Get details about the current decoding format
         [PreserveSig]
-        int GetDecodeDetails(IntPtr pCodec, IntPtr pDecodeFormat, out int pnChannels, out int pSampleRate, out uint pChannelMask);
+        int GetDecodeDetails(out IntPtr pCodec, out IntPtr pDecodeFormat, out int pnChannels, out int pSampleRate, out uint pChannelMask);
 
         // Get details about the current output format
         [PreserveSig]
-        int GetOutputDetails(IntPtr pOutputFormat, out int pnChannels, out int pSampleRate, out uint pChannelMask);
+        int GetOutputDetails(out IntPtr pOutputFormat, out int pnChannels, out int pSampleRate, out uint pChannelMask);
 
         // Enable Volume measurements
         [PreserveSig]

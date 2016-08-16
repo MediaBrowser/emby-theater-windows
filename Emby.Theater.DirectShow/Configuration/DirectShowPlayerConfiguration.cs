@@ -293,11 +293,13 @@ namespace Emby.Theater.DirectShow.Configuration
         public bool UseWasapiEventMode { get; set; }
         public int Ac3EncodingMode { get; set; }
         public int OutputBufferSize { get; set; }
+        public string AudioProcessor { get; set; }
 
         /// <summary>
         /// Gets or sets audio codecs that will be enabled. 
         /// </summary>
         public List<string> EnabledCodecs { get; set; }
+        public List<string> BitstreamCodecs { get; set; }
 
         public AudioConfiguration()
         {
@@ -325,16 +327,28 @@ namespace Emby.Theater.DirectShow.Configuration
             Ac3EncodingMode = 0; //disabled
             UseWasapiEventMode = true;
             OutputBufferSize = 500;
+            AudioProcessor = string.Empty;
+            BitstreamCodecs = new List<string>();
         }
 
         public void ResetDefaults()
         {
             EnabledCodecs.Clear();
+            BitstreamCodecs.Clear();
             SetDefaults();
         }
 
         public void SetDefaults()
         {
+            if (BitstreamCodecs.Count == 0)
+            {
+                EnabledCodecs.Add("AC3");
+                EnabledCodecs.Add("EAC3");
+                EnabledCodecs.Add("TRUEHD");
+                EnabledCodecs.Add("DTS");
+                EnabledCodecs.Add("DTS");
+            }
+
             if (EnabledCodecs.Count == 0)
             {
                 EnabledCodecs.Add("AAC");
@@ -360,6 +374,7 @@ namespace Emby.Theater.DirectShow.Configuration
                 EnabledCodecs.Add("Truespeech");
                 EnabledCodecs.Add("TAK");
                 EnabledCodecs.Add("ATRAC");
+                EnabledCodecs.Add("DCA");
             }
         }
     }

@@ -125,6 +125,8 @@ namespace Emby.Theater.DirectShow.Configuration
 
         public string VideoRenderer { get; set; }
 
+        public int SW_DeintModes { get; set; }
+
         public VideoConfiguration()
         {
             HwaEnabledCodecs = new List<string>();
@@ -142,6 +144,7 @@ namespace Emby.Theater.DirectShow.Configuration
             MinRefreshRateMin = 5;
             ScalingMode = 4;
             TryEnableFSE = false;
+            SW_DeintModes = 0;
         }
 
         public void ResetDefaults()

@@ -1047,6 +1047,15 @@ namespace Emby.Theater.DirectShow
                                             vsett.SetTrayIcon(
                                                 _config.VideoConfig.ShowTrayIcon);
                                         DsError.ThrowExceptionForHR(hr);
+
+                                        LAVSWDeintModes swDi = (LAVSWDeintModes)_config.VideoConfig.SW_DeintModes;
+                                        LAVSWDeintModes testdi = vsett.GetSWDeintMode();
+                                        _logger.Info("Current SW DI Mode: {0} Desired Mode: {1}", testdi, swDi);
+                                        if (testdi != swDi)
+                                        {
+                                            hr = vsett.SetSWDeintMode(swDi);
+                                            DsError.ThrowExceptionForHR(hr);
+                                        }
                                     }
                                 }
 

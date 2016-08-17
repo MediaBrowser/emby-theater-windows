@@ -338,16 +338,21 @@ namespace Emby.Theater.DirectShow.Configuration
             SetDefaults();
         }
 
-        public void SetDefaults()
+        public void SetBitstreamCodecs()
         {
             if (BitstreamCodecs.Count == 0)
             {
-                EnabledCodecs.Add("AC3");
-                EnabledCodecs.Add("EAC3");
-                EnabledCodecs.Add("TRUEHD");
-                EnabledCodecs.Add("DTS");
-                EnabledCodecs.Add("DTS");
+                BitstreamCodecs.Add("AC3");
+                BitstreamCodecs.Add("EAC3");
+                BitstreamCodecs.Add("TRUEHD");
+                BitstreamCodecs.Add("DTS");
+                BitstreamCodecs.Add("DCA");
             }
+        }
+
+        public void SetDefaults()
+        {
+            SetBitstreamCodecs();
 
             if (EnabledCodecs.Count == 0)
             {

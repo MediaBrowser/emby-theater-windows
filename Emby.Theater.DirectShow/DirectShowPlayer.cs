@@ -1495,6 +1495,8 @@ namespace Emby.Theater.DirectShow
 
                                             //_logger.Log(LogSeverity.Debug, "output format: {0} - {1} - {2} - {3}", sOutFormat, nChannels, sRate, cMask);
 
+                                            _config.AudioConfig.SetBitstreamCodecs();
+
                                             if (_config.AudioConfig.BitstreamCodecs.Contains(sCodec.ToUpper()))
                                             {
                                                 _logger.Log(LogSeverity.Debug, "Bit streaming format found, do not add processor");
@@ -1587,6 +1589,24 @@ namespace Emby.Theater.DirectShow
                                         }
                                     }
                                     DsError.ThrowExceptionForHR(hr);
+
+                                    ILAVAudioStatus audioStatus = _lavaudio as ILAVAudioStatus;
+                                    if (audioStatus != null)
+                                    {
+                                        IntPtr outFormat = IntPtr.Zero;
+
+                                        int nChannels, sRate;
+                                        uint cMask;
+
+                                        hr = audioStatus.GetOutputDetails(out outFormat, out nChannels, out sRate, out cMask);
+                                        //DsError.ThrowExceptionForHR(hr);
+                                        if (hr >= 0)
+                                        {
+                                            string sOutFormat = Marshal.PtrToStringAnsi(outFormat);
+
+                                            _logger.Log(LogSeverity.Debug, "output format: {0} - {1} - {2} - {3}", sOutFormat, nChannels, sRate, cMask);
+                                        }
+                                    }
 
                                     needsRender = false;
                                     break;

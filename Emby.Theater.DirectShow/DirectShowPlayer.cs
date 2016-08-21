@@ -1047,6 +1047,15 @@ namespace Emby.Theater.DirectShow
                                             vsett.SetTrayIcon(
                                                 _config.VideoConfig.ShowTrayIcon);
                                         DsError.ThrowExceptionForHR(hr);
+
+                                        LAVSWDeintModes swDi = (LAVSWDeintModes)_config.VideoConfig.SW_DeintModes;
+                                        LAVSWDeintModes testdi = vsett.GetSWDeintMode();
+                                        _logger.Info("Current SW DI Mode: {0} Desired Mode: {1}", testdi, swDi);
+                                        if (testdi != swDi)
+                                        {
+                                            hr = vsett.SetSWDeintMode(swDi);
+                                            DsError.ThrowExceptionForHR(hr);
+                                        }
                                     }
                                 }
 
@@ -1451,6 +1460,90 @@ namespace Emby.Theater.DirectShow
                                         PinDirection.Output, 0);
                                 }
 
+                                if (!string.IsNullOrWhiteSpace(_config.AudioConfig.AudioProcessor))
+                                {
+                                    bool addProcessor = true;
+
+                                    if (_config.AudioConfig.AudioBitstreaming != BitstreamChoice.None)
+                                    {
+                                        _logger.Log(LogSeverity.Debug, "Bit streaming is enabled, we need to decide whether to add processor");
+
+                                        ILAVAudioStatus audioStatus = _lavaudio as ILAVAudioStatus;
+                                        if (audioStatus != null)
+                                        {
+                                            IntPtr codec = IntPtr.Zero;// Marshal.AllocCoTaskMem(100);
+                                            IntPtr format = IntPtr.Zero;
+                                            IntPtr outFormat = IntPtr.Zero;
+
+                                            int nChannels, sRate;
+                                            uint cMask;
+
+                                            hr = audioStatus.GetDecodeDetails(out codec, out format, out nChannels, out sRate, out cMask);
+                                            DsError.ThrowExceptionForHR(hr);
+
+                                            string sCodec, sFormat;//, sOutFormat;
+
+                                            sCodec = Marshal.PtrToStringAnsi(codec);
+                                            sFormat = Marshal.PtrToStringAnsi(format);
+
+                                            _logger.Log(LogSeverity.Debug, "input format: {0} - {1} - {2} - {3} - {4}", sCodec, sFormat, nChannels, sRate, cMask);
+
+                                            //hr = audioStatus.GetOutputDetails(out outFormat, out nChannels, out sRate, out cMask);
+                                            //DsError.ThrowExceptionForHR(hr);
+
+                                            //sOutFormat = Marshal.PtrToStringAnsi(outFormat);
+
+                                            //_logger.Log(LogSeverity.Debug, "output format: {0} - {1} - {2} - {3}", sOutFormat, nChannels, sRate, cMask);
+
+                                            _config.AudioConfig.SetBitstreamCodecs();
+
+                                            if (_config.AudioConfig.BitstreamCodecs.Contains(sCodec.ToUpper()))
+                                            {
+                                                _logger.Log(LogSeverity.Debug, "Bit streaming format found, do not add processor");
+                                                addProcessor = false;
+                                            }
+                                        }
+                                    }
+
+                                    if (addProcessor)
+                                    {
+                                        _logger.Log(LogSeverity.Debug, "Add audio processor: {0}", _config.AudioConfig.AudioProcessor);
+                                        IBaseFilter audioProcessor = null;
+
+                                        if (System.Text.RegularExpressions.Regex.IsMatch(_config.AudioConfig.AudioProcessor, @"{?\w{8}-\w{4}-\w{4}-\w{4}-\w{12}}?"))
+                                            audioProcessor = FilterGraphTools.AddFilterFromClsid(_filterGraph, new Guid(_config.AudioConfig.AudioProcessor), _config.AudioConfig.AudioProcessor);
+                                        else
+                                            audioProcessor = FilterGraphTools.AddFilterByName(_filterGraph, FilterCategory.LegacyAmFilterCategory, _config.AudioConfig.AudioProcessor);
+
+                                        if (audioProcessor != null)
+                                        {
+                                            _logger.Log(LogSeverity.Debug, "Connect audio processor: {0}", _config.AudioConfig.AudioProcessor);
+
+                                            CleanUpInterface(decIn);
+                                            decIn = DsFindPin.ByDirection(audioProcessor, PinDirection.Input, 0);
+                                            if (decIn != null)
+                                            {
+                                                hr = _filterGraph.ConnectDirect(decOut, decIn, null);
+                                                if (hr < 0)
+                                                {
+                                                    _logger.Warn("couldn't connect to audio processor");
+                                                    hr = _filterGraph.RemoveFilter(audioProcessor);
+                                                    DsError.ThrowExceptionForHR(hr);
+                                                    CleanUpInterface(audioProcessor);
+                                                }
+                                                else
+                                                {
+                                                    _logger.Log(LogSeverity.Debug, "Connected audio processor: {0}", _config.AudioConfig.AudioProcessor);
+                                                    CleanUpInterface(decOut);
+                                                    decOut = DsFindPin.ByDirection(audioProcessor, PinDirection.Output, 0);
+                                                    CleanUpInterface(audioProcessor);
+                                                }
+
+                                            }
+                                        }
+                                    }
+                                }
+
                                 rendIn = DsFindPin.ByDirection(AudioRenderer, PinDirection.Input, 0);
 
                                 if (decOut != null && rendIn != null)
@@ -1496,6 +1589,24 @@ namespace Emby.Theater.DirectShow
                                         }
                                     }
                                     DsError.ThrowExceptionForHR(hr);
+
+                                    ILAVAudioStatus audioStatus = _lavaudio as ILAVAudioStatus;
+                                    if (audioStatus != null)
+                                    {
+                                        IntPtr outFormat = IntPtr.Zero;
+
+                                        int nChannels, sRate;
+                                        uint cMask;
+
+                                        hr = audioStatus.GetOutputDetails(out outFormat, out nChannels, out sRate, out cMask);
+                                        //DsError.ThrowExceptionForHR(hr);
+                                        if (hr >= 0)
+                                        {
+                                            string sOutFormat = Marshal.PtrToStringAnsi(outFormat);
+
+                                            _logger.Log(LogSeverity.Debug, "output format: {0} - {1} - {2} - {3}", sOutFormat, nChannels, sRate, cMask);
+                                        }
+                                    }
 
                                     needsRender = false;
                                     break;

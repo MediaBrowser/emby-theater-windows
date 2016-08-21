@@ -61,4 +61,5 @@
         });
     });
 
+    require(['css!electronfile://windowstyle']);
 });

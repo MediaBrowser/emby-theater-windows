@@ -160,6 +160,62 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="..\..\Emby.Theater.Electron\node_modules\is-linux\license">
+      <Link>electronapp\node_modules\is-linux\license</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Emby.Theater.Electron\node_modules\is-linux\package.json">
+      <Link>electronapp\node_modules\is-linux\package.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Emby.Theater.Electron\node_modules\is-linux\readme.md">
+      <Link>electronapp\node_modules\is-linux\readme.md</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Emby.Theater.Electron\node_modules\is-osx\license">
+      <Link>electronapp\node_modules\is-osx\license</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Emby.Theater.Electron\node_modules\is-osx\package.json">
+      <Link>electronapp\node_modules\is-osx\package.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Emby.Theater.Electron\node_modules\is-osx\readme.md">
+      <Link>electronapp\node_modules\is-osx\readme.md</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Emby.Theater.Electron\node_modules\is-windows\LICENSE">
+      <Link>electronapp\node_modules\is-windows\LICENSE</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Emby.Theater.Electron\node_modules\is-windows\package.json">
+      <Link>electronapp\node_modules\is-windows\package.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Emby.Theater.Electron\node_modules\power-off\license">
+      <Link>electronapp\node_modules\power-off\license</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Emby.Theater.Electron\node_modules\power-off\package.json">
+      <Link>electronapp\node_modules\power-off\package.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Emby.Theater.Electron\node_modules\power-off\readme.md">
+      <Link>electronapp\node_modules\power-off\readme.md</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Emby.Theater.Electron\node_modules\sleep-mode\license">
+      <Link>electronapp\node_modules\sleep-mode\license</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Emby.Theater.Electron\node_modules\sleep-mode\package.json">
+      <Link>electronapp\node_modules\sleep-mode\package.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Emby.Theater.Electron\node_modules\sleep-mode\readme.md">
+      <Link>electronapp\node_modules\sleep-mode\readme.md</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Emby.Theater.Electron\package.json">
       <Link>electronapp\package.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -301,6 +357,34 @@
     </Content>
     <Content Include="..\..\Emby.Theater.Electron\main.js">
       <Link>electronapp\main.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Emby.Theater.Electron\node_modules\is-linux\index.js">
+      <Link>electronapp\node_modules\is-linux\index.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Emby.Theater.Electron\node_modules\is-osx\index.js">
+      <Link>electronapp\node_modules\is-osx\index.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Emby.Theater.Electron\node_modules\is-windows\index.js">
+      <Link>electronapp\node_modules\is-windows\index.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Emby.Theater.Electron\node_modules\power-off\cli.js">
+      <Link>electronapp\node_modules\power-off\cli.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Emby.Theater.Electron\node_modules\power-off\index.js">
+      <Link>electronapp\node_modules\power-off\index.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Emby.Theater.Electron\node_modules\sleep-mode\cli.js">
+      <Link>electronapp\node_modules\sleep-mode\cli.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Emby.Theater.Electron\node_modules\sleep-mode\index.js">
+      <Link>electronapp\node_modules\sleep-mode\index.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\Emby.Theater.Electron\scripts\appclose.js">

@@ -347,8 +347,8 @@
       <Link>electronapp\cec\command-map.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\index.html">
-      <Link>electronapp\index.html</Link>
+    <Content Include="..\..\Emby.Theater.Electron\fullscreenmanager.js">
+      <Link>electronapp\fullscreenmanager.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\Emby.Theater.Electron\logowhite.png">
@@ -409,6 +409,10 @@
     </Content>
     <Content Include="..\..\Emby.Theater.Electron\shell.js">
       <Link>electronapp\shell.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Emby.Theater.Electron\splash.html">
+      <Link>electronapp\splash.html</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\ThirdParty\cec\cec-client.exe">

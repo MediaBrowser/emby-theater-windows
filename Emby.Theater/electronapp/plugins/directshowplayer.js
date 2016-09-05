@@ -220,15 +220,20 @@
 
         self.play = function (options) {
 
+            var mediaSource = JSON.parse(JSON.stringify(options.mediaSource));
+
+            var url = options.url;
+            if (options.item.Type == 'TvChannel') {
+                url = url.replace(/videocodec=h264/gi, "videocodec=copy");
+            }
+
             ignoreEnded = false;
-            currentSrc = options.url;
+            currentSrc = url;
 
             //var isVideo = options.mimeType.toLowerCase('video').indexOf() == 0;
             var isVideo = options.item.MediaType == 'Video';
 
             var enableFullscreen = options.fullscreen !== false;
-
-            var mediaSource = JSON.parse(JSON.stringify(options.mediaSource));
 
             // Update the text url in the media source with the full url from the options object
             mediaSource.MediaStreams.forEach(function (ms) {
@@ -243,7 +248,7 @@
             });
 
             var requestBody = {
-                url: options.url,
+                url: url,
                 isVideo: isVideo,
                 item: options.item,
                 mediaSource: mediaSource,

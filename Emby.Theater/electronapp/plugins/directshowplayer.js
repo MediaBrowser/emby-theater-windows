@@ -223,9 +223,6 @@
             var mediaSource = JSON.parse(JSON.stringify(options.mediaSource));
 
             var url = options.url;
-            if (options.item.Type == 'TvChannel') {
-                url = url.replace(/videocodec=h264/gi, "videocodec=copy");
-            }
 
             ignoreEnded = false;
             currentSrc = url;

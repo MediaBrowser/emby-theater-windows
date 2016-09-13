@@ -233,7 +233,13 @@
     <None Include="electronapp\plugins\directshowplayer\strings\fr.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="electronapp\plugins\directshowplayer\strings\hr.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="electronapp\plugins\directshowplayer\strings\nl.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="electronapp\plugins\directshowplayer\strings\pl.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="electronapp\plugins\directshowplayer\strings\pt-BR.json">

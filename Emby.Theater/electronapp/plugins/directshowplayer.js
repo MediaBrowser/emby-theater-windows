@@ -75,8 +75,8 @@
             });
 
             files.push({
-                lang: 'nl',
-                path: pluginManager.mapPath(self, 'directshowplayer/strings/nl.json')
+                lang: 'hr',
+                path: pluginManager.mapPath(self, 'directshowplayer/strings/hr.json')
             });
 
             files.push({
@@ -109,6 +109,11 @@
                 return appHost.supports('windowtransparency');
             }
             return (mediaType || '').toLowerCase() == 'audio';
+        };
+
+        self.canPlayItem = function (item) {
+
+            return item.Type != 'TvChannel' || (item.ServiceName || '').toLowerCase().indexOf('next') == -1;
         };
 
         self.getDeviceProfile = function () {

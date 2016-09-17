@@ -113,7 +113,20 @@
 
         self.canPlayItem = function (item) {
 
-            return item.Type != 'TvChannel' || (item.ServiceName || '').toLowerCase().indexOf('next') == -1;
+            if (item.Type != 'TvChannel') {
+                return true;
+            }
+
+            var serviceName = (item.ServiceName || '').toLowerCase();
+
+            if (serviceName.indexOf('next') != -1) {
+                return false;
+            }
+            if (serviceName.indexOf('tvh') != -1) {
+                return false;
+            }
+
+            return true;
         };
 
         self.getDeviceProfile = function () {

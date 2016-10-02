@@ -179,6 +179,14 @@
                 Method: 'External'
             });
             profile.SubtitleProfiles.push({
+                Format: 'ass',
+                Method: 'External'
+            });
+            profile.SubtitleProfiles.push({
+                Format: 'ssa',
+                Method: 'External'
+            });
+            profile.SubtitleProfiles.push({
                 Format: 'srt',
                 Method: 'Embed'
             });

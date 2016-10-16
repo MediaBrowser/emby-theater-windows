@@ -224,6 +224,9 @@
     <None Include="electronapp\plugins\directshowplayer\strings\de.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="electronapp\plugins\directshowplayer\strings\en-GB.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="electronapp\plugins\directshowplayer\strings\en-US.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

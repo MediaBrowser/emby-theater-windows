@@ -1,4 +1,4 @@
-﻿define(['apphost', 'pluginManager', 'events'], function (appHost, pluginManager, events) {
+﻿define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, pluginManager, events, embyRouter) {
 
     return function () {
 
@@ -67,6 +67,11 @@
             files.push({
                 lang: 'en-us',
                 path: pluginManager.mapPath(self, 'directshowplayer/strings/en-US.json')
+            });
+
+            files.push({
+                lang: 'en-GB',
+                path: pluginManager.mapPath(self, 'directshowplayer/strings/en-GB.json')
             });
 
             files.push({
@@ -284,10 +289,10 @@
                 if (isVideo) {
                     if (enableFullscreen) {
 
-                        Emby.Page.showVideoOsd();
+                        embyRouter.showVideoOsd();
 
                     } else {
-                        Emby.Page.setTransparency(Emby.TransparencyLevel.Backdrop);
+                        embyRouter.setTransparency('backdrop');
                     }
                 }
 
@@ -333,7 +338,7 @@
         };
 
         self.destroy = function () {
-            Emby.Page.setTransparency(Emby.TransparencyLevel.None);
+            embyRouter.setTransparency('none');
         };
 
         self.pause = function () {

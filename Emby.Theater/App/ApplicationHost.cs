@@ -208,7 +208,8 @@ namespace Emby.Theater.App
         public override Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken, IProgress<double> progress)
         {
             var updateLevel = ConfigurationManager.CommonConfiguration.SystemUpdateLevel;
-            return new GithubUpdater(HttpClient, JsonSerializer, TimeSpan.FromTicks(0)).CheckForUpdateResult("MediaBrowser", "Emby.Theater.Windows", ApplicationVersion, updateLevel, "emby.theater.zip", "emby.theater", "emby.theater.zip", cancellationToken);
+            return new GithubUpdater(HttpClient, JsonSerializer)
+                .CheckForUpdateResult("MediaBrowser", "Emby.Theater.Windows", ApplicationVersion, updateLevel, "emby.theater.zip", "emby.theater", "emby.theater.zip", TimeSpan.FromTicks(0), cancellationToken);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, pluginManager, events, embyRouter) {
+    'use strict';
 
     return function () {
 

@@ -525,6 +525,7 @@ namespace Emby.Theater.DirectShow
                             if (ms.Type == MediaStreamType.Video)
                             {
                                 _startResolution = Display.GetCurrentResolution(_hostForm);
+
                                 if (ms.RealFrameRate.HasValue && !ms.IsInterlaced)
                                 {
                                     int videoRate = (int)ms.RealFrameRate;
@@ -564,7 +565,9 @@ namespace Emby.Theater.DirectShow
                 var isDvd = ((item.MediaSource.VideoType ?? VideoType.VideoFile) == VideoType.Dvd ||
                              (item.MediaSource.IsoType ?? IsoType.BluRay) == IsoType.Dvd);
 
-                Initialize(item.PlayablePath, isDvd, videoRenderer);
+                var isInterlaced = item.MediaStreams != null && item.MediaStreams.Any(i => i.Type == MediaStreamType.Video && i.IsInterlaced);
+
+                Initialize(item.PlayablePath, isDvd, videoRenderer, isInterlaced);
 
                 //_hiddenWindow.OnWMGRAPHNOTIFY = HandleGraphEvent;
                 //_hiddenWindow.OnDVDEVENT = HandleDvdEvent;
@@ -631,7 +634,9 @@ namespace Emby.Theater.DirectShow
         }
 
         private void Initialize(string path,
-            bool isDvd, string videoRenderer)
+            bool isDvd, 
+            string videoRenderer,
+            bool forceEnableDeinterlacing)
         {
             _filePath = path;
 
@@ -649,7 +654,7 @@ namespace Emby.Theater.DirectShow
                 InitializeDvd(path);
 
                 // Try to render the streams.
-                RenderStreams(_sourceFilter, videoRenderer, false);
+                RenderStreams(_sourceFilter, videoRenderer, false, forceEnableDeinterlacing);
                 //we don't need XySubFilter for DVD 
             }
             else
@@ -775,7 +780,7 @@ namespace Emby.Theater.DirectShow
                     DsError.ThrowExceptionForHR(hr);
                 }
                 // Try to render the streams.
-                RenderStreams(_sourceFilter, videoRenderer, true);
+                RenderStreams(_sourceFilter, videoRenderer, true, forceEnableDeinterlacing);
             }
 
             // Get the seeking capabilities.
@@ -830,7 +835,8 @@ namespace Emby.Theater.DirectShow
 
         private void RenderStreams(DirectShowLib.IBaseFilter pSource,
             string videoRenderer,
-            bool enableXySubFilter)
+            bool enableXySubFilter,
+            bool forceEnableDeinterlacing)
         {
             int hr;
 
@@ -1049,6 +1055,12 @@ namespace Emby.Theater.DirectShow
                                         DsError.ThrowExceptionForHR(hr);
 
                                         LAVSWDeintModes swDi = (LAVSWDeintModes)_config.VideoConfig.SW_DeintModes;
+
+                                        if (swDi == LAVSWDeintModes.None && forceEnableDeinterlacing)
+                                        {
+                                            swDi = LAVSWDeintModes.YADIF;
+                                        }
+
                                         LAVSWDeintModes testdi = vsett.GetSWDeintMode();
                                         _logger.Info("Current SW DI Mode: {0} Desired Mode: {1}", testdi, swDi);
                                         if (testdi != swDi)

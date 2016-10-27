@@ -1,4 +1,5 @@
 ﻿require(['apphost', 'events'], function (apphost, events) {
+    'use strict';
 
     var windowDragRegion;
 

@@ -1,4 +1,5 @@
 ﻿define([], function () {
+    'use strict';
 
     function exits(endpoint, path) {
         return new Promise(function (resolve, reject) {

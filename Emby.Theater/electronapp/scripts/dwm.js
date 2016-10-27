@@ -1,4 +1,5 @@
 ﻿require(['apphost', 'appSettings', 'connectionManager', 'events'], function (appHost, appSettings, connectionManager, events) {
+    'use strict';
 
     var settingsKey = 'dwmcheck';
 

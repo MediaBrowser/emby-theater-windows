@@ -17,7 +17,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using CommonIO.Windows;
 using MediaBrowser.Common.Implementations.Updates;
 using MediaBrowser.Model.IO;
 

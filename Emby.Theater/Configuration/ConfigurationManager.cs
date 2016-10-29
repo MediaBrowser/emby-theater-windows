@@ -4,7 +4,7 @@ using MediaBrowser.Common.Implementations.Configuration;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Serialization;
 using System;
-using CommonIO;
+using MediaBrowser.Model.IO;
 
 namespace Emby.Theater.Configuration
 {

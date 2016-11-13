@@ -93,22 +93,6 @@ namespace Emby.Theater.App
             return IsoManager;
         }
 
-        /// <summary>
-        /// Registers resources that classes will depend on
-        /// </summary>
-        protected override async Task RegisterResources(IProgress<double> progress)
-        {
-            await base.RegisterResources(progress).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Finds the parts.
-        /// </summary>
-        protected override void FindParts()
-        {
-            base.FindParts();
-        }
-
         protected override INetworkManager CreateNetworkManager(ILogger logger)
         {
             return new NetworkManager(logger);

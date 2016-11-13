@@ -404,7 +404,7 @@ namespace Emby.Theater.DirectShow.Configuration
         public bool ShowTrayIcon { get; set; }
         public bool PreferHighQualityAudioStreams { get; set; }
         public bool LoadMatroskaExternalSegments { get; set; }
-        public int NetworkStreamAnalysisDuration { get; set; }
+        public int NetworkStreamAnalysisDurationMs { get; set; }
         public int MaxQueueSize { get; set; }
 
         //public List<string> EnabledFormats { get; set; }
@@ -426,7 +426,7 @@ namespace Emby.Theater.DirectShow.Configuration
             ShowTrayIcon = false;
             PreferHighQualityAudioStreams = true;
             LoadMatroskaExternalSegments = true;
-            NetworkStreamAnalysisDuration = 1400;
+            NetworkStreamAnalysisDurationMs = 1800;
             MaxQueueMemSize = 256;
             MaxQueueSize = 350;
         }

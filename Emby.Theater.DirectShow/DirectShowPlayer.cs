@@ -749,8 +749,8 @@ namespace Emby.Theater.DirectShow
 
                             int NetworkStreamAnalysisDuration = lss.GetNetworkStreamAnalysisDuration();
 
-                            _logger.Debug("SetNetworkStreamAnalysisDuration: from {0} to {1}", NetworkStreamAnalysisDuration, _config.SplitterConfig.NetworkStreamAnalysisDuration);
-                            hr = lss.SetNetworkStreamAnalysisDuration(_config.SplitterConfig.NetworkStreamAnalysisDuration);
+                            _logger.Debug("SetNetworkStreamAnalysisDuration: from {0} to {1}", NetworkStreamAnalysisDuration, _config.SplitterConfig.NetworkStreamAnalysisDurationMs);
+                            hr = lss.SetNetworkStreamAnalysisDuration(_config.SplitterConfig.NetworkStreamAnalysisDurationMs);
                             DsError.ThrowExceptionForHR(hr);
 
                             int MaxQueueSize = lss.GetMaxQueueSize();

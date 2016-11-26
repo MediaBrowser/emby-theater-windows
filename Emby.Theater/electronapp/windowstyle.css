@@ -1,4 +1,5 @@
 ﻿.backgroundContainer-transparent:not(.withBackdrop) {
+    background-color: rgba(0,0,0,.01) !important;
 }
 
 @media all and (max-height: 720px) {

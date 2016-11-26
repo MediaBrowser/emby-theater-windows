@@ -86,6 +86,11 @@
             });
 
             files.push({
+                lang: 'it',
+                path: pluginManager.mapPath(self, 'directshowplayer/strings/it.json')
+            });
+
+            files.push({
                 lang: 'pl',
                 path: pluginManager.mapPath(self, 'directshowplayer/strings/pl.json')
             });

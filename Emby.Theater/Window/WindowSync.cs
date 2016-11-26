@@ -101,12 +101,19 @@ namespace Emby.Theater.Window
 
                 _form.InvokeIfRequired(() =>
                 {
-                    if (_form.WindowState == FormWindowState.Normal)
+                    var windowState = _form.WindowState;
+
+                    if (windowState == FormWindowState.Normal)
                     {
                         _form.Top = rect.Top;
                         _form.Left = rect.Left;
                         _form.Width = rect.Right - rect.Left;
                         _form.Height = rect.Bottom - rect.Top;
+                    }
+
+                    if (windowState != FormWindowState.Minimized)
+                    {
+                        FocusElectron();
                     }
                 });
             }
@@ -167,12 +174,12 @@ namespace Emby.Theater.Window
                         //NativeWindowMethods.SetWindowPos(_windowHandle, -2, _form.Left, _form.Top, _form.Width, _form.Height, 0);
                         //NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
                     }
-                });
 
-                if (newState != FormWindowState.Minimized)
-                {
-                    NativeWindowMethods.SetForegroundWindow(_windowHandle);
-                }
+                    if (newState != FormWindowState.Minimized)
+                    {
+                        FocusElectron();
+                    }
+                });
             }
             catch (Exception ex)
             {

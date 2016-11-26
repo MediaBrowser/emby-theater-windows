@@ -636,7 +636,7 @@ namespace Emby.Theater.DirectShow
         private void Initialize(string path,
             bool isDvd, 
             string videoRenderer,
-            bool forceEnableDeinterlacing)
+            bool isInterlaced)
         {
             _filePath = path;
 
@@ -654,7 +654,7 @@ namespace Emby.Theater.DirectShow
                 InitializeDvd(path);
 
                 // Try to render the streams.
-                RenderStreams(_sourceFilter, videoRenderer, false, forceEnableDeinterlacing);
+                RenderStreams(_sourceFilter, videoRenderer, false, isInterlaced);
                 //we don't need XySubFilter for DVD 
             }
             else
@@ -780,7 +780,7 @@ namespace Emby.Theater.DirectShow
                     DsError.ThrowExceptionForHR(hr);
                 }
                 // Try to render the streams.
-                RenderStreams(_sourceFilter, videoRenderer, true, forceEnableDeinterlacing);
+                RenderStreams(_sourceFilter, videoRenderer, true, isInterlaced);
             }
 
             // Get the seeking capabilities.
@@ -836,7 +836,7 @@ namespace Emby.Theater.DirectShow
         private void RenderStreams(DirectShowLib.IBaseFilter pSource,
             string videoRenderer,
             bool enableXySubFilter,
-            bool forceEnableDeinterlacing)
+            bool isInterlaced)
         {
             int hr;
 
@@ -1056,9 +1056,9 @@ namespace Emby.Theater.DirectShow
 
                                         LAVSWDeintModes swDi = (LAVSWDeintModes)_config.VideoConfig.SW_DeintModes;
 
-                                        if (swDi == LAVSWDeintModes.None && forceEnableDeinterlacing)
+                                        if (!isInterlaced)
                                         {
-                                            swDi = LAVSWDeintModes.YADIF;
+                                            swDi = LAVSWDeintModes.None;
                                         }
 
                                         LAVSWDeintModes testdi = vsett.GetSWDeintMode();

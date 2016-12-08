@@ -425,6 +425,10 @@ namespace Emby.Theater.DirectShowPlayer
                 {
                     SetPositionTicks(value);
                 }
+                else
+                {
+                    _logger.Error("Unrecognized positionticks value {0}", context.Request.QueryString["val"]);
+                }
             }
             else if (string.Equals(command, "setAudioStreamIndex", StringComparison.OrdinalIgnoreCase))
             {
@@ -433,6 +437,10 @@ namespace Emby.Theater.DirectShowPlayer
                 {
                     _player.SetAudioStreamIndex(value);
                 }
+                else
+                {
+                    _logger.Error("Unrecognized setAudioStreamIndex value {0}", context.Request.QueryString["index"]);
+                }
             }
             else if (string.Equals(command, "setSubtitleStreamIndex", StringComparison.OrdinalIgnoreCase))
             {
@@ -440,6 +448,10 @@ namespace Emby.Theater.DirectShowPlayer
                 if (int.TryParse(context.Request.QueryString["index"], NumberStyles.Any, CultureInfo.InvariantCulture, out value))
                 {
                     _player.SetSubtitleStreamIndex(value);
+                }
+                else
+                {
+                    _logger.Error("Unrecognized setSubtitleStreamIndex value {0}", context.Request.QueryString["index"]);
                 }
             }
 

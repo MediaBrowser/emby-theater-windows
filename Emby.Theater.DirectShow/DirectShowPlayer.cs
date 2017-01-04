@@ -25,6 +25,7 @@ using MediaBrowser.Model.IO;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Common.Net;
 using Emby.Theater.DirectShow.Configuration;
+using Emby.Theater.DirectShow.Window;
 using MediaBrowser.Model.MediaInfo;
 
 namespace Emby.Theater.DirectShow
@@ -266,15 +267,20 @@ namespace Emby.Theater.DirectShow
                 bool isFS = false;
 
                 //Multimonitor support
-                Screen screen = Screen.FromControl(_hostForm);
-                if (_hostForm.Height == screen.Bounds.Height && _hostForm.Width == screen.Bounds.Width)
+                Screen screen = Screen.FromHandle(VideoWindowHandle);
+
+                var windowHeight = _hostForm.Height;
+                var windowWidth = _hostForm.Width;
+                if (windowHeight == screen.Bounds.Height && windowWidth == screen.Bounds.Width)
                     isFS = true;
 
-                _logger.Debug("IsFullScreen: W: {0} H: {1} Top: {2} Bottom: {3} Left: {4} Right: {5}", _hostForm.Width, _hostForm.Height, screen.Bounds.Top, screen.Bounds.Bottom, screen.Bounds.Left, screen.Bounds.Right);
+                _logger.Debug("IsFullScreen: W: {0} H: {1} Top: {2} Bottom: {3} Left: {4} Right: {5}", windowWidth, windowHeight, screen.Bounds.Top, screen.Bounds.Bottom, screen.Bounds.Left, screen.Bounds.Right);
 
                 return isFS;
             }
         }
+
+        private System.Threading.Timer _timer = null;
 
         public DirectShowPlayer(
             InternalDirectShowPlayer playerWrapper
@@ -289,9 +295,30 @@ namespace Emby.Theater.DirectShow
             _config = config;
             _httpClient = httpClient;
 
+            _videoWindowHandle = _hostForm.Handle;
+
             _hostForm.GraphNotify += _hostForm_GraphNotify;
             _hostForm.DvdEvent += _hostForm_DvdEvent;
+            //_timer = new System.Threading.Timer(TimerCallback, null, 200, 200);
         }
+
+        public void TimerCallback(object state)
+        {
+            if (_hostForm.InvokeRequired)
+            {
+                Action action = HandleGraphEvent;
+                _hostForm.Invoke(action);
+            }
+            else
+            {
+                HandleGraphEvent();
+            }
+        }
+
+        public const int WM_APP = 0x8000;
+        public const int WM_GRAPH_NOTIFY = WM_APP + 1;
+        public const int WM_KEYDOWN = 0x0100;
+        public const int WM_DVD_EVENT = 0x00008002;
 
         void _hostForm_DvdEvent(object sender, EventArgs e)
         {
@@ -344,26 +371,12 @@ namespace Emby.Theater.DirectShow
         //    //throw new NotImplementedException();
         //}
 
+        private IntPtr _videoWindowHandle;
         private IntPtr VideoWindowHandle
         {
             get
             {
-                return _hostForm.Handle;
-                IntPtr chromeWindow = NativeMethods.FindWindowEx(_hostForm.Handle, IntPtr.Zero, null, null);
-
-                //crawl down the window stack until we reach the bottom
-                IntPtr lastPtr = IntPtr.Zero;
-                do
-                {
-                    lastPtr = chromeWindow;
-                    chromeWindow = NativeMethods.FindWindowEx(chromeWindow, IntPtr.Zero, null, null);
-
-                } while (chromeWindow != IntPtr.Zero);
-
-                if (lastPtr != IntPtr.Zero)
-                    return lastPtr;
-                else
-                    return _hostForm.Handle;
+                return _videoWindowHandle;
             }
         }
 
@@ -478,8 +491,8 @@ namespace Emby.Theater.DirectShow
             try
             {
                 // Don't need madvr when not playing fullscreen
-                string videoRenderer = enableFullScreen ? 
-                    _config.VideoConfig.VideoRenderer : 
+                string videoRenderer = enableFullScreen ?
+                    _config.VideoConfig.VideoRenderer :
                     (IsEvrAvailable() ? "evr" : "evrcp");
 
                 if (string.IsNullOrWhiteSpace(videoRenderer))
@@ -524,7 +537,7 @@ namespace Emby.Theater.DirectShow
                         {
                             if (ms.Type == MediaStreamType.Video)
                             {
-                                _startResolution = Display.GetCurrentResolution(_hostForm);
+                                _startResolution = Display.GetCurrentResolution(VideoWindowHandle);
 
                                 if (ms.RealFrameRate.HasValue && !ms.IsInterlaced)
                                 {
@@ -542,7 +555,7 @@ namespace Emby.Theater.DirectShow
                                     {
                                         Resolution desiredRes = new Resolution(_startResolution.ToString());
                                         desiredRes.Rate = videoRate;
-                                        if (Display.ChangeResolution(_hostForm, desiredRes, false))
+                                        if (Display.ChangeResolution(VideoWindowHandle, desiredRes, false))
                                             _logger.Info("Changed resolution from {0} to {1}", _startResolution, desiredRes);
                                         else
                                         {
@@ -634,7 +647,7 @@ namespace Emby.Theater.DirectShow
         }
 
         private void Initialize(string path,
-            bool isDvd, 
+            bool isDvd,
             string videoRenderer,
             bool isInterlaced)
         {
@@ -2132,6 +2145,66 @@ namespace Emby.Theater.DirectShow
             }
         }
 
+        private void SetAspectRatioLegacy(int screenWidth, int screenHeight, Size? ratio = null)
+        {
+            // Get Aspect Ratio
+            int aspectX;
+            int aspectY;
+
+            if (ratio.HasValue)
+            {
+                aspectX = ratio.Value.Width;
+                aspectY = ratio.Value.Height;
+            }
+            else
+            {
+                var basicVideo2 = (IBasicVideo2)m_graph;
+                basicVideo2.GetPreferredAspectRatio(out aspectX, out aspectY);
+
+                var sourceHeight = 0;
+                var sourceWidth = 0;
+
+                _basicVideo.GetVideoSize(out sourceWidth, out sourceHeight);
+
+                if (aspectX == 0 || aspectY == 0 || sourceWidth > 0 || sourceHeight > 0)
+                {
+                    aspectX = sourceWidth;
+                    aspectY = sourceHeight;
+                }
+            }
+
+            // Adjust Video Size
+            var iAdjustedHeight = 0;
+
+            if (aspectX > 0 && aspectY > 0)
+            {
+                double adjustedHeight = aspectY * screenWidth;
+                adjustedHeight /= aspectX;
+
+                iAdjustedHeight = Convert.ToInt32(Math.Round(adjustedHeight));
+            }
+
+            if (screenHeight > iAdjustedHeight && iAdjustedHeight > 0)
+            {
+                double totalMargin = (screenHeight - iAdjustedHeight);
+                var topMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
+
+                _basicVideo.SetDestinationPosition(0, topMargin, screenWidth, iAdjustedHeight);
+            }
+            else if (iAdjustedHeight > 0)
+            {
+                double adjustedWidth = aspectX * screenHeight;
+                adjustedWidth /= aspectY;
+
+                var iAdjustedWidth = Convert.ToInt32(Math.Round(adjustedWidth));
+
+                double totalMargin = (screenWidth - iAdjustedWidth);
+                var leftMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
+
+                _basicVideo.SetDestinationPosition(leftMargin, 0, iAdjustedWidth, screenHeight);
+            }
+        }
+
         private void SetAspectRatio(Size? ratio = null, bool setVideoWindow = true)
         {
             int screenWidth;
@@ -2142,17 +2215,21 @@ namespace Emby.Theater.DirectShow
 
             if (_isInExclusiveMode)
             {
-                var size = System.Windows.Forms.Screen.FromControl(_hostForm).Bounds;
+                var size = System.Windows.Forms.Screen.FromHandle(VideoWindowHandle).Bounds;
 
                 screenWidth = size.Width;
                 screenHeight = size.Height;
             }
             else
             {
-                var hiddenWindowContentSize = _hostForm.Bounds;
+                RECT rect = new RECT();
+                NativeWindowMethods.GetWindowRect(VideoWindowHandle, ref rect);
+                //var hiddenWindowContentSize = _hostForm.Bounds;
+                //screenWidth = hiddenWindowContentSize.Width;
+                //screenHeight = hiddenWindowContentSize.Height;
 
-                screenWidth = hiddenWindowContentSize.Width;
-                screenHeight = hiddenWindowContentSize.Height;
+                screenWidth = rect.Right - rect.Left;
+                screenHeight = rect.Bottom - rect.Top;
             }
 
             // Set the display position to the entire window.
@@ -2198,6 +2275,17 @@ namespace Emby.Theater.DirectShow
                             dVRWidth = dWRWidth;
                             dVRHeight = dWRHeight;
                             break;
+                        case VideoScalingScheme.ZOOM1:
+                        case VideoScalingScheme.ZOOM2:
+                            {
+                                double minw = dWRWidth < dVRWidth ? dWRWidth : dVRWidth;
+                                double maxw = dWRWidth > dVRWidth ? dWRWidth : dVRWidth;
+
+                                double scale = _iVideoScaling == VideoScalingScheme.ZOOM1 ? 1.0 / 3.0 : 2.0 / 3.0;
+                                dVRWidth = minw + (maxw - minw) * scale;
+                                dVRHeight = dVRWidth / dVideoAR;
+                                break;
+                            }
                         default:
                         //ASSERT(FALSE);
                         // Fallback to "Touch Window From Inside" if settings were corrupted.
@@ -2213,17 +2301,6 @@ namespace Emby.Theater.DirectShow
                                 dVRHeight = dWRHeight;
                             }
                             break;
-                        case VideoScalingScheme.ZOOM1:
-                        case VideoScalingScheme.ZOOM2:
-                            {
-                                double minw = dWRWidth < dVRWidth ? dWRWidth : dVRWidth;
-                                double maxw = dWRWidth > dVRWidth ? dWRWidth : dVRWidth;
-
-                                double scale = _iVideoScaling == VideoScalingScheme.ZOOM1 ? 1.0 / 3.0 : 2.0 / 3.0;
-                                dVRWidth = minw + (maxw - minw) * scale;
-                                dVRHeight = dVRWidth / dVideoAR;
-                                break;
-                            }
                     }
 
                     // Scale video frame
@@ -2244,9 +2321,12 @@ namespace Emby.Theater.DirectShow
                     //dRect.right = dRect.right + (ps.OverscanWidth / 2);//this.Width;
                     //dRect.bottom = dRect.bottom + (ps.OverscanHeight / 2);//this.Height;
                 }
+
+                dRect = new MFRect(0, 0, screenWidth, screenHeight);
                 _logger.Debug("Source Rect T: {0} L: {1} B: {2} R: {3} Dest Rect T: {4} L: {5} B: {6} R: {7}", sRect.top, sRect.left, sRect.bottom, sRect.right, dRect.top, dRect.left, dRect.bottom, dRect.right);
 
                 _mPDisplay.SetVideoPosition(sRect, dRect);
+                //SetAspectRatioLegacy(screenWidth, screenHeight, ratio);
             }
             else if (_madvr != null)
             {
@@ -2272,66 +2352,7 @@ namespace Emby.Theater.DirectShow
                     hr = _madCmd.SendCommandString("setZoomMode", zoomMode);
                 }
             }
-            //this shouldn't be necessary anymore. EVR & EVR+ are configured via _mPDisplay, and madVR via IMadVRCommand
-            //else
-            //{
-            //    // Get Aspect Ratio
-            //    int aspectX;
-            //    int aspectY;
 
-            //    if (ratio.HasValue)
-            //    {
-            //        aspectX = ratio.Value.Width;
-            //        aspectY = ratio.Value.Height;
-            //    }
-            //    else
-            //    {
-            //        var basicVideo2 = (IBasicVideo2)m_graph;
-            //        basicVideo2.GetPreferredAspectRatio(out aspectX, out aspectY);
-
-            //        var sourceHeight = 0;
-            //        var sourceWidth = 0;
-
-            //        _basicVideo.GetVideoSize(out sourceWidth, out sourceHeight);
-
-            //        if (aspectX == 0 || aspectY == 0 || sourceWidth > 0 || sourceHeight > 0)
-            //        {
-            //            aspectX = sourceWidth;
-            //            aspectY = sourceHeight;
-            //        }
-            //    }
-
-            //    // Adjust Video Size
-            //    var iAdjustedHeight = 0;
-
-            //    if (aspectX > 0 && aspectY > 0)
-            //    {
-            //        double adjustedHeight = aspectY * screenWidth;
-            //        adjustedHeight /= aspectX;
-
-            //        iAdjustedHeight = Convert.ToInt32(Math.Round(adjustedHeight));
-            //    }
-
-            //    if (screenHeight > iAdjustedHeight && iAdjustedHeight > 0)
-            //    {
-            //        double totalMargin = (screenHeight - iAdjustedHeight);
-            //        var topMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
-
-            //        _basicVideo.SetDestinationPosition(0, topMargin, screenWidth, iAdjustedHeight);
-            //    }
-            //    else if (iAdjustedHeight > 0)
-            //    {
-            //        double adjustedWidth = aspectX * screenHeight;
-            //        adjustedWidth /= aspectY;
-
-            //        var iAdjustedWidth = Convert.ToInt32(Math.Round(adjustedWidth));
-
-            //        double totalMargin = (screenWidth - iAdjustedWidth);
-            //        var leftMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
-
-            //        _basicVideo.SetDestinationPosition(leftMargin, 0, iAdjustedWidth, screenHeight);
-            //    }
-            //}
             _logger.Debug("Screen Width: {0} Screen Height: {1}", screenWidth, screenHeight);
 
             if (setVideoWindow)
@@ -2410,7 +2431,7 @@ namespace Emby.Theater.DirectShow
             if (_startResolution != null)
             {
                 _logger.Info("Change resolution back to {0}", _startResolution);
-                Display.ChangeResolution(_hostForm, _startResolution, false);
+                Display.ChangeResolution(VideoWindowHandle, _startResolution, false);
             }
 
             DsError.ThrowExceptionForHR(hr);
@@ -2819,6 +2840,11 @@ namespace Emby.Theater.DirectShow
 
         private void DisposePlayer()
         {
+            if (_timer != null)
+            {
+                _timer.Dispose();
+                _timer = null;
+            }
             _hostForm.GraphNotify -= _hostForm_GraphNotify;
             _hostForm.DvdEvent -= _hostForm_DvdEvent;
 

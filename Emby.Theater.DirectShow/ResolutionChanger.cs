@@ -80,26 +80,26 @@ namespace Emby.Theater.DirectShow
             return _modes;
         }
 
-        public static Screen GetScreenFromControl(Control control)
+        public static Screen GetScreenFromHandle(IntPtr handle)
         {
-            return Screen.FromControl(control);
+            return Screen.FromHandle(handle);
         }
 
-        public static Resolution GetCurrentResolution(Form host)
+        public static Resolution GetCurrentResolution(IntPtr windowHandle)
         {
             DEVMODE cDm = new DEVMODE();
             //cDm.dmDeviceName = new String(new char[32]);
             //cDm.dmFormName = new String(new char[32]);
             cDm.dmSize = (short)Marshal.SizeOf(cDm);
 
-            NativeMethods.EnumDisplaySettings(GetScreenFromControl(host).DeviceName, NativeMethods.ENUM_CURRENT_SETTINGS, ref cDm);
+            NativeMethods.EnumDisplaySettings(GetScreenFromHandle(windowHandle).DeviceName, NativeMethods.ENUM_CURRENT_SETTINGS, ref cDm);
 
             Resolution res = new Resolution(cDm.dmPelsWidth, cDm.dmPelsHeight, cDm.dmDisplayFrequency, ((cDm.dmDisplayFlags & NativeMethods.DM_INTERLACED) == NativeMethods.DM_INTERLACED), cDm.dmDisplayFixedOutput, cDm.dmBitsPerPel);
 
             return res;
         }
 
-        public static bool ChangeResolution(Form host, Resolution res, bool permanent)
+        public static bool ChangeResolution(IntPtr windowHandle, Resolution res, bool permanent)
         {
             int i = 0;
 
@@ -108,7 +108,7 @@ namespace Emby.Theater.DirectShow
             //cDm.dmFormName = new String(new char[32]);
             cDm.dmSize = (short)Marshal.SizeOf(cDm);
             //FileLogger.Log("DEVMODE Size: {0}", Marshal.SizeOf(cDm));
-            Screen hostScreen = GetScreenFromControl(host);
+            Screen hostScreen = GetScreenFromHandle(windowHandle);
 
             NativeMethods.EnumDisplaySettings(hostScreen.DeviceName, NativeMethods.ENUM_CURRENT_SETTINGS, ref cDm);
 

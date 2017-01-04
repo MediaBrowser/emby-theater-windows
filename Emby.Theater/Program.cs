@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Emby.Theater.DirectShow.Window;
 using Emby.Theater.Window;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Net;

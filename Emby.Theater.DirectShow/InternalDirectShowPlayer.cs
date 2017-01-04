@@ -15,7 +15,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Emby.Theater.Common;
-using Emby.Theater.DirectShow.Streaming;
 using Emby.Theater.DirectShow.Configuration;
 using MediaBrowser.Common.Configuration;
 

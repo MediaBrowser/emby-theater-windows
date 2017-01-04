@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Emby.Theater.Common;
+using Emby.Theater.DirectShow.Window;
 using Emby.Theater.DirectShowPlayer;
 using Emby.Theater.Window;
 using HttpListener = SocketHttpListener.Net.HttpListener;

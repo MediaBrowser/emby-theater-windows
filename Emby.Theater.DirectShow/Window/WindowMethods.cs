@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Emby.Theater.Window
+namespace Emby.Theater.DirectShow.Window
 {
     public static class NativeWindowMethods
     {
@@ -21,6 +21,27 @@ namespace Emby.Theater.Window
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
 
+        public delegate int HookProc(int nCode, IntPtr wParam, IntPtr lParam);
+
+        //This is the Import for the SetWindowsHookEx function.
+        //Use this function to install a thread-specific hook.
+        [DllImport("user32.dll", CharSet = CharSet.Auto,
+         CallingConvention = CallingConvention.StdCall)]
+        public static extern int SetWindowsHookEx(int idHook, HookProc lpfn,
+        IntPtr hInstance, int threadId);
+
+        //This is the Import for the UnhookWindowsHookEx function.
+        //Call this function to uninstall the hook.
+        [DllImport("user32.dll", CharSet = CharSet.Auto,
+         CallingConvention = CallingConvention.StdCall)]
+        public static extern bool UnhookWindowsHookEx(int idHook);
+
+        //This is the Import for the CallNextHookEx function.
+        //Use this function to pass the hook information to the next hook procedure in chain.
+        [DllImport("user32.dll", CharSet = CharSet.Auto,
+         CallingConvention = CallingConvention.StdCall)]
+        public static extern int CallNextHookEx(int idHook, int nCode,
+        IntPtr wParam, IntPtr lParam);
         public static WINDOWPLACEMENT GetPlacement(IntPtr hwnd)
         {
             WINDOWPLACEMENT placement = new WINDOWPLACEMENT();

@@ -36,47 +36,11 @@ namespace Emby.Theater.Common
                             eh(this, new EventArgs());
                     }
                     break;
-                case WM_APPCOMMAND:
-                    {
-                        int cmd = (m.LParam.ToInt32() / 65536);
-                        var appCmd = MapAppCommand(cmd);
-                        if (appCmd.HasValue)
-                        {
-                            OnAppCommand(appCmd.Value);
-                        }
-                        break;
-                    }
                 default:
                     break;
             }
 
             base.WndProc(ref m);
-        }
-
-        private AppCommand? MapAppCommand(int cmd)
-        {
-            AppCommand? appCommand = null;
-
-            // dont use exception handling to exclude most frequent appCommand, its very slow
-            // use an excludion test first that will catch most of teh cases
-            if (cmd >= (int)AppCommand.APPCOMMAND_BROWSER_BACKWARD || cmd <= (int)AppCommand.APPCOMMAND_ASP_TOGGLE)
-            {
-                try
-                {
-                    appCommand = (AppCommand)cmd;
-                }
-                catch (Exception)
-                {
-                    // not our app command
-                }
-            }
-
-            return appCommand;
-        }
-
-        protected virtual void OnAppCommand(AppCommand cmd)
-        {
-            
         }
     }
 }

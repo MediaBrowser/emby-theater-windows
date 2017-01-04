@@ -145,7 +145,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnhandledExceptionWriter.cs" />
-    <Compile Include="Window\WindowMethods.cs" />
     <Compile Include="Window\WindowSync.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

@@ -114,10 +114,10 @@
     </Compile>
     <Compile Include="ResolutionChanger.cs" />
     <Compile Include="Standby.cs" />
-    <Compile Include="Streaming\MediaBrowserTheaterProfile.cs" />
     <Compile Include="StringProcessing.cs" />
     <Compile Include="Subtitles.cs" />
     <Compile Include="URCOMLoader.cs" />
+    <Compile Include="Window\WindowMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

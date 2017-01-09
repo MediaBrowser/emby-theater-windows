@@ -186,6 +186,7 @@ namespace Emby.Theater.DirectShow
         private DirectShowPlayerConfiguration _config;
         private string _filePath = string.Empty;
         private bool _customEvrPresenterLoaded = false;
+        private string _currentVideoRenderer;
         //private IUserInputManager _input = null;
         //private MMDevice _audioDevice = null;
         private Resolution _startResolution = null;
@@ -859,7 +860,7 @@ namespace Emby.Theater.DirectShow
                 throw new Exception("Could not QueryInterface for the IFilterGraph2");
             }
 
-            var useDefaultRenderer = true;
+            var useDefaultAudioRenderer = true;
 
             DirectShowLib.IEnumPins pEnum;
             hr = pSource.EnumPins(out pEnum);
@@ -882,6 +883,7 @@ namespace Emby.Theater.DirectShow
                     DirectShowLib.IPin decOut = null;
                     DirectShowLib.IPin rendIn = null;
 
+                    _currentVideoRenderer = videoRenderer;
                     var enableMadvr = string.Equals(videoRenderer, "madvr", StringComparison.OrdinalIgnoreCase);
 
                     try
@@ -1209,7 +1211,7 @@ namespace Emby.Theater.DirectShow
                                         {
                                             hr = m_graph.AddFilter(aRenderer, "Reclock Audio Renderer");
                                             DsError.ThrowExceptionForHR(hr);
-                                            useDefaultRenderer = false;
+                                            useDefaultAudioRenderer = false;
 
                                             _logger.Debug("Added reclock audio renderer");
                                         }
@@ -1228,7 +1230,7 @@ namespace Emby.Theater.DirectShow
                                         {
                                             hr = m_graph.AddFilter(aRenderer, "WASAPI Audio Renderer");
                                             DsError.ThrowExceptionForHR(hr);
-                                            useDefaultRenderer = false;
+                                            useDefaultAudioRenderer = false;
                                             _logger.Debug("Added WASAPI audio renderer");
 
                                             IMPAudioRendererConfig arSett = aRenderer as IMPAudioRendererConfig;
@@ -1264,7 +1266,7 @@ namespace Emby.Theater.DirectShow
                                     break;
                             }
 
-                            if (useDefaultRenderer)
+                            if (useDefaultAudioRenderer)
                             {
                                 AddDefaultAudioRenderer();
                             }
@@ -2322,7 +2324,10 @@ namespace Emby.Theater.DirectShow
                     //dRect.bottom = dRect.bottom + (ps.OverscanHeight / 2);//this.Height;
                 }
 
-                dRect = new MFRect(0, 0, screenWidth, screenHeight);
+                if (string.Equals(_currentVideoRenderer, "evr", StringComparison.OrdinalIgnoreCase))
+                {
+                    dRect = new MFRect(0, 0, screenWidth, screenHeight);
+                }
                 _logger.Debug("Source Rect T: {0} L: {1} B: {2} R: {3} Dest Rect T: {4} L: {5} B: {6} R: {7}", sRect.top, sRect.left, sRect.bottom, sRect.right, dRect.top, dRect.left, dRect.bottom, dRect.right);
 
                 _mPDisplay.SetVideoPosition(sRect, dRect);

@@ -67,7 +67,7 @@ namespace Emby.Theater.DirectShowPlayer
                 if (mediaSource.VideoType.Value == VideoType.VideoFile ||
                     mediaSource.VideoType.Value == VideoType.Iso)
                 {
-                    if (File.Exists(mediaSource.Path))
+                    if (File.Exists(mediaSource.Path) && mediaSource.SupportsDirectPlay)
                     {
                         path = mediaSource.Path;
                     }

@@ -270,8 +270,12 @@ namespace Emby.Theater.DirectShow
                 //Multimonitor support
                 Screen screen = Screen.FromHandle(VideoWindowHandle);
 
-                var windowHeight = _hostForm.Height;
-                var windowWidth = _hostForm.Width;
+                RECT rect = new RECT();
+                NativeWindowMethods.GetWindowRect(VideoWindowHandle, ref rect);
+
+                var windowWidth = rect.Right - rect.Left;
+                var windowHeight = rect.Bottom - rect.Top;
+
                 if (windowHeight == screen.Bounds.Height && windowWidth == screen.Bounds.Width)
                     isFS = true;
 

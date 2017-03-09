@@ -11,22 +11,22 @@ namespace Emby.Theater.Window
     public class WindowSync
     {
         private readonly Form _form;
-        private readonly IntPtr _windowHandle;
+        private readonly IntPtr _browserWindowHandle;
         private readonly ILogger _logger;
 
-        public WindowSync(Form form, IntPtr windowHandle, ILogger logger)
+        public WindowSync(Form form, IntPtr browserWindowHandle, ILogger logger)
         {
             _form = form;
-            _windowHandle = windowHandle;
+            _browserWindowHandle = browserWindowHandle;
             _logger = logger;
 
             _form.Invoke(new MethodInvoker(() =>
             {
                 _form.ShowInTaskbar = true;
-                NativeWindowMethods.SetWindowLong(_windowHandle, -8, _form.Handle);
+                NativeWindowMethods.SetWindowLong(_browserWindowHandle, -8, _form.Handle);
             }));
 
-            var placement = NativeWindowMethods.GetPlacement(_windowHandle);
+            var placement = NativeWindowMethods.GetPlacement(_browserWindowHandle);
             switch (placement.showCmd)
             {
                 case ShowWindowCommands.Maximized:
@@ -49,7 +49,7 @@ namespace Emby.Theater.Window
         public void FocusElectron()
         {
             //_logger.Info("Ensuring the electron window has focus");
-            NativeWindowMethods.SetForegroundWindow(_windowHandle);
+            NativeWindowMethods.SetForegroundWindow(_browserWindowHandle);
         }
 
         void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
@@ -90,7 +90,7 @@ namespace Emby.Theater.Window
             try
             {
                 RECT rect = new RECT();
-                NativeWindowMethods.GetWindowRect(_windowHandle, ref rect);
+                NativeWindowMethods.GetWindowRect(_browserWindowHandle, ref rect);
 
                 var width = rect.Right - rect.Left;
                 var height = rect.Bottom - rect.Top;
@@ -130,16 +130,13 @@ namespace Emby.Theater.Window
             try
             {
                 FormWindowState newState;
-                bool fullscreen = false;
                 if (string.Equals(newWindowState, "fullscreen", StringComparison.OrdinalIgnoreCase))
                 {
                     newState = FormWindowState.Maximized;
-                    fullscreen = true;
                 }
                 else if (string.Equals(newWindowState, "maximized", StringComparison.OrdinalIgnoreCase))
                 {
                     newState = FormWindowState.Maximized;
-                    fullscreen = true;
                 }
                 else if (string.Equals(newWindowState, "minimized", StringComparison.OrdinalIgnoreCase))
                 {
@@ -153,28 +150,6 @@ namespace Emby.Theater.Window
                 _form.InvokeIfRequired(() =>
                 {
                     _form.WindowState = newState;
-
-                    if (fullscreen)
-                    {
-                        //NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
-                        //var placement = new WINDOWPLACEMENT();
-                        //placement.showCmd = ShowWindowCommands.Maximized;
-                        //placement.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
-                        //NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
-                    }
-                    else if (newState == FormWindowState.Maximized)
-                    {
-                        //NativeWindowMethods.SetWindowPos(_windowHandle, -1, _form.Left, _form.Top, _form.Width, _form.Height, 0);
-                        //var placement = new WINDOWPLACEMENT();
-                        //placement.showCmd = ShowWindowCommands.Maximized;
-                        //placement.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
-                        //NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
-                    }
-                    else if (newState == FormWindowState.Normal)
-                    {
-                        //NativeWindowMethods.SetWindowPos(_windowHandle, -2, _form.Left, _form.Top, _form.Width, _form.Height, 0);
-                        //NativeWindowMethods.SetWindowPlacement(_windowHandle, ref placement);
-                    }
 
                     if (newState != FormWindowState.Minimized)
                     {

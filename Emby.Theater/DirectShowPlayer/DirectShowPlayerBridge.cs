@@ -64,10 +64,16 @@ namespace Emby.Theater.DirectShowPlayer
 
             if (mediaSource.Protocol == MediaProtocol.File && mediaSource.VideoType.HasValue)
             {
-                if (mediaSource.VideoType.Value == VideoType.VideoFile ||
-                    mediaSource.VideoType.Value == VideoType.Iso)
+                if (mediaSource.VideoType.Value == VideoType.VideoFile)
                 {
-                    if (File.Exists(mediaSource.Path) && mediaSource.SupportsDirectPlay)
+                    if (File.Exists(mediaSource.Path) && !string.Equals(Path.GetExtension(mediaSource.Path), "dvr-ms", StringComparison.OrdinalIgnoreCase))
+                    {
+                        path = mediaSource.Path;
+                    }
+                }
+                else if (mediaSource.VideoType.Value == VideoType.Iso)
+                {
+                    if (File.Exists(mediaSource.Path))
                     {
                         path = mediaSource.Path;
                     }

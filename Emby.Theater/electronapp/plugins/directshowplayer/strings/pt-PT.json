@@ -1,11 +1,11 @@
 {
-    "ExpandMono": "Expand mono",
-    "ExpandSixToSeven": "Expand 6.1 to 7.1",
-    "FilterSet": "Filter set",
-    "Edge": "Edge",
-    "AudioEndPoint": "WASAPI audio device",
+    "ExpandMono": "Expandir mono",
+    "ExpandSixToSeven": "Expandir 6.1 para 7.1",
+    "FilterSet": "Conjunto de filtros",
+    "Edge": "Limite",
+    "AudioEndPoint": "Dispositivo de \u00e1udio WASAPI",
     "Stable": "Est\u00e1vel",
-    "OutputRange": "Output range",
+    "OutputRange": "Intervalo de sa\u00edda",
     "HardwareAccelerationMode": "Modo acelera\u00e7\u00e3o por hardware",
     "Auto": "Autom\u00e1tico",
     "Disabled": "Desativado",
@@ -18,10 +18,10 @@
     "SmoothMotionMode": "Modo de movimento suave",
     "Always": "Sempre",
     "AlmostAlways": "Quase Sempre",
-    "AvoidJudder": "Avoid Judder",
-    "SpeakerLayout": "Speaker layout",
+    "AvoidJudder": "Evitar Trepida\u00e7\u00e3o",
+    "SpeakerLayout": "Esquema das colunas",
     "Stereo": "Est\u00e9reo",
-    "Quadraphonic": "Quadraphonic",
+    "Quadraphonic": "Quadraf\u00f3nico",
     "Surround": "Surround",
-    "DynamicRangeCompression": "Dynamic range compression"
+    "DynamicRangeCompression": "Intervalo din\u00e2mico de compress\u00e3o"
 }

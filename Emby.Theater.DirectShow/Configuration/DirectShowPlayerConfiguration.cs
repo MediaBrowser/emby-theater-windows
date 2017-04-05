@@ -180,7 +180,7 @@ namespace Emby.Theater.DirectShow.Configuration
                 HwaEnabledCodecs.Add("MPEG2");
                 //HwaEnabledCodecs.Add("MPEG2DVD");
                 //HwaEnabledCodecs.Add("MPEG4");
-                //HwaEnabledCodecs.Add("HEVC");
+                HwaEnabledCodecs.Add("HEVC");
                 //HwaEnabledCodecs.Add("VP9");
             }
 

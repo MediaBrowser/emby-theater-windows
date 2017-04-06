@@ -107,7 +107,7 @@ namespace Emby.Theater.DirectShow.Configuration
         /// <summary>
         /// Gets or sets video codecs that will be HWA. 
         /// </summary>
-        public List<string> HwaEnabledCodecs { get; set; }
+        public List<string> HwEnabledCodecs { get; set; }
 
         /// <summary>
         /// Gets or sets video codecs that will be enabled. 
@@ -129,7 +129,7 @@ namespace Emby.Theater.DirectShow.Configuration
 
         public VideoConfiguration()
         {
-            HwaEnabledCodecs = new List<string>();
+            HwEnabledCodecs = new List<string>();
             EnabledCodecs = new List<string>();
 
             UseMadVrSmoothMotion = false;
@@ -149,7 +149,7 @@ namespace Emby.Theater.DirectShow.Configuration
 
         public void ResetDefaults()
         {
-            HwaEnabledCodecs.Clear();
+            HwEnabledCodecs.Clear();
             EnabledCodecs.Clear();
             SetDefaults();
         }
@@ -173,14 +173,14 @@ namespace Emby.Theater.DirectShow.Configuration
             //and since most any PC should be able to manage it, we're not going to turn it on by default
             //also skip MPEG4 since most GPUs can't HWA and it's buggy
             //the full list of codecs can be had from DirectShowPlayer.GetLAVVideoHwaCodecs for UI config building
-            if (HwaEnabledCodecs.Count == 0)
+            if (HwEnabledCodecs.Count == 0)
             {
-                HwaEnabledCodecs.Add("H264");
-                HwaEnabledCodecs.Add("VC1");
-                HwaEnabledCodecs.Add("MPEG2");
+                HwEnabledCodecs.Add("H264");
+                HwEnabledCodecs.Add("VC1");
+                HwEnabledCodecs.Add("MPEG2");
                 //HwaEnabledCodecs.Add("MPEG2DVD");
                 //HwaEnabledCodecs.Add("MPEG4");
-                HwaEnabledCodecs.Add("HEVC");
+                HwEnabledCodecs.Add("HEVC");
                 //HwaEnabledCodecs.Add("VP9");
             }
 

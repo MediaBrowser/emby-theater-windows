@@ -1030,7 +1030,7 @@ namespace Emby.Theater.DirectShow
                                             bool hwaIsEnabled = vsett.GetHWAccelCodec(codec);
 
                                             if (
-                                                _config.VideoConfig.HwaEnabledCodecs
+                                                _config.VideoConfig.HwEnabledCodecs
                                                     .Contains(hwaCodec))
                                             {
                                                 if (!hwaIsEnabled)

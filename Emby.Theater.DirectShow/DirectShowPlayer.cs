@@ -179,7 +179,6 @@ namespace Emby.Theater.DirectShow
 
         private PlayableItem _item = null;
 
-        private readonly IntPtr _applicationWindowHandle;
         private bool _isInExclusiveMode;
         private DvdMenuMode _dvdMenuMode = DvdMenuMode.No;
         private bool _removeHandlers = false;
@@ -2037,8 +2036,6 @@ namespace Emby.Theater.DirectShow
 
             if (!enableExclusiveMode)
             {
-                _hostForm.SizeChanged += _hiddenWindow_SizeChanged;
-                _hostForm.MouseClick += HiddenForm_MouseClick;
                 //_hiddenWindow.KeyDown += HiddenForm_KeyDown;
                 _removeHandlers = true;
             }
@@ -2050,7 +2047,7 @@ namespace Emby.Theater.DirectShow
 
             if (_madvr != null)
             {
-                var ownerHandle = enableExclusiveMode ? _applicationWindowHandle : VideoWindowHandle;
+                var ownerHandle = VideoWindowHandle;
 
                 _videoWindow.put_Owner(ownerHandle);
                 _videoWindow.put_WindowStyle(WindowStyle.Child | WindowStyle.ClipSiblings);
@@ -2084,7 +2081,7 @@ namespace Emby.Theater.DirectShow
             }
         }
 
-        private void _hiddenWindow_SizeChanged(object sender, EventArgs e)
+        public void HandleWindowSizeChanged()
         {
             SetAspectRatio(null);
         }
@@ -2231,7 +2228,7 @@ namespace Emby.Theater.DirectShow
             {
                 RECT rect = new RECT();
                 NativeWindowMethods.GetWindowRect(VideoWindowHandle, ref rect);
-                //var hiddenWindowContentSize = _hostForm.Bounds;
+                //var hiddenWindowContentSize = _form.Bounds;
                 //screenWidth = hiddenWindowContentSize.Width;
                 //screenHeight = hiddenWindowContentSize.Height;
 
@@ -2860,8 +2857,6 @@ namespace Emby.Theater.DirectShow
 
             if (_removeHandlers)
             {
-                _hostForm.SizeChanged -= _hiddenWindow_SizeChanged;
-                _hostForm.MouseClick -= HiddenForm_MouseClick;
                 //_hiddenWindow.KeyDown -= HiddenForm_KeyDown;
                 _removeHandlers = false;
             }

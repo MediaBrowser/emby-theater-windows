@@ -14,6 +14,8 @@ namespace Emby.Theater.Window
         private readonly IntPtr _browserWindowHandle;
         private readonly ILogger _logger;
 
+        public Action OnWindowSizeChanged { get; set; }
+
         public WindowSync(Form form, IntPtr browserWindowHandle, ILogger logger)
         {
             _form = form;
@@ -116,6 +118,8 @@ namespace Emby.Theater.Window
                     {
                         FocusElectron();
                     }
+
+                    TriggerWindowSizeChanged();
                 });
             }
             catch (Exception ex)
@@ -155,11 +159,21 @@ namespace Emby.Theater.Window
                     {
                         FocusElectron();
                     }
+
+                    TriggerWindowSizeChanged();
                 });
             }
             catch (Exception ex)
             {
                 _logger.ErrorException("Error syncing window positions", ex);
+            }
+        }
+
+        private void TriggerWindowSizeChanged()
+        {
+            if (OnWindowSizeChanged != null)
+            {
+                OnWindowSizeChanged();
             }
         }
     }

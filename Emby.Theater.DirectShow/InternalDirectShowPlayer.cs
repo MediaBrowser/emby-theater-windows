@@ -498,19 +498,18 @@ namespace Emby.Theater.DirectShow
 
         }
 
+        public void HandleWindowSizeChanged()
+        {
+            if (_mediaPlayer != null)
+            {
+                InvokeOnPlayerThread(() => _mediaPlayer.HandleWindowSizeChanged());
+            }
+        }
+
         private void InvokeOnPlayerThread(Action action, bool throwOnError = false)
         {
             try
             {
-                //if (_hostForm.Form.InvokeRequired)
-                //{
-                //    _hostForm.Form.Invoke(action);
-                //}
-                //else
-                //{
-                //    action();
-                //}
-
                 if (_hostForm.InvokeRequired)
                 {
                     _hostForm.Invoke(action);
@@ -524,7 +523,7 @@ namespace Emby.Theater.DirectShow
             {
                 _logger.ErrorException("InvokeOnPlayerThread", ex);
 
-                if (throwOnError) throw ex;
+                if (throwOnError) throw;
             }
         }
 

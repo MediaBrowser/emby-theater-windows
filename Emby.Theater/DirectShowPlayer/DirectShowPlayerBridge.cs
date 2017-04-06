@@ -47,6 +47,13 @@ namespace Emby.Theater.DirectShowPlayer
             _player = new InternalDirectShowPlayer(logManager, hostForm, appPaths, isoManager, zipClient, httpClient, configurationManager);
 
             _player.PlayStateChanged += _player_PlayStateChanged;
+
+            windowSync.OnWindowSizeChanged = OnWindowSizeChanged;
+        }
+
+        private void OnWindowSizeChanged()
+        {
+            _player.HandleWindowSizeChanged();
         }
 
         private void _player_PlayStateChanged(object sender, EventArgs e)

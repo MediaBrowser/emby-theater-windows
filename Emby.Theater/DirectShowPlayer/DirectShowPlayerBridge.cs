@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CoreAudioApi;
-using Emby.Theater.Common;
 using Emby.Theater.DirectShow;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Net;
@@ -21,50 +20,35 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.MediaInfo;
 using SocketHttpListener.Net;
 using System.Text.RegularExpressions;
-using Emby.Theater.Window;
+using System.Windows.Threading;
 
 namespace Emby.Theater.DirectShowPlayer
 {
-    class DirectShowPlayerBridge
+    public class DirectShowPlayerBridge
     {
         private readonly InternalDirectShowPlayer _player;
         private readonly IJsonSerializer _json;
         private readonly ILogger _logger;
-        private readonly WindowSync _windowSync;
         private bool _isVideo;
 
         public DirectShowPlayerBridge(ILogManager logManager
-            , MainBaseForm hostForm
             , IApplicationPaths appPaths
             , IIsoManager isoManager
             , IZipClient zipClient
             , IHttpClient httpClient,
-            IConfigurationManager configurationManager, IJsonSerializer json, WindowSync windowSync)
+            IConfigurationManager configurationManager, IJsonSerializer json, Dispatcher context)
         {
             _json = json;
-            _windowSync = windowSync;
             _logger = logManager.GetLogger("DirectShowPlayerBridge");
-            _player = new InternalDirectShowPlayer(logManager, hostForm, appPaths, isoManager, zipClient, httpClient, configurationManager);
-
-            _player.PlayStateChanged += _player_PlayStateChanged;
-
-            windowSync.OnWindowSizeChanged = OnWindowSizeChanged;
+            _player = new InternalDirectShowPlayer(logManager, appPaths, isoManager, zipClient, httpClient, configurationManager, context);
         }
 
-        private void OnWindowSizeChanged()
+        public void HandleWindowSizeChanged()
         {
             _player.HandleWindowSizeChanged();
         }
 
-        private void _player_PlayStateChanged(object sender, EventArgs e)
-        {
-            if (_player.PlayState == PlayState.Idle)
-            {
-                _windowSync.ResyncWindow();
-            }
-        }
-
-        public void Play(string path, long startPositionTicks, bool isVideo, MediaSourceInfo mediaSource, BaseItemDto item, bool isFullScreen)
+        public void Play(string path, long startPositionTicks, bool isVideo, MediaSourceInfo mediaSource, BaseItemDto item, bool isFullScreen, IntPtr videoWindowHandle)
         {
             _isFadingOut = false;
             _isVideo = isVideo;
@@ -101,7 +85,7 @@ namespace Emby.Theater.DirectShowPlayer
 
             _logger.Info("Playing media source {0}", _json.SerializeToString(mediaSource));
 
-            _player.Play(path, startPositionTicks, isVideo, item, mediaSource, isFullScreen);
+            _player.Play(path, startPositionTicks, isVideo, item, mediaSource, isFullScreen, videoWindowHandle);
         }
 
         private static string GetFolderRipPath(VideoType videoType, string root)
@@ -317,19 +301,9 @@ namespace Emby.Theater.DirectShowPlayer
             }
         }
 
-        private readonly SemaphoreSlim _requestSemaphore = new SemaphoreSlim(1, 1);
-        public async Task ProcessRequest(HttpListenerContext context, string localPath)
+        public void ProcessRequest(HttpListenerContext context, string localPath)
         {
-            await _requestSemaphore.WaitAsync().ConfigureAwait(false);
-
-            try
-            {
-                ProcessRequestInternal(context, localPath);
-            }
-            finally
-            {
-                _requestSemaphore.Release();
-            }
+            ProcessRequestInternal(context, localPath);
         }
 
         private void ProcessRequestInternal(HttpListenerContext context, string localPath)
@@ -395,7 +369,9 @@ namespace Emby.Theater.DirectShowPlayer
             {
                 var playRequest = _json.DeserializeFromStream<PlayRequest>(context.Request.InputStream);
 
-                Play(playRequest.url, playRequest.startPositionTicks ?? 0, playRequest.isVideo, playRequest.mediaSource, playRequest.item, playRequest.fullscreen);
+                var playerWindowHandle = new IntPtr(long.Parse(playRequest.windowHandle, CultureInfo.InvariantCulture));
+
+                Play(playRequest.url, playRequest.startPositionTicks ?? 0, playRequest.isVideo, playRequest.mediaSource, playRequest.item, playRequest.fullscreen, playerWindowHandle);
             }
             else if (string.Equals(command, "pause", StringComparison.OrdinalIgnoreCase))
             {
@@ -521,6 +497,7 @@ namespace Emby.Theater.DirectShowPlayer
             public long? startPositionTicks { get; set; }
             public BaseItemDto item { get; set; }
             public MediaSourceInfo mediaSource { get; set; }
+            public string windowHandle { get; set; }
         }
     }
 

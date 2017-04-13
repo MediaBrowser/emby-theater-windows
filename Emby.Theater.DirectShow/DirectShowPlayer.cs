@@ -5,6 +5,7 @@ using MediaFoundation;
 using MediaFoundation.EVR;
 using MediaFoundation.Misc;
 using System;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
@@ -12,11 +13,12 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Text;
+using System.Threading;
 using DirectShowLib.Utils;
 using System.Windows.Input;
 using CoreAudioApi;
 using System.Windows.Forms;
-using Emby.Theater.Common;
+using System.Windows.Threading;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Dlna;
@@ -116,8 +118,6 @@ namespace Emby.Theater.DirectShow
         {
             get { return MediaSource.MediaStreams; }
         }
-
-        public IIsoMount IsoMount { get; set; }
     }
     #endregion
 
@@ -190,8 +190,6 @@ namespace Emby.Theater.DirectShow
         //private MMDevice _audioDevice = null;
         private Resolution _startResolution = null;
         VideoScalingScheme _iVideoScaling = VideoScalingScheme.FROMINSIDE;
-
-        MainBaseForm _hostForm = null;
 
         #region LAVConfigurationValues
 
@@ -284,39 +282,32 @@ namespace Emby.Theater.DirectShow
             }
         }
 
-        private System.Threading.Timer _timer = null;
+        private System.Timers.Timer _timer = null;
 
         public DirectShowPlayer(
             InternalDirectShowPlayer playerWrapper
-            , MainBaseForm hostForm
             , ILogger logger
             , DirectShowPlayerConfiguration config
-            , IHttpClient httpClient)
+            , IHttpClient httpClient,
+            IntPtr videoWindowHandle)
         {
             _playerWrapper = playerWrapper;
-            _hostForm = hostForm;
             _logger = logger;
             _config = config;
             _httpClient = httpClient;
 
-            _videoWindowHandle = _hostForm.Handle;
+            _videoWindowHandle = videoWindowHandle;
 
-            _hostForm.GraphNotify += _hostForm_GraphNotify;
-            _hostForm.DvdEvent += _hostForm_DvdEvent;
-            //_timer = new System.Threading.Timer(TimerCallback, null, 200, 200);
+            //_hostForm.GraphNotify += _hostForm_GraphNotify;
+            //_hostForm.DvdEvent += _hostForm_DvdEvent;
+            _timer = new System.Timers.Timer(400);
+            _timer.Elapsed += _timer_Elapsed;
+            _timer.Start();
         }
 
-        public void TimerCallback(object state)
+        private void _timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (_hostForm.InvokeRequired)
-            {
-                Action action = HandleGraphEvent;
-                _hostForm.Invoke(action);
-            }
-            else
-            {
-                HandleGraphEvent();
-            }
+            HandleGraphEvent();
         }
 
         public const int WM_APP = 0x8000;
@@ -591,11 +582,12 @@ namespace Emby.Theater.DirectShow
                 //_hiddenWindow.OnDVDEVENT = HandleDvdEvent;
 
                 //pre-roll the graph
-                _logger.Debug("pre-roll the graph");
+                _logger.Info("pre-roll the graph");
                 var hr = _mediaControl.Pause();
                 DsError.ThrowExceptionForHR(hr);
 
-                _logger.Debug("run the graph");
+                //Task.WaitAll(Task.Delay(300));
+                _logger.Info("run the graph");
                 hr = _mediaControl.Run();
                 DsError.ThrowExceptionForHR(hr);
 
@@ -604,7 +596,7 @@ namespace Emby.Theater.DirectShow
 
                 _streams = GetStreams();
 
-                _logger.Debug("DSPlayer Done in play");
+                _logger.Info("DSPlayer Done in play");
             }
             catch (Exception ex)
             {
@@ -2086,56 +2078,6 @@ namespace Emby.Theater.DirectShow
             SetAspectRatio(null);
         }
 
-        private void HiddenForm_KeyDown(object sender, KeyEventArgs e)
-        {
-            _logger.Debug("HiddenForm_KeyDown: {0} {1}", e.KeyCode, (int)e.Modifiers);
-            switch (e.KeyCode)
-            {
-                case Keys.Return:
-                    if ((_dvdMenuMode == DvdMenuMode.Buttons) && (_mDvdControl != null))
-                    {
-                        _mDvdControl.ActivateButton();
-                        e.Handled = true;
-                    }
-                    else if ((_dvdMenuMode == DvdMenuMode.Still) && (_mDvdControl != null))
-                    {
-                        _mDvdControl.StillOff();
-                        e.Handled = true;
-                    }
-                    break;
-                case Keys.Left:
-                    if (_mDvdControl != null)
-                    {
-                        if (_dvdMenuMode == DvdMenuMode.Buttons)
-                            _mDvdControl.SelectRelativeButton(DvdRelativeButton.Left);
-                        e.Handled = true;
-                    }
-                    break;
-                case Keys.Right:
-                    if (_mDvdControl != null)
-                    {
-                        if (_dvdMenuMode == DvdMenuMode.Buttons)
-                            _mDvdControl.SelectRelativeButton(DvdRelativeButton.Right);
-                        e.Handled = true;
-                    }
-                    break;
-                case Keys.Up:
-                    if ((_dvdMenuMode == DvdMenuMode.Buttons) && (_mDvdControl != null))
-                    {
-                        _mDvdControl.SelectRelativeButton(DvdRelativeButton.Upper);
-                        e.Handled = true;
-                    }
-                    break;
-                case Keys.Down:
-                    if ((_dvdMenuMode == DvdMenuMode.Buttons) && (_mDvdControl != null))
-                    {
-                        _mDvdControl.SelectRelativeButton(DvdRelativeButton.Lower);
-                        e.Handled = true;
-                    }
-                    break;
-            }
-        }
-
         private void HiddenForm_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             _logger.Debug("HiddenForm_MouseClick: {0}", e);
@@ -2431,9 +2373,13 @@ namespace Emby.Theater.DirectShow
 
             var pos = CurrentPositionTicks;
 
+            _logger.Info("Calling _mediaControl.Stop");
+
             // Stop media playback
             if (_mediaControl != null)
                 hr = _mediaControl.Stop();
+
+            _logger.Info("_mediaControl.Stop complete");
 
             if (_startResolution != null)
             {
@@ -2676,8 +2622,13 @@ namespace Emby.Theater.DirectShow
             // Clear global flags
             PlayState = PlayState.Idle;
 
+            _logger.Info("Calling DisposePlayer");
             DisposePlayer();
+            _logger.Info("DisposePlayer complete");
 
+            Standby.AllowSleep();
+
+            _logger.Info("_playerWrapper.OnPlaybackStopped");
             _playerWrapper.OnPlaybackStopped(_item, endingPosition, reason, newTrackIndex);
         }
 
@@ -2849,11 +2800,12 @@ namespace Emby.Theater.DirectShow
         {
             if (_timer != null)
             {
+                _timer.Elapsed -= _timer_Elapsed;
                 _timer.Dispose();
                 _timer = null;
             }
-            _hostForm.GraphNotify -= _hostForm_GraphNotify;
-            _hostForm.DvdEvent -= _hostForm_DvdEvent;
+            //_hostForm.GraphNotify -= _hostForm_GraphNotify;
+            //_hostForm.DvdEvent -= _hostForm_DvdEvent;
 
             if (_removeHandlers)
             {

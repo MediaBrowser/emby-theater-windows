@@ -255,6 +255,10 @@
             return currentSrc;
         };
 
+        function getPlayerWindowHandle() {
+            return window.PlayerWindowId;
+        }
+
         self.play = function (options) {
 
             var mediaSource = JSON.parse(JSON.stringify(options.mediaSource));
@@ -287,7 +291,8 @@
                 item: options.item,
                 mediaSource: mediaSource,
                 startPositionTicks: options.playerStartPositionTicks,
-                fullscreen: enableFullscreen
+                fullscreen: enableFullscreen,
+                windowHandle: getPlayerWindowHandle()
             };
 
             return sendCommand('play', requestBody).then(function () {

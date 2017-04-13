@@ -8,8 +8,8 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using Emby.Theater.DirectShow.Window;
-using Emby.Theater.Window;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Net;
 using Microsoft.Win32;
@@ -100,16 +100,19 @@ namespace Emby.Theater
                 task = InstallCecDriver(appPaths);
                 Task.WaitAll(task);
 
-                var electronTask = StartElectron(appPaths, supportsTransparency);
+                var electronTask = StartElectron(appPaths);
                 Task.WaitAll(electronTask);
 
                 var electronProcess = electronTask.Result;
 
+                electronProcess.Exited += ElectronProcess_Exited;
+
+                var server = new TheaterServer(_logger, _appHost.TheaterConfigurationManager, electronProcess, _appHost);
+
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
-                _mainForm = new MainForm(_logger, _appHost.TheaterConfigurationManager, _appHost, electronProcess);
-                Application.Run(_mainForm);
+                Application.Run(new AppContext(server, electronProcess));
             }
             catch (Exception ex)
             {
@@ -124,6 +127,11 @@ namespace Emby.Theater
             {
                 ReleaseMutex();
             }
+        }
+
+        private static void ElectronProcess_Exited(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
 
         private static async Task InstallVcredist2013IfNeeded(ApplicationHost appHost, ILogger logger)
@@ -313,7 +321,7 @@ namespace Emby.Theater
             }
         }
 
-        private static async Task<Process> StartElectron(IApplicationPaths appPaths, bool supportsTransparency)
+        private static async Task<Process> StartElectron(IApplicationPaths appPaths)
         {
             var appDirectoryPath = Path.GetDirectoryName(appPaths.ApplicationPath);
 
@@ -340,7 +348,7 @@ namespace Emby.Theater
                     UseShellExecute = false,
 
                     FileName = electronExePath,
-                    Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", electronAppPath, dataPath, supportsTransparency.ToString().ToLower(), cecPath)
+                    Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\"", electronAppPath, dataPath, cecPath)
                 },
 
                 EnableRaisingEvents = true,

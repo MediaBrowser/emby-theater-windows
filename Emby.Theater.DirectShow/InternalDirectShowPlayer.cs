@@ -8,13 +8,13 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using Emby.Theater.Common;
+using System.Windows.Threading;
 using Emby.Theater.DirectShow.Configuration;
 using MediaBrowser.Common.Configuration;
 
@@ -25,7 +25,6 @@ namespace Emby.Theater.DirectShow
         private DirectShowPlayer _mediaPlayer;
 
         private readonly ILogger _logger;
-        private readonly MainBaseForm _hostForm;
         //private readonly IPresentationManager _presentation;
         //private readonly ISessionManager _sessionManager;
         private readonly IIsoManager _isoManager;
@@ -43,23 +42,25 @@ namespace Emby.Theater.DirectShow
         //    }
         //}
 
+        private readonly Dispatcher _dispatcher;
+
         public InternalDirectShowPlayer(
             ILogManager logManager
-            , MainBaseForm hostForm
             //, IPresentationManager presentation
             //, ISessionManager sessionManager
             , IApplicationPaths appPaths
             , IIsoManager isoManager
             //, IUserInputManager inputManager
             , IZipClient zipClient
-            , IHttpClient httpClient, IConfigurationManager configurationManager)
+            , IHttpClient httpClient, IConfigurationManager configurationManager, Dispatcher dispatcher)
         {
             _logger = logManager.GetLogger("InternalDirectShowPlayer");
-            _hostForm = hostForm;
             //_presentation = presentation;
             //_sessionManager = sessionManager;
             _httpClient = httpClient;
             _config = configurationManager;
+
+            _dispatcher = dispatcher;
             _isoManager = isoManager;
             //_inputManager = inputManager;
             _zipClient = zipClient;
@@ -223,28 +224,7 @@ namespace Emby.Theater.DirectShow
             }
         }
 
-        public void Play(string path, long startPositionTicks, bool isVideo, BaseItemDto item, MediaSourceInfo mediaSource, bool enableFullScreen)
-        {
-            try
-            {
-                PlayTrack(path, startPositionTicks, isVideo, item, mediaSource, enableFullScreen);
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error beginning playback", ex);
-
-                DisposePlayer();
-
-                throw;
-            }
-        }
-
-        public void SetVolume(int level)
-        {
-            _mediaPlayer.SetVolume(level);
-        }
-
-        private void PlayTrack(string path, long startPositionTicks, bool isVideo, BaseItemDto item, MediaSourceInfo mediaSource, bool enableFullScreen)
+        public void Play(string path, long startPositionTicks, bool isVideo, BaseItemDto item, MediaSourceInfo mediaSource, bool enableFullScreen, IntPtr videoWindowHandle)
         {
             var playableItem = new PlayableItem
             {
@@ -258,9 +238,9 @@ namespace Emby.Theater.DirectShow
                 InvokeOnPlayerThread(() =>
                 {
                     //create a fresh DS Player everytime we want one
-                    DisposePlayer();
+                    DisposePlayerInternal();
 
-                    _mediaPlayer = new DirectShowPlayer(this, _hostForm, _logger, GetConfiguration(), _httpClient);
+                    _mediaPlayer = new DirectShowPlayer(this, _logger, GetConfiguration(), _httpClient, videoWindowHandle);
                     _mediaPlayer.Play(playableItem, enableFullScreen);
 
                     try
@@ -272,31 +252,57 @@ namespace Emby.Theater.DirectShow
 
                     }
 
+                    try
+                    {
+                        if (startPositionTicks > 0)
+                        {
+                            _mediaPlayer.Seek(startPositionTicks);
+                        }
+                    }
+                    catch
+                    {
+
+                    }
+
+                    if (playableItem.OriginalItem.IsVideo)
+                    {
+                        var audioIndex = playableItem.MediaSource.DefaultAudioStreamIndex;
+                        var subtitleIndex = playableItem.MediaSource.DefaultSubtitleStreamIndex;
+
+                        if (audioIndex.HasValue && audioIndex.Value != -1)
+                        {
+                            try
+                            {
+                                SetAudioStreamIndexInternal(audioIndex.Value);
+                            }
+                            catch
+                            {
+
+                            }
+                        }
+                        try
+                        {
+                            SetSubtitleStreamIndexInternal(subtitleIndex ?? -1);
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+
                 }, true);
             }
-            catch
+            catch (Exception ex)
             {
                 OnPlaybackStopped(playableItem, null, TrackCompletionReason.Failure, null);
 
                 throw;
             }
+        }
 
-            if (startPositionTicks > 0)
-            {
-                InvokeOnPlayerThread(() => _mediaPlayer.Seek(startPositionTicks));
-            }
-
-            if (playableItem.OriginalItem.IsVideo)
-            {
-                var audioIndex = playableItem.MediaSource.DefaultAudioStreamIndex;
-                var subtitleIndex = playableItem.MediaSource.DefaultSubtitleStreamIndex;
-
-                if (audioIndex.HasValue && audioIndex.Value != -1)
-                {
-                    SetAudioStreamIndex(audioIndex.Value);
-                }
-                SetSubtitleStreamIndex(subtitleIndex ?? -1);
-            }
+        public void SetVolume(int level)
+        {
+            _mediaPlayer.SetVolume(level);
         }
 
         private static string GetFolderRipPath(VideoType videoType, string root)
@@ -332,13 +338,15 @@ namespace Emby.Theater.DirectShow
 
         private void DisposePlayer()
         {
+            InvokeOnPlayerThread(DisposePlayerInternal);
+        }
+
+        private void DisposePlayerInternal()
+        {
             if (_mediaPlayer != null)
             {
-                InvokeOnPlayerThread(() =>
-                {
-                    _mediaPlayer.Dispose();
-                    _mediaPlayer = null; //force the object to get cleaned up
-                });
+                _mediaPlayer.Dispose();
+                _mediaPlayer = null; //force the object to get cleaned up
             }
         }
 
@@ -383,7 +391,9 @@ namespace Emby.Theater.DirectShow
             {
                 if (_mediaPlayer != null)
                 {
+                    _logger.Info("Invoke stop");
                     InvokeOnPlayerThread(() => _mediaPlayer.Stop(TrackCompletionReason.Stop, null));
+                    _logger.Info("Invoke stop complete");
                 }
             }
         }
@@ -419,38 +429,8 @@ namespace Emby.Theater.DirectShow
             EventHelper.FireEventIfNotNull(PlayStateChanged, this, EventArgs.Empty, _logger);
         }
 
-        private void DisposeMount(PlayableItem media)
+        internal void OnPlaybackStopped(PlayableItem media, long? positionTicks, TrackCompletionReason reason, int? newTrackIndex)
         {
-            if (media.IsoMount != null)
-            {
-                try
-                {
-                    media.IsoMount.Dispose();
-                    media.IsoMount = null;
-                }
-                catch (Exception ex)
-                {
-                    _logger.ErrorException("Error unmounting iso {0}", ex, media.IsoMount.MountedPath);
-                }
-            }
-        }
-
-        internal async void OnPlaybackStopped(PlayableItem media, long? positionTicks, TrackCompletionReason reason, int? newTrackIndex)
-        {
-            DisposeMount(media);
-
-            try
-            {
-                InvokeOnPlayerThread(() =>
-                {
-                    Standby.AllowSleep();
-                });
-            }
-            catch
-            {
-                
-            }
-
             // TODO
             // Notify
         }
@@ -467,15 +447,14 @@ namespace Emby.Theater.DirectShow
             get { return _mediaPlayer.GetSelectableStreams(); }
         }
 
-        public void ChangeAudioStream(SelectableMediaStream track)
-        {
-            InvokeOnPlayerThread(() => _mediaPlayer.SetAudioTrack(track));
-        }
-
-
         public void SetSubtitleStreamIndex(int subtitleStreamIndex)
         {
-            InvokeOnPlayerThread(() => _mediaPlayer.SetSubtitleStreamIndex(subtitleStreamIndex));
+            InvokeOnPlayerThread(() => SetSubtitleStreamIndexInternal(subtitleStreamIndex));
+        }
+
+        private void SetSubtitleStreamIndexInternal(int subtitleStreamIndex)
+        {
+            _mediaPlayer.SetSubtitleStreamIndex(subtitleStreamIndex);
         }
 
         public void NextSubtitleStream()
@@ -485,12 +464,12 @@ namespace Emby.Theater.DirectShow
 
         public void SetAudioStreamIndex(int audioStreamIndex)
         {
-            InvokeOnPlayerThread(() => _mediaPlayer.SetAudioStreamIndex(audioStreamIndex));
+            InvokeOnPlayerThread(() => SetAudioStreamIndexInternal(audioStreamIndex));
         }
 
-        public void ChangeSubtitleStream(SelectableMediaStream track)
+        public void SetAudioStreamIndexInternal(int audioStreamIndex)
         {
-            InvokeOnPlayerThread(() => _mediaPlayer.SetSubtitleStream(track));
+            _mediaPlayer.SetAudioStreamIndex(audioStreamIndex);
         }
 
         public void RemoveSubtitles()
@@ -502,21 +481,49 @@ namespace Emby.Theater.DirectShow
         {
             if (_mediaPlayer != null)
             {
-                InvokeOnPlayerThread(() => _mediaPlayer.HandleWindowSizeChanged());
+                InvokeOnPlayerThread(() => _mediaPlayer.HandleWindowSizeChanged(), false, false);
             }
         }
 
-        private void InvokeOnPlayerThread(Action action, bool throwOnError = false)
+        private void InvokeOnPlayerThread(Action action, bool throwOnError = false, bool wait = true)
         {
             try
             {
-                if (_hostForm.InvokeRequired)
+                //var task = Task.Factory.StartNew(() =>
+                //{
+                //    _logger.Info("thread id: {0}", Thread.CurrentThread.ManagedThreadId);
+                //    action();
+
+                //}, CancellationToken.None, TaskCreationOptions.DenyChildAttach, _dispatcher);
+
+                TaskCompletionSource<bool> source = new TaskCompletionSource<bool>();
+
+                //_dispatcher.BeginInvoke(action, DispatcherPriority.Normal);
+
+                Action act = () =>
                 {
-                    _hostForm.Invoke(action);
-                }
-                else
+                    _logger.Info("thread id: {0}", Thread.CurrentThread.ManagedThreadId);
+
+                    try
+                    {
+                        action();
+                        source.TrySetResult(true);
+                    }
+                    catch (Exception ex)
+                    {
+                        source.TrySetException(ex);
+                    }
+                };
+
+                //_queue.Enqueue(act);
+
+                _dispatcher.BeginInvoke(act, DispatcherPriority.Send);
+
+                var task = source.Task;
+
+                if (wait)
                 {
-                    action();
+                    Task.WaitAll(task);
                 }
             }
             catch (Exception ex)

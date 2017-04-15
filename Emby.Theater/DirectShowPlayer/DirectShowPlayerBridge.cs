@@ -381,6 +381,18 @@ namespace Emby.Theater.DirectShowPlayer
             {
                 UnPause();
             }
+            else if (string.Equals(command, "playpause", StringComparison.OrdinalIgnoreCase))
+            {
+                var currentState = _player.PlayState;
+                if (currentState == PlayState.Paused)
+                {
+                    UnPause();
+                }
+                else if (currentState == PlayState.Playing)
+                {
+                    Pause();
+                }
+            }
             else if (string.Equals(command, "stopfade", StringComparison.OrdinalIgnoreCase))
             {
                 positionTicks = GetPositionTicks();

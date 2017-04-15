@@ -8,7 +8,7 @@
         self.name = 'Windows Player';
         self.type = 'mediaplayer';
         self.id = 'directshowplayer';
-        self.requiresVideoTransparency = true;
+        self.priority = -1;
 
         var currentSrc;
         var playerState = {};
@@ -124,16 +124,7 @@
 
         self.canPlayItem = function (item) {
 
-            if (item.Type != 'TvChannel') {
-                return true;
-            }
-
-            var serviceName = (item.ServiceName || '').toLowerCase();
-
-            if (serviceName.indexOf('next') != -1) {
-                return false;
-            }
-            if (serviceName.indexOf('tvh') != -1) {
+            if (!item.RunTimeTicks) {
                 return false;
             }
 
@@ -350,6 +341,10 @@
 
         self.destroy = function () {
             embyRouter.setTransparency('none');
+        };
+
+        self.playPause = function () {
+            sendCommand('playpause');
         };
 
         self.pause = function () {

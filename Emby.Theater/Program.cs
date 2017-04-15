@@ -326,8 +326,10 @@ namespace Emby.Theater
             var appDirectoryPath = Path.GetDirectoryName(appPaths.ApplicationPath);
 
             var architecture = Environment.Is64BitOperatingSystem ? "x64" : "x86";
-            var electronExePath = Path.Combine(appDirectoryPath, architecture, "electron", "electron.exe");
+            var archPath = Path.Combine(appDirectoryPath, architecture);
+            var electronExePath = Path.Combine(archPath, "electron", "electron.exe");
             var electronAppPath = Path.Combine(appDirectoryPath, "electronapp");
+            var mpvExePath = Path.Combine(archPath, "mpv", "mpv.exe");
 
             var dataPath = Path.Combine(appPaths.DataPath, "electron");
 
@@ -348,7 +350,7 @@ namespace Emby.Theater
                     UseShellExecute = false,
 
                     FileName = electronExePath,
-                    Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\"", electronAppPath, dataPath, cecPath)
+                    Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", electronAppPath, dataPath, cecPath, mpvExePath)
                 },
 
                 EnableRaisingEvents = true,

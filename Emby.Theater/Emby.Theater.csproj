@@ -156,55 +156,55 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\de.json">
-      <Link>electronapp\plugins\strings\de.json</Link>
+      <Link>electronapp\plugins\mpvplayer\strings\de.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\en-GB.json">
-      <Link>electronapp\plugins\strings\en-GB.json</Link>
+      <Link>electronapp\plugins\mpvplayer\strings\en-GB.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\en-US.json">
-      <Link>electronapp\plugins\strings\en-US.json</Link>
+      <Link>electronapp\plugins\mpvplayer\strings\en-US.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\es-419.json">
-      <Link>electronapp\plugins\strings\es-419.json</Link>
+      <Link>electronapp\plugins\mpvplayer\strings\es-419.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\fr.json">
-      <Link>electronapp\plugins\strings\fr.json</Link>
+      <Link>electronapp\plugins\mpvplayer\strings\fr.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\hr.json">
-      <Link>electronapp\plugins\strings\hr.json</Link>
+      <Link>electronapp\plugins\mpvplayer\strings\hr.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\it.json">
-      <Link>electronapp\plugins\strings\it.json</Link>
+      <Link>electronapp\plugins\mpvplayer\strings\it.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\nl.json">
-      <Link>electronapp\plugins\strings\nl.json</Link>
+      <Link>electronapp\plugins\mpvplayer\strings\nl.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\pl.json">
-      <Link>electronapp\plugins\strings\pl.json</Link>
+      <Link>electronapp\plugins\mpvplayer\strings\pl.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\pt-BR.json">
-      <Link>electronapp\plugins\strings\pt-BR.json</Link>
+      <Link>electronapp\plugins\mpvplayer\strings\pt-BR.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\pt-PT.json">
-      <Link>electronapp\plugins\strings\pt-PT.json</Link>
+      <Link>electronapp\plugins\mpvplayer\strings\pt-PT.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\ru.json">
-      <Link>electronapp\plugins\strings\ru.json</Link>
+      <Link>electronapp\plugins\mpvplayer\strings\ru.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\sv.json">
-      <Link>electronapp\plugins\strings\sv.json</Link>
+      <Link>electronapp\plugins\mpvplayer\strings\sv.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="app.manifest" />

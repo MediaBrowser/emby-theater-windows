@@ -129,12 +129,11 @@
     <Compile Include="App\IStartupEntryPoint.cs" />
     <Compile Include="App\PatternsLogger.cs" />
     <Compile Include="App\SystemUpdateTask.cs" />
-    <Compile Include="CommandActions\InputToCommand.cs" />
     <Compile Include="Configuration\ApplicationConfiguration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Configuration\ITheaterConfigurationManager.cs" />
-    <Compile Include="DirectShowPlayer\DirectShowPlayerBridge.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="NativeWindowMethods.cs" />
     <Compile Include="Network\NativeMethods.cs" />
     <Compile Include="Network\NetworkManager.cs" />
     <Compile Include="Network\NetworkShares.cs" />
@@ -152,134 +151,11 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\is-linux\license">
-      <Link>electronapp\node_modules\is-linux\license</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\is-linux\package.json">
-      <Link>electronapp\node_modules\is-linux\package.json</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\is-linux\readme.md">
-      <Link>electronapp\node_modules\is-linux\readme.md</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\is-osx\license">
-      <Link>electronapp\node_modules\is-osx\license</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\is-osx\package.json">
-      <Link>electronapp\node_modules\is-osx\package.json</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\is-osx\readme.md">
-      <Link>electronapp\node_modules\is-osx\readme.md</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\is-windows\LICENSE">
-      <Link>electronapp\node_modules\is-windows\LICENSE</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\is-windows\package.json">
-      <Link>electronapp\node_modules\is-windows\package.json</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\long\.npmignore">
-      <Link>electronapp\node_modules\long\.npmignore</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\long\.travis.yml">
-      <Link>electronapp\node_modules\long\.travis.yml</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\long\bower.json">
-      <Link>electronapp\node_modules\long\bower.json</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\long\jsdoc.json">
-      <Link>electronapp\node_modules\long\jsdoc.json</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\long\LICENSE">
-      <Link>electronapp\node_modules\long\LICENSE</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\long\package.json">
-      <Link>electronapp\node_modules\long\package.json</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\long\README.md">
-      <Link>electronapp\node_modules\long\README.md</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\power-off\license">
-      <Link>electronapp\node_modules\power-off\license</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\power-off\package.json">
-      <Link>electronapp\node_modules\power-off\package.json</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\power-off\readme.md">
-      <Link>electronapp\node_modules\power-off\readme.md</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\sleep-mode\license">
-      <Link>electronapp\node_modules\sleep-mode\license</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\sleep-mode\package.json">
-      <Link>electronapp\node_modules\sleep-mode\package.json</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Emby.Theater.Electron\node_modules\sleep-mode\readme.md">
-      <Link>electronapp\node_modules\sleep-mode\readme.md</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="..\..\Emby.Theater.Electron\package.json">
       <Link>electronapp\package.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="app.manifest" />
-    <None Include="electronapp\plugins\directshowplayer\strings\de.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="electronapp\plugins\directshowplayer\strings\en-GB.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="electronapp\plugins\directshowplayer\strings\en-US.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="electronapp\plugins\directshowplayer\strings\es-419.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="electronapp\plugins\directshowplayer\strings\fr.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="electronapp\plugins\directshowplayer\strings\hr.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="electronapp\plugins\directshowplayer\strings\it.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="electronapp\plugins\directshowplayer\strings\nl.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="electronapp\plugins\directshowplayer\strings\pl.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="electronapp\plugins\directshowplayer\strings\pt-BR.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="electronapp\plugins\directshowplayer\strings\pt-PT.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="electronapp\plugins\directshowplayer\strings\ru.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="electronapp\plugins\directshowplayer\strings\sv.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -326,9 +202,6 @@
     <None Include="x64\electron\views_resources_200_percent.pak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="x64\mpv\manual.pdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="x64\mpv\mpv.com">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -368,9 +241,6 @@
     <None Include="x86\electron\views_resources_200_percent.pak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="x86\mpv\manual.pdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="x86\mpv\mpv.com">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -379,7 +249,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\Emby.Theater.Electron\apphost.js">
+	<Content Include="..\..\Emby.Theater.Electron\apphost.js">
       <Link>electronapp\apphost.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -407,50 +277,10 @@
       <Link>electronapp\main.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\node_modules\is-linux\index.js">
-      <Link>electronapp\node_modules\is-linux\index.js</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Emby.Theater.Electron\node_modules\is-osx\index.js">
-      <Link>electronapp\node_modules\is-osx\index.js</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Emby.Theater.Electron\node_modules\is-windows\index.js">
-      <Link>electronapp\node_modules\is-windows\index.js</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Emby.Theater.Electron\node_modules\long\dist\long.js">
-      <Link>electronapp\node_modules\long\dist\long.js</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Emby.Theater.Electron\node_modules\long\donate.png">
-      <Link>electronapp\node_modules\long\donate.png</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Emby.Theater.Electron\node_modules\long\index.js">
-      <Link>electronapp\node_modules\long\index.js</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Emby.Theater.Electron\node_modules\long\long.png">
-      <Link>electronapp\node_modules\long\long.png</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Emby.Theater.Electron\node_modules\power-off\cli.js">
-      <Link>electronapp\node_modules\power-off\cli.js</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Emby.Theater.Electron\node_modules\power-off\index.js">
-      <Link>electronapp\node_modules\power-off\index.js</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Emby.Theater.Electron\node_modules\sleep-mode\cli.js">
-      <Link>electronapp\node_modules\sleep-mode\cli.js</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Emby.Theater.Electron\node_modules\sleep-mode\index.js">
-      <Link>electronapp\node_modules\sleep-mode\index.js</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="..\..\Emby.Theater.Electron\node_modules\**\*.*">
+	  <Link>electronapp\node_modules\%(RecursiveDir)%(Filename)%(Extension)</Link>
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Content>
     <Content Include="..\..\Emby.Theater.Electron\playbackhandler\playbackhandler.js">
       <Link>electronapp\playbackhandler\playbackhandler.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -516,24 +346,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="electronapp\filesystem.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="electronapp\plugins\directshowplayer\madvr.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="electronapp\plugins\directshowplayer\madvr.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="electronapp\plugins\directshowplayer\audio.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="electronapp\plugins\directshowplayer\audio.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="electronapp\plugins\directshowplayer\video.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="electronapp\plugins\directshowplayer\video.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="electronapp\scripts\dwm.js">
@@ -608,16 +420,11 @@
     </Content>
     <Content Include="Icon.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Emby.Theater.DirectShow\Emby.Theater.DirectShow.csproj">
-      <Project>{f9d197a5-fa0f-4bbc-9020-f707879b8b30}</Project>
-      <Name>Emby.Theater.DirectShow</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(SolutionDir)ThirdParty\GenerateFilterTxt\GenerateFilterTxt.exe "$(SolutionDir)Emby.Theater.DirectShow\FilterZips" "$(ProjectDir)\Properties\AssemblyInfo.cs"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

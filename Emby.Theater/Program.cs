@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using Emby.Theater.DirectShow.Window;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Net;
 using Microsoft.Win32;
@@ -375,17 +374,9 @@ namespace Emby.Theater
             _appHost.Shutdown();
         }
 
-        private static Form _mainForm;
         public static void Exit()
         {
-            if (_mainForm != null)
-            {
-                _mainForm.InvokeIfRequired(() =>
-                {
-                    _mainForm.Close();
-                    Application.Exit();
-                });
-            }
+            Application.Exit();
         }
 
         /// <summary>

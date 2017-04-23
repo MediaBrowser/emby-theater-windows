@@ -4,6 +4,7 @@ using MediaBrowser.Common.Implementations.Configuration;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Serialization;
 using System;
+using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.IO;
 
 namespace Emby.Theater.Configuration
@@ -21,7 +22,7 @@ namespace Emby.Theater.Configuration
         /// <value>The type of the configuration.</value>
         protected override Type ConfigurationType
         {
-            get { return typeof(ApplicationConfiguration); }
+            get { return typeof(BaseApplicationConfiguration); }
         }
 
         /// <summary>
@@ -37,9 +38,9 @@ namespace Emby.Theater.Configuration
         /// Gets the configuration.
         /// </summary>
         /// <value>The configuration.</value>
-        public ApplicationConfiguration Configuration
+        public BaseApplicationConfiguration Configuration
         {
-            get { return (ApplicationConfiguration)CommonConfiguration; }
+            get { return (BaseApplicationConfiguration)CommonConfiguration; }
         }
     }
 }

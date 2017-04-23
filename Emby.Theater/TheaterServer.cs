@@ -69,12 +69,7 @@ namespace Emby.Theater
 
             var localPath = request.Url.LocalPath.Trim('/');
 
-            var logRequest = !string.Equals(localPath, "directshowplayer/refresh", StringComparison.OrdinalIgnoreCase);
-
-            if (logRequest)
-            {
-                _logger.Info("Http {0} {1}", request.HttpMethod, localPath);
-            }
+            _logger.Info("Http {0} {1}", request.HttpMethod, localPath);
 
             try
             {
@@ -94,36 +89,10 @@ namespace Emby.Theater
                         _config.SaveConfiguration();
                     }
                 }
-                else if (localPath.StartsWith("fileexists", StringComparison.OrdinalIgnoreCase))
-                {
-                    using (var reader = new StreamReader(context.Request.InputStream))
-                    {
-                        var path = reader.ReadToEnd();
-                        var exists = File.Exists(path);
-                        var bytes = Encoding.UTF8.GetBytes(exists.ToString().ToLower());
-                        context.Response.ContentLength64 = bytes.Length;
-                        context.Response.OutputStream.Write(bytes, 0, bytes.Length);
-                    }
-                }
-                else if (localPath.StartsWith("directoryexists", StringComparison.OrdinalIgnoreCase))
-                {
-                    using (var reader = new StreamReader(context.Request.InputStream))
-                    {
-                        var path = reader.ReadToEnd();
-                        var exists = Directory.Exists(path);
-                        var bytes = Encoding.UTF8.GetBytes(exists.ToString().ToLower());
-                        context.Response.ContentLength64 = bytes.Length;
-                        context.Response.OutputStream.Write(bytes, 0, bytes.Length);
-                    }
-                }
             }
             finally
             {
-                if (logRequest)
-                {
-                    _logger.Info("Http Completed {0} {1}", request.HttpMethod, localPath);
-                }
-
+                _logger.Info("Http Completed {0} {1}", request.HttpMethod, localPath);
                 response.Close();
             }
         }

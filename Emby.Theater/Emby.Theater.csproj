@@ -130,7 +130,6 @@
     <Compile Include="App\IStartupEntryPoint.cs" />
     <Compile Include="App\PatternsLogger.cs" />
     <Compile Include="App\SystemUpdateTask.cs" />
-    <Compile Include="Configuration\ApplicationConfiguration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Configuration\ITheaterConfigurationManager.cs" />
     <Compile Include="ExtensionMethods.cs" />
@@ -314,6 +313,10 @@
       <Link>electronapp\cec\command-map.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\Emby.Theater.Electron\filesystem.js">
+      <Link>electronapp\filesystem.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\Emby.Theater.Electron\fullscreenmanager.js">
       <Link>electronapp\fullscreenmanager.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -412,9 +415,6 @@
     </Content>
     <Content Include="..\Tools\Installation\MediaBrowser.Updater.exe">
       <Link>MediaBrowser.Updater.exe</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="electronapp\filesystem.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="electronapp\scripts\dwm.js">

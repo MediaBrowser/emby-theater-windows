@@ -1,9 +1,10 @@
 ﻿using MediaBrowser.Common.Configuration;
+using MediaBrowser.Model.Configuration;
 
 namespace Emby.Theater.Configuration
 {
     public interface ITheaterConfigurationManager : IConfigurationManager
     {
-        ApplicationConfiguration Configuration { get; }
+        BaseApplicationConfiguration Configuration { get; }
     }
 }

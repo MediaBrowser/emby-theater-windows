@@ -495,7 +495,6 @@
     <Content Include="x86\mpv\mpv.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <EmbeddedResource Include="App\ServerDiscovery\serverdiscovery.js" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup />

@@ -39,7 +39,14 @@ namespace Emby.Theater
 
             }
 
-            _server.Dispose();
+            try
+            {
+                _server.Dispose();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }

@@ -108,8 +108,8 @@ namespace Emby.Theater
 
                 var server = new TheaterServer(_logger, _appHost.TheaterConfigurationManager, electronProcess, _appHost);
 
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
+                //Application.EnableVisualStyles();
+                //Application.SetCompatibleTextRenderingDefault(false);
 
                 Application.Run(new AppContext(server, electronProcess));
             }

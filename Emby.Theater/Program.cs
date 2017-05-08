@@ -24,8 +24,8 @@ namespace Emby.Theater
         private static ILogger _logger;
 
         /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
+        /// /// The main entry point for the application.
+        /// /// </summary>
         [STAThread]
         static void Main()
         {
@@ -108,8 +108,8 @@ namespace Emby.Theater
 
                 var server = new TheaterServer(_logger, _appHost.TheaterConfigurationManager, electronProcess, _appHost);
 
-                //Application.EnableVisualStyles();
-                //Application.SetCompatibleTextRenderingDefault(false);
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
 
                 Application.Run(new AppContext(server, electronProcess));
             }

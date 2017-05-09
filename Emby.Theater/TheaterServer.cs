@@ -89,6 +89,30 @@ namespace Emby.Theater
                         _config.SaveConfiguration();
                     }
                 }
+                else if (localPath.StartsWith("fileexists", StringComparison.OrdinalIgnoreCase))
+                {
+                    using (var reader = new StreamReader(context.Request.InputStream))
+                    {
+                        var path = reader.ReadToEnd();
+                        var exists = File.Exists(path);
+                        _logger.Info("File exists {0}: {1}", path, exists);
+                        var bytes = Encoding.UTF8.GetBytes(exists.ToString().ToLower());
+                        context.Response.ContentLength64 = bytes.Length;
+                        context.Response.OutputStream.Write(bytes, 0, bytes.Length);
+                    }
+                }
+                else if (localPath.StartsWith("directoryexists", StringComparison.OrdinalIgnoreCase))
+                {
+                    using (var reader = new StreamReader(context.Request.InputStream))
+                    {
+                        var path = reader.ReadToEnd();
+                        var exists = Directory.Exists(path);
+                        _logger.Info("Directory exists {0}: {1}", path, exists);
+                        var bytes = Encoding.UTF8.GetBytes(exists.ToString().ToLower());
+                        context.Response.ContentLength64 = bytes.Length;
+                        context.Response.OutputStream.Write(bytes, 0, bytes.Length);
+                    }
+                }
             }
             finally
             {

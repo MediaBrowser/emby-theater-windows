@@ -17,7 +17,20 @@ namespace Emby.Theater
 {
     static class Program
     {
-        public static string UpdatePackageName = "emby.theater.zip";
+        public static string UpdatePackageName
+        {
+            get
+            {
+                return "emby.theater.zip";
+
+                //if (Environment.Is64BitOperatingSystem)
+                //{
+                //    return "emby-theater-x64.zip";
+                //}
+
+                //return "emby-theater-x86.zip";
+            }
+        }
 
         private static Mutex _singleInstanceMutex;
         private static ApplicationHost _appHost;

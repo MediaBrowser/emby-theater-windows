@@ -192,7 +192,7 @@ namespace Emby.Theater.App
         {
             var updateLevel = ConfigurationManager.CommonConfiguration.SystemUpdateLevel;
             return new GithubUpdater(HttpClient, JsonSerializer)
-                .CheckForUpdateResult("MediaBrowser", "Emby.Theater.Windows", ApplicationVersion, updateLevel, "emby.theater.zip", "emby.theater", "emby.theater.zip", TimeSpan.FromTicks(0), cancellationToken);
+                .CheckForUpdateResult("MediaBrowser", "Emby.Theater.Windows", ApplicationVersion, updateLevel, Program.UpdatePackageName, "emby.theater", "emby.theater.zip", TimeSpan.FromTicks(0), cancellationToken);
         }
 
         /// <summary>

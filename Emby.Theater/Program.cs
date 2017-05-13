@@ -176,45 +176,15 @@ namespace Emby.Theater
                 return;
             }
 
+            MessageBox.Show("The Visual C++ 2013 Runtime will now be installed.");
+
             try
             {
-                await InstallVcredist2013().ConfigureAwait(false);
+                await InstallVcredist(GetVcredist2013Url()).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 logger.ErrorException("Error installing Visual Studio C++ runtime", ex);
-            }
-        }
-
-        private async static Task InstallVcredist2013()
-        {
-            var httpClient = _appHost.HttpClient;
-
-            var tmp = await httpClient.GetTempFile(new HttpRequestOptions
-            {
-                Url = GetVcredist2013Url(),
-                Progress = new Progress<double>()
-
-            }).ConfigureAwait(false);
-
-            var exePath = Path.ChangeExtension(tmp, ".exe");
-            File.Copy(tmp, exePath);
-
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = exePath,
-
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                Verb = "runas",
-                ErrorDialog = false
-            };
-
-            _logger.Info("Running {0}", startInfo.FileName);
-
-            using (var process = Process.Start(startInfo))
-            {
-                process.WaitForExit();
             }
         }
 
@@ -260,17 +230,60 @@ namespace Emby.Theater
                 return;
             }
 
-            var arch = Environment.Is64BitOperatingSystem ? "x64" : "x86";
+            MessageBox.Show("The Visual C++ 2015 Runtime will now be installed.");
 
-            var msg = string.Format(
-                    "The Visual C++ 2015 {0} Redistributable is required. Click OK to open the Microsoft website where you can install it. When asked to select x64 or x86, select {0}. After you have completed the installation, please run Emby Theater again.",
-                    arch);
+            try
+            {
+                await InstallVcredist(GetVcredist2015Url()).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorException("Error installing Visual Studio C++ runtime", ex);
+            }
+        }
 
-            MessageBox.Show(msg);
+        private static string GetVcredist2015Url()
+        {
+            if (Environment.Is64BitOperatingSystem)
+            {
+                return "https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2015/vc_redist.x64.exe";
+            }
 
-            Process.Start("https://www.microsoft.com/en-us/download/details.aspx?id=48145");
+            // TODO: ARM url - https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2015/vcredist_arm.exe
 
-            Environment.Exit(0);
+            return "https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2015/vc_redist.x86.exe";
+        }
+
+        private async static Task InstallVcredist(string url)
+        {
+            var httpClient = _appHost.HttpClient;
+
+            var tmp = await httpClient.GetTempFile(new HttpRequestOptions
+            {
+                Url = url,
+                Progress = new Progress<double>()
+
+            }).ConfigureAwait(false);
+
+            var exePath = Path.ChangeExtension(tmp, ".exe");
+            File.Copy(tmp, exePath);
+
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = exePath,
+
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                Verb = "runas",
+                ErrorDialog = false
+            };
+
+            _logger.Info("Running {0}", startInfo.FileName);
+
+            using (var process = Process.Start(startInfo))
+            {
+                process.WaitForExit();
+            }
         }
 
         private static async Task InstallCecDriver(IApplicationPaths appPaths)

@@ -64,7 +64,7 @@ namespace Emby.Theater
             var logManager = new NlogManager(appPaths.LogDirectoryPath, "theater");
             logManager.ReloadLogger(LogSeverity.Debug);
 
-            var updateArchive = Path.Combine(appPaths.TempUpdatePath, UpdatePackageName);
+            var updateArchive = Path.Combine(appPaths.TempUpdatePath, "emby.theater.zip");
 
             if (File.Exists(updateArchive))
             {
@@ -73,8 +73,7 @@ namespace Emby.Theater
                 // Update is there - execute update
                 try
                 {
-                    new ApplicationUpdater().UpdateApplication(appPaths, updateArchive,
-                        logManager.GetLogger("ApplicationUpdater"));
+                    new ApplicationUpdater().UpdateApplication(appPaths, updateArchive, logManager.GetLogger("ApplicationUpdater"));
 
                     // And just let the app exit so it can update
                     return;

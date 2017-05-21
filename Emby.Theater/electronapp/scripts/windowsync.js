@@ -16,4 +16,20 @@
             }
         });
     });
+
+    function onWindowStateChanged(e) {
+
+        if (e.detail.windowState !== 'Fullscreen') {
+
+            require(['css!electronfile://windowstyle']);
+            document.removeEventListener('windowstatechanged', onWindowStateChanged);
+        }
+    }
+
+    if (document.windowState && document.windowState !== 'Fullscreen') {
+        require(['css!electronfile://windowstyle']);
+    } else {
+        require(['css!electronfile://windowstyle']);
+        //document.addEventListener('windowstatechanged', onWindowStateChanged);
+    }
 });

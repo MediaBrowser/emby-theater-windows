@@ -21,15 +21,18 @@ namespace Emby.Theater
         {
             get
             {
-                return "emby.theater.zip";
+                if (Is64Bit)
+                {
+                    return "emby-theater-x64.zip";
+                }
 
-                //if (Environment.Is64BitOperatingSystem)
-                //{
-                //    return "emby-theater-x64.zip";
-                //}
-
-                //return "emby-theater-x86.zip";
+                return "emby-theater-x86.zip";
             }
+        }
+
+        private static bool Is64Bit
+        {
+            get { return Environment.Is64BitProcess; }
         }
 
         private static Mutex _singleInstanceMutex;
@@ -153,7 +156,7 @@ namespace Emby.Theater
 
             try
             {
-                var subkey = Environment.Is64BitOperatingSystem
+                var subkey = Is64Bit
                     ? "SOFTWARE\\WOW6432Node\\Microsoft\\VisualStudio\\12.0\\VC\\Runtimes\\x64"
                     : "SOFTWARE\\Microsoft\\VisualStudio\\12.0\\VC\\Runtimes\\x86";
 
@@ -190,7 +193,7 @@ namespace Emby.Theater
 
         private static string GetVcredist2013Url()
         {
-            if (Environment.Is64BitOperatingSystem)
+            if (Is64Bit)
             {
                 return "https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2013/vcredist_x64.exe";
             }
@@ -207,7 +210,7 @@ namespace Emby.Theater
 
             try
             {
-                var subkey = Environment.Is64BitOperatingSystem
+                var subkey = Is64Bit
                     ? "SOFTWARE\\WOW6432Node\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x64"
                     : "SOFTWARE\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x86";
 
@@ -244,7 +247,7 @@ namespace Emby.Theater
 
         private static string GetVcredist2015Url()
         {
-            if (Environment.Is64BitOperatingSystem)
+            if (Is64Bit)
             {
                 return "https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2015/vc_redist.x64.exe";
             }
@@ -350,7 +353,7 @@ namespace Emby.Theater
         {
             var appDirectoryPath = Path.GetDirectoryName(appPaths.ApplicationPath);
 
-            var architecture = Environment.Is64BitOperatingSystem ? "x64" : "x86";
+            var architecture = Is64Bit ? "x64" : "x86";
             var archPath = Path.Combine(appDirectoryPath, architecture);
             var electronExePath = Path.Combine(archPath, "electron", "electron.exe");
             var electronAppPath = Path.Combine(appDirectoryPath, "electronapp");
@@ -359,7 +362,7 @@ namespace Emby.Theater
             var dataPath = Path.Combine(appPaths.DataPath, "electron");
 
             var cecPath = Path.Combine(Path.GetDirectoryName(appPaths.ApplicationPath), "cec");
-            if (Environment.Is64BitOperatingSystem)
+            if (Is64Bit)
             {
                 cecPath = Path.Combine(cecPath, "cec-client.x64.exe");
             }

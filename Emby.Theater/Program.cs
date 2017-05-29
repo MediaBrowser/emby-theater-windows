@@ -30,6 +30,11 @@ namespace Emby.Theater
             }
         }
 
+        private static bool Is64BitElectron
+        {
+            get { return Environment.Is64BitOperatingSystem; }
+        }
+
         private static bool Is64Bit
         {
             get { return Environment.Is64BitProcess; }
@@ -153,9 +158,11 @@ namespace Emby.Theater
             // Reference 
             // http://stackoverflow.com/questions/12206314/detect-if-visual-c-redistributable-for-visual-studio-2012-is-installed
 
+            var is64Bit = Is64BitElectron;
+
             try
             {
-                var subkey = Is64Bit
+                var subkey = is64Bit
                     ? "SOFTWARE\\WOW6432Node\\Microsoft\\VisualStudio\\12.0\\VC\\Runtimes\\x64"
                     : "SOFTWARE\\Microsoft\\VisualStudio\\12.0\\VC\\Runtimes\\x86";
 
@@ -182,7 +189,7 @@ namespace Emby.Theater
 
             try
             {
-                await InstallVcredist(GetVcredist2013Url()).ConfigureAwait(false);
+                await InstallVcredist(GetVcredist2013Url(is64Bit)).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -190,9 +197,9 @@ namespace Emby.Theater
             }
         }
 
-        private static string GetVcredist2013Url()
+        private static string GetVcredist2013Url(bool is64Bit)
         {
-            if (Is64Bit)
+            if (is64Bit)
             {
                 return "https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2013/vcredist_x64.exe";
             }
@@ -207,9 +214,11 @@ namespace Emby.Theater
             // Reference 
             // http://stackoverflow.com/questions/12206314/detect-if-visual-c-redistributable-for-visual-studio-2012-is-installed
 
+            var is64Bit = Is64BitElectron;
+
             try
             {
-                var subkey = Is64Bit
+                var subkey = is64Bit
                     ? "SOFTWARE\\WOW6432Node\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x64"
                     : "SOFTWARE\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x86";
 
@@ -236,7 +245,7 @@ namespace Emby.Theater
 
             try
             {
-                await InstallVcredist(GetVcredist2015Url()).ConfigureAwait(false);
+                await InstallVcredist(GetVcredist2015Url(is64Bit)).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -244,9 +253,9 @@ namespace Emby.Theater
             }
         }
 
-        private static string GetVcredist2015Url()
+        private static string GetVcredist2015Url(bool is64Bit)
         {
-            if (Is64Bit)
+            if (is64Bit)
             {
                 return "https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2015/vc_redist.x64.exe";
             }
@@ -352,7 +361,9 @@ namespace Emby.Theater
         {
             var appDirectoryPath = Path.GetDirectoryName(appPaths.ApplicationPath);
 
-            var architecture = Is64Bit ? "x64" : "x86";
+            var is64BitElectron = Is64BitElectron;
+
+            var architecture = is64BitElectron ? "x64" : "x86";
             var archPath = Path.Combine(appDirectoryPath, architecture);
             var electronExePath = Path.Combine(archPath, "electron", "electron.exe");
             var electronAppPath = Path.Combine(appDirectoryPath, "electronapp");
@@ -361,7 +372,7 @@ namespace Emby.Theater
             var dataPath = Path.Combine(appPaths.DataPath, "electron");
 
             var cecPath = Path.Combine(Path.GetDirectoryName(appPaths.ApplicationPath), "cec");
-            if (Is64Bit)
+            if (is64BitElectron)
             {
                 cecPath = Path.Combine(cecPath, "cec-client.x64.exe");
             }

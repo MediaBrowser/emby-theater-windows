@@ -33,7 +33,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -133,6 +133,7 @@
     <Compile Include="App\SystemUpdateTask.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Configuration\ITheaterConfigurationManager.cs" />
+    <Compile Include="DirectShowPlayer\DirectShowPlayerBridge.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="NativeWindowMethods.cs" />
     <Compile Include="Network\NativeMethods.cs" />
@@ -427,6 +428,9 @@
     <Content Include="electronapp\filesystem.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="electronapp\plugins\directshowplayer.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="electronapp\scripts\dwm.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -510,7 +514,12 @@
     </Content>
     <Content Include="Icon.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Emby.Theater.DirectShow\Emby.Theater.DirectShow.csproj">
+      <Project>{f9d197a5-fa0f-4bbc-9020-f707879b8b30}</Project>
+      <Name>Emby.Theater.DirectShow</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

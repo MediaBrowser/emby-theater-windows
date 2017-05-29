@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using Emby.Theater.App;
 using Emby.Theater.Configuration;
+using Emby.Theater.DirectShowPlayer;
+using MediaBrowser.Common;
 using MediaBrowser.Model.Logging;
 using SocketHttpListener.Net;
 
@@ -21,6 +23,7 @@ namespace Emby.Theater
 
         private readonly Process _electronProcess;
         private HttpListener _listener;
+        private DirectShowPlayerBridge _dsPlayerBridge;
         private readonly ApplicationHost _appHost;
 
         public TheaterServer(ILogger logger, ITheaterConfigurationManager config, Process electronProcess, ApplicationHost appHost)
@@ -43,6 +46,10 @@ namespace Emby.Theater
 
             listener.Start();
             _listener = listener;
+
+            _dsPlayerBridge = new DirectShowPlayerBridge(_appHost.LogManager, _config.CommonApplicationPaths,
+                _appHost.GetIsoManager(), _appHost.GetZipClient(), _appHost.GetHttpClient(), _config,
+                _appHost.JsonSerializer, context);
         }
 
         private void ProcessContext(HttpListenerContext context)
@@ -69,11 +76,35 @@ namespace Emby.Theater
 
             var localPath = request.Url.LocalPath.Trim('/');
 
-            _logger.Info("Http {0} {1}", request.HttpMethod, localPath);
+            var logRequest = !string.Equals(localPath, "directshowplayer/refresh", StringComparison.OrdinalIgnoreCase);
+
+            if (logRequest)
+            {
+                _logger.Info("Http {0} {1}", request.HttpMethod, localPath);
+            }
 
             try
             {
-                if (string.Equals(localPath, "runatstartup-true", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(localPath, "windowstate-maximized", StringComparison.OrdinalIgnoreCase))
+                {
+                    _dsPlayerBridge.HandleWindowSizeChanged();
+                }
+                else if (string.Equals(localPath, "windowstate-normal", StringComparison.OrdinalIgnoreCase))
+                {
+                    _dsPlayerBridge.HandleWindowSizeChanged();
+                }
+                else if (string.Equals(localPath, "windowstate-minimized", StringComparison.OrdinalIgnoreCase))
+                {
+                }
+                else if (string.Equals(localPath, "windowstate-fullscreen", StringComparison.OrdinalIgnoreCase))
+                {
+                    _dsPlayerBridge.HandleWindowSizeChanged();
+                }
+                else if (string.Equals(localPath, "windowsize", StringComparison.OrdinalIgnoreCase))
+                {
+                    _dsPlayerBridge.HandleWindowSizeChanged();
+                }
+                else if (string.Equals(localPath, "runatstartup-true", StringComparison.OrdinalIgnoreCase))
                 {
                     if (!_config.Configuration.RunAtStartup)
                     {
@@ -89,13 +120,16 @@ namespace Emby.Theater
                         _config.SaveConfiguration();
                     }
                 }
+                else if (localPath.StartsWith("directshowplayer", StringComparison.OrdinalIgnoreCase))
+                {
+                    _dsPlayerBridge.ProcessRequest(context, localPath);
+                }
                 else if (localPath.StartsWith("fileexists", StringComparison.OrdinalIgnoreCase))
                 {
                     using (var reader = new StreamReader(context.Request.InputStream))
                     {
                         var path = reader.ReadToEnd();
                         var exists = File.Exists(path);
-                        _logger.Info("File exists {0}: {1}", path, exists);
                         var bytes = Encoding.UTF8.GetBytes(exists.ToString().ToLower());
                         context.Response.ContentLength64 = bytes.Length;
                         context.Response.OutputStream.Write(bytes, 0, bytes.Length);
@@ -107,7 +141,6 @@ namespace Emby.Theater
                     {
                         var path = reader.ReadToEnd();
                         var exists = Directory.Exists(path);
-                        _logger.Info("Directory exists {0}: {1}", path, exists);
                         var bytes = Encoding.UTF8.GetBytes(exists.ToString().ToLower());
                         context.Response.ContentLength64 = bytes.Length;
                         context.Response.OutputStream.Write(bytes, 0, bytes.Length);
@@ -116,7 +149,11 @@ namespace Emby.Theater
             }
             finally
             {
-                _logger.Info("Http Completed {0} {1}", request.HttpMethod, localPath);
+                if (logRequest)
+                {
+                    _logger.Info("Http Completed {0} {1}", request.HttpMethod, localPath);
+                }
+
                 response.Close();
             }
         }

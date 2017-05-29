@@ -122,16 +122,19 @@ namespace Emby.Theater.DirectShow
             //init code moved to Initialize which must be called before this object will work correctly
         }
 
+        private KnownCOMObjectConfiguration _KnownCOMObjectConfiguration = new KnownCOMObjectConfiguration();
+
         public void Initialize(string appProgramDataPath, IZipClient zipClient, ILogManager logManager, IConfigurationManager configurationManager)
         {
             if (!_initialized)
             {
                 _configurationManager = configurationManager;
-                var config = GetConfiguration();
 
-                _knownObjects = config.COMConfig.FilterList;
+                _KnownCOMObjectConfiguration.SetDefaults();
+
+                _knownObjects = _KnownCOMObjectConfiguration.FilterList;
                 SearchPath = GetComObjectsFilterPath(appProgramDataPath);
-                _preferURObjects = config.UsePrivateObjects;
+
                 _logger = logManager.GetLogger("URCOMLoader"); 
 
                 _logger.Debug("URCOMLoader Initialized");
@@ -251,7 +254,7 @@ namespace Emby.Theater.DirectShow
             try
             {
                 //TODO: might be better to call _mreFilterBlock.WaitOne with a small value (e.g. 1000) and surface an actionalbe result if it fails so the UI can signal a potentially long running process
-                if (_mreFilterBlock.WaitOne(GetConfiguration().COMConfig.LoadWait))
+                if (_mreFilterBlock.WaitOne(_KnownCOMObjectConfiguration.LoadWait))
                 {
                     _logger.Debug("URCOMLoader is not blocking.");
                     return this.CreateObjectFromPath(kf.ObjectPath, kf.Clsid, true, comFallback);
@@ -272,13 +275,6 @@ namespace Emby.Theater.DirectShow
                 return null;
             }
         }
-
-        private DirectShowPlayerConfiguration GetConfiguration()
-        {
-            return _configurationManager.GetConfiguration<DirectShowPlayerConfiguration>("directshowplayer");
-        }
-
-        #region IDisposable Members
 
         protected void Dispose(bool disposing)
         {
@@ -306,8 +302,6 @@ namespace Emby.Theater.DirectShow
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
-        #endregion
     }
 
     public class DateAndVersion

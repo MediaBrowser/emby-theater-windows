@@ -85,7 +85,13 @@ namespace Emby.Theater.DirectShowPlayer
 
             _logger.Info("Playing media source {0}", _json.SerializeToString(mediaSource));
 
-            _player.Play(path, startPositionTicks, isVideo, item, mediaSource, isFullScreen, videoWindowHandle);
+            var config = new DirectShowPlayerConfiguration();
+
+            config.VideoConfig.SetDefaults();
+            config.AudioConfig.SetDefaults();
+            config.SubtitleConfig.SetDefaults();
+
+            _player.Play(path, startPositionTicks, isVideo, item, mediaSource, isFullScreen, videoWindowHandle, config);
         }
 
         private static string GetFolderRipPath(VideoType videoType, string root)
@@ -311,53 +317,11 @@ namespace Emby.Theater.DirectShowPlayer
             var command = localPath.Split('/').LastOrDefault();
             long? positionTicks = null;
 
-            if (string.Equals(command, "config", StringComparison.OrdinalIgnoreCase))
-            {
-                var response = context.Response;
-
-                var bytes = Encoding.UTF8.GetBytes(_json.SerializeToString(_player.GetConfiguration()));
-
-                response.ContentType = "application/json";
-                response.ContentLength64 = bytes.Length;
-                response.OutputStream.Write(bytes, 0, bytes.Length);
-                return;
-            }
-            if (string.Equals(command, "configsave", StringComparison.OrdinalIgnoreCase))
-            {
-                var config = _json.DeserializeFromStream<DirectShowPlayerConfiguration>(context.Request.InputStream);
-                _player.UpdateConfiguration(config);
-
-                var response = context.Response;
-
-                var bytes = Encoding.UTF8.GetBytes(_json.SerializeToString(_player.GetConfiguration()));
-
-                response.ContentType = "application/json";
-                response.ContentLength64 = bytes.Length;
-                response.OutputStream.Write(bytes, 0, bytes.Length);
-                return;
-            }
-            else if (string.Equals(command, "getaudiodevices", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(command, "getaudiodevices", StringComparison.OrdinalIgnoreCase))
             {
                 var response = context.Response;
                 var jsnString = _json.SerializeToString(AudioConfigurationUtils.GetAudioDevices());
                 var bytes = Encoding.UTF8.GetBytes(jsnString);
-
-                response.ContentType = "application/json";
-                response.ContentLength64 = bytes.Length;
-                response.OutputStream.Write(bytes, 0, bytes.Length);
-                return;
-            }
-            else if (Regex.IsMatch(command, "configresetdefaults-\\w+$", RegexOptions.IgnoreCase))
-            {
-                Match configType = Regex.Match(command, "configresetdefaults-(\\w+)$", RegexOptions.IgnoreCase);
-
-                if (configType.Success)
-                {
-                    _player.ResetConfiguration(configType.Groups[1].Value);
-                }
-
-                var response = context.Response;
-                var bytes = Encoding.UTF8.GetBytes(_json.SerializeToString(_player.GetConfiguration()));
 
                 response.ContentType = "application/json";
                 response.ContentLength64 = bytes.Length;
@@ -510,21 +474,6 @@ namespace Emby.Theater.DirectShowPlayer
             public BaseItemDto item { get; set; }
             public MediaSourceInfo mediaSource { get; set; }
             public string windowHandle { get; set; }
-        }
-    }
-
-    public class DirectShowPlayerConfigurationFactory : IConfigurationFactory
-    {
-        public IEnumerable<ConfigurationStore> GetConfigurations()
-        {
-            return new List<ConfigurationStore>
-            {
-                new ConfigurationStore
-                {
-                    Key = "directshowplayer",
-                    ConfigurationType = typeof (DirectShowPlayerConfiguration)
-                }
-            };
         }
     }
 }

@@ -66,49 +66,12 @@ namespace Emby.Theater.DirectShow
             _zipClient = zipClient;
             _appPaths = appPaths;
 
-            var config = GetConfiguration();
-
-            config.VideoConfig.SetDefaults();
-            config.AudioConfig.SetDefaults();
-            config.SubtitleConfig.SetDefaults();
-            config.COMConfig.SetDefaults();
-
             //use a static object so we keep the libraries in the same place. Doesn't usually matter, but the EVR Presenter does some COM hooking that has problems if we change the lib address.
             //if (_privateCom == null)
             //    _privateCom = new URCOMLoader(_config, _zipClient);
             URCOMLoader.Instance.Initialize(appPaths.ProgramDataPath, _zipClient, logManager, configurationManager);
 
             EnsureMediaFilters(appPaths.ProgramDataPath);
-        }
-
-        public DirectShowPlayerConfiguration GetConfiguration()
-        {
-            return _config.GetConfiguration<DirectShowPlayerConfiguration>("directshowplayer");
-        }
-
-        public void UpdateConfiguration(DirectShowPlayerConfiguration config)
-        {
-            var curConfig = GetConfiguration();
-            _config.SaveConfiguration("directshowplayer", config);
-            if (string.Compare(curConfig.FilterSet, config.FilterSet, true) != 0)
-            {
-                //update filters
-                URCOMLoader.Instance.EnsureObjects(_appPaths.ProgramDataPath, _zipClient, false);
-            }
-        }
-
-        public void ResetConfiguration(string section)
-        {
-            var curConfig = GetConfiguration();
-            switch (section)
-            {
-                case "video":
-                    curConfig.VideoConfig.ResetDefaults();
-                    break;
-                case "audio":
-                    curConfig.AudioConfig.ResetDefaults();
-                    break;
-            }
         }
 
         private void EnsureMediaFilters(string appProgramDataPath)
@@ -224,7 +187,7 @@ namespace Emby.Theater.DirectShow
             }
         }
 
-        public void Play(string path, long startPositionTicks, bool isVideo, BaseItemDto item, MediaSourceInfo mediaSource, bool enableFullScreen, IntPtr videoWindowHandle)
+        public void Play(string path, long startPositionTicks, bool isVideo, BaseItemDto item, MediaSourceInfo mediaSource, bool enableFullScreen, IntPtr videoWindowHandle, DirectShowPlayerConfiguration config)
         {
             var playableItem = new PlayableItem
             {
@@ -240,7 +203,7 @@ namespace Emby.Theater.DirectShow
                     //create a fresh DS Player everytime we want one
                     DisposePlayerInternal();
 
-                    _mediaPlayer = new DirectShowPlayer(this, _logger, GetConfiguration(), _httpClient, videoWindowHandle);
+                    _mediaPlayer = new DirectShowPlayer(this, _logger, config, _httpClient, videoWindowHandle);
                     _mediaPlayer.Play(playableItem, enableFullScreen);
 
                     try

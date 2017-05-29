@@ -8,7 +8,7 @@
         self.name = 'Windows Player';
         self.type = 'mediaplayer';
         self.id = 'directshowplayer';
-        self.priority = -1;
+        self.priority = -2;
 
         var currentSrc;
         var playerState = {};

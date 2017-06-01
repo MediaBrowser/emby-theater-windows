@@ -38,51 +38,6 @@
 
             var files = [];
 
-            files.push({
-                lang: 'en-us',
-                path: pluginManager.mapPath(self, 'directshowplayer/strings/en-US.json')
-            });
-
-            files.push({
-                lang: 'en-GB',
-                path: pluginManager.mapPath(self, 'directshowplayer/strings/en-GB.json')
-            });
-
-            files.push({
-                lang: 'fr',
-                path: pluginManager.mapPath(self, 'directshowplayer/strings/fr.json')
-            });
-
-            files.push({
-                lang: 'hr',
-                path: pluginManager.mapPath(self, 'directshowplayer/strings/hr.json')
-            });
-
-            files.push({
-                lang: 'it',
-                path: pluginManager.mapPath(self, 'directshowplayer/strings/it.json')
-            });
-
-            files.push({
-                lang: 'pl',
-                path: pluginManager.mapPath(self, 'directshowplayer/strings/pl.json')
-            });
-
-            files.push({
-                lang: 'pt-PT',
-                path: pluginManager.mapPath(self, 'directshowplayer/strings/pt-PT.json')
-            });
-
-            files.push({
-                lang: 'ru',
-                path: pluginManager.mapPath(self, 'directshowplayer/strings/ru.json')
-            });
-
-            files.push({
-                lang: 'sv',
-                path: pluginManager.mapPath(self, 'directshowplayer/strings/sv.json')
-            });
-
             return files;
         };
 
@@ -333,7 +288,7 @@
                 if (state.isPaused) {
                     onPause();
                 } else {
-                    onPlaying();
+                    onUnpause();
                 }
             });
         };
@@ -343,7 +298,7 @@
         };
 
         self.unpause = function () {
-            sendCommand('unpause').then(onPlaying);
+            sendCommand('unpause').then(onUnpause);
         };
 
         self.paused = function () {
@@ -414,9 +369,9 @@
             events.trigger(self, 'volumechange');
         }
 
-        function onPlaying() {
+        function onUnpause() {
 
-            events.trigger(self, 'playing');
+            events.trigger(self, 'unpause');
         }
 
         function onPause() {

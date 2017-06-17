@@ -1,4 +1,4 @@
-﻿define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, pluginManager, events, embyRouter) {
+﻿define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'require', 'loading', 'dom'], function (appHost, pluginManager, events, embyRouter, appSettings, require, loading, dom) {
     'use strict';
 
     return function () {
@@ -13,6 +13,7 @@
         var currentSrc;
         var playerState = {};
         var ignoreEnded;
+        var videoDialog;
 
         self.getRoutes = function () {
 
@@ -20,15 +21,19 @@
 
             if (appHost.supports('windowtransparency')) {
 
-                //routes.push({
-                //    path: 'directshowplayer/madvr.html',
-                //    transition: 'slide',
-                //    dependencies: [
-                //        'emby-select'
-                //    ],
-                //    controller: pluginManager.mapPath(self, 'directshowplayer/madvr.js'),
-                //    thumbImage: ''
-                //});
+                routes.push({
+                    path: 'directshowplayer/video.html',
+                    transition: 'slide',
+                    dependencies: [
+                        'emby-select'
+                    ],
+                    controller: pluginManager.mapPath(self, 'directshowplayer/video.js'),
+                    thumbImage: '',
+                    type: 'settings',
+                    title: 'MadVR Video Player',
+                    category: 'Playback',
+                    order: 1000
+                });
             }
 
             return routes;
@@ -43,21 +48,29 @@
 
         self.canPlayMediaType = function (mediaType) {
 
-            return false;
             if ((mediaType || '').toLowerCase() == 'video') {
 
                 return appHost.supports('windowtransparency');
             }
-            return (mediaType || '').toLowerCase() == 'audio';
+            return false;
         };
 
-        self.canPlayItem = function (item) {
+        self.canPlayItem = function (item, playOptions) {
 
             if (!item.RunTimeTicks) {
                 return false;
             }
+            if (!playOptions.fullscreen) {
+                return false;
+            }
+            if (item.VideoType !== 'VideoFile') {
+                return false;
+            }
+            if (item.LocationType !== 'FileSystem') {
+                return false;
+            }
 
-            return true;
+            return appSettings.get('dsplayer-enabled') === 'true';
         };
 
         self.getDeviceProfile = function () {
@@ -191,6 +204,13 @@
 
         self.play = function (options) {
 
+            return createMediaElement(options).then(function () {
+                return playInternal(options);
+            });
+        };
+
+        function playInternal(options) {
+
             var mediaSource = JSON.parse(JSON.stringify(options.mediaSource));
 
             var url = options.url;
@@ -222,7 +242,15 @@
                 mediaSource: mediaSource,
                 startPositionTicks: options.playerStartPositionTicks,
                 fullscreen: enableFullscreen,
-                windowHandle: getPlayerWindowHandle()
+                windowHandle: getPlayerWindowHandle(),
+                playerOptions: {
+                    dynamicRangeCompression: appSettings.get('mpv-drc'),
+                    audioChannels: appSettings.get('mpv-speakerlayout'),
+                    audioSpdif: appSettings.get('mpv-audiospdif'),
+                    videoOutputLevels: appSettings.get('mpv-outputlevels'),
+                    deinterlace: appSettings.get('mpv-deinterlace'),
+                    hwdec: appSettings.get('mpv-hwdec')
+                }
             };
 
             return sendCommand('play', requestBody).then(function () {
@@ -230,10 +258,15 @@
                 if (isVideo) {
                     if (enableFullscreen) {
 
-                        embyRouter.showVideoOsd();
+                        embyRouter.showVideoOsd().then(onNavigatedToOsd);
 
                     } else {
                         embyRouter.setTransparency('backdrop');
+
+                        if (videoDialog) {
+                            videoDialog.classList.remove('mpv-videoPlayerContainer-withBackdrop');
+                            videoDialog.classList.remove('mpv-videoPlayerContainer-onTop');
+                        }
                     }
                 }
 
@@ -245,7 +278,69 @@
                 stopTimeUpdateInterval();
                 throw err;
             });
-        };
+        }
+
+        function onNavigatedToOsd() {
+
+            if (videoDialog) {
+                videoDialog.classList.remove('mpv-videoPlayerContainer-withBackdrop');
+                videoDialog.classList.remove('mpv-videoPlayerContainer-onTop');
+            }
+        }
+
+        function createMediaElement(options) {
+
+            if (options.mediaType !== 'Video') {
+                return Promise.resolve();
+            }
+
+            return new Promise(function (resolve, reject) {
+
+                var dlg = document.querySelector('.mpv-videoPlayerContainer');
+
+                if (!dlg) {
+
+                    require(['css!./mpvplayer'], function () {
+
+                        loading.show();
+
+                        var dlg = document.createElement('div');
+
+                        dlg.classList.add('mpv-videoPlayerContainer');
+
+                        if (options.backdropUrl) {
+
+                            dlg.classList.add('mpv-videoPlayerContainer-withBackdrop');
+                            dlg.style.backgroundImage = "url('" + options.backdropUrl + "')";
+                        }
+
+                        if (options.fullscreen) {
+                            dlg.classList.add('mpv-videoPlayerContainer-onTop');
+                        }
+
+                        document.body.insertBefore(dlg, document.body.firstChild);
+                        videoDialog = dlg;
+
+                        if (options.fullscreen) {
+                            zoomIn(dlg).then(resolve);
+                        } else {
+                            resolve();
+                        }
+
+                    });
+
+                } else {
+
+                    if (options.backdropUrl) {
+
+                        dlg.classList.add('mpv-videoPlayerContainer-withBackdrop');
+                        dlg.style.backgroundImage = "url('" + options.backdropUrl + "')";
+                    }
+
+                    resolve();
+                }
+            });
+        }
 
         // Save this for when playback stops, because querying the time at that point might return 0
         self.currentTime = function (val) {
@@ -263,14 +358,14 @@
             return playerState.durationTicks / 10000;
         };
 
-        self.stop = function (destroyPlayer, reportEnded) {
+        self.stop = function (destroyPlayer) {
 
             ignoreEnded = true;
 
             var cmd = destroyPlayer ? 'stopfade' : 'stop';
             return sendCommand(cmd).then(function () {
 
-                onEnded(reportEnded);
+                onEnded(true);
 
                 if (destroyPlayer) {
                     self.destroy();
@@ -280,6 +375,14 @@
 
         self.destroy = function () {
             embyRouter.setTransparency('none');
+
+            var dlg = videoDialog;
+            if (dlg) {
+
+                videoDialog = null;
+
+                dlg.parentNode.removeChild(dlg);
+            }
         };
 
         self.playPause = function () {
@@ -431,6 +534,18 @@
                 }
             }
             return values.join('&');
+        }
+
+        function zoomIn(elem) {
+
+            return new Promise(function (resolve, reject) {
+
+                var duration = 240;
+                elem.style.animation = 'mpvvideoplayer-zoomin ' + duration + 'ms ease-in normal';
+                dom.addEventListener(elem, dom.whichAnimationEvent(), resolve, {
+                    once: true
+                });
+            });
         }
 
         function sendCommand(name, body) {

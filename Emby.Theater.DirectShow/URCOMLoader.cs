@@ -79,10 +79,10 @@ namespace Emby.Theater.DirectShow
 
         private string GetComObjectsFilterPath(string appProgramDataPath)
         {
-            return Path.Combine(appProgramDataPath, OJB_FOLDER, "2017-05-29");
+            return Path.Combine(appProgramDataPath, OJB_FOLDER, "2017-06-12");
         }
 
-        public bool EnsureObjects(string appProgramDataPath, IZipClient zipClient, bool block)
+        public bool EnsureObjects(string appProgramDataPath, IZipClient zipClient)
         {
             bool needsRestart = false;
 
@@ -124,7 +124,7 @@ namespace Emby.Theater.DirectShow
 
         private KnownCOMObjectConfiguration _KnownCOMObjectConfiguration = new KnownCOMObjectConfiguration();
 
-        public void Initialize(string appProgramDataPath, IZipClient zipClient, ILogManager logManager, IConfigurationManager configurationManager)
+        public string Initialize(string appProgramDataPath, IZipClient zipClient, ILogManager logManager, IConfigurationManager configurationManager)
         {
             if (!_initialized)
             {
@@ -141,6 +141,8 @@ namespace Emby.Theater.DirectShow
 
                 _initialized = true;
             }
+
+            return SearchPath;
         }
 
         public object CreateObjectFromPath(string dllPath, Guid clsid, bool comFallback)
@@ -155,7 +157,7 @@ namespace Emby.Theater.DirectShow
             IntPtr lib = IntPtr.Zero;
             string fullDllPath = Path.Combine(SearchPath, dllPath);
 
-            _logger.Debug("CreateObjectFromPath: {0} - {1} - {2} - {3}", fullDllPath, clsid, setSearchPath, comFallback);
+            _logger.Info("CreateObjectFromPath: {0} - {1} - {2} - {3}", fullDllPath, clsid, setSearchPath, comFallback);
 
             if (File.Exists(fullDllPath) && (_preferURObjects || !comFallback))
             {

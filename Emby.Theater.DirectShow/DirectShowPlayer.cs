@@ -904,24 +904,6 @@ namespace Emby.Theater.DirectShow
                                         {
                                             MadVRSettings msett = new MadVRSettings(_madvr);
 
-                                            bool smoothMotion = msett.GetBool("smoothMotionEnabled");
-
-                                            if (smoothMotion !=
-                                                _config.VideoConfig
-                                                    .UseMadVrSmoothMotion)
-                                                msett.SetBool("smoothMotionEnabled",
-                                                    _config.VideoConfig
-                                                        .UseMadVrSmoothMotion);
-
-                                            if (
-                                                string.Compare(msett.GetString("smoothMotionMode"),
-                                                    _config.VideoConfig
-                                                        .MadVrSmoothMotionMode, true) != 0)
-                                            {
-                                                bool success = msett.SetString("smoothMotionMode",
-                                                    _config.VideoConfig
-                                                        .MadVrSmoothMotionMode);
-                                            }
                                             MFNominalRange levels = (MFNominalRange)_config.VideoConfig.NominalRange;
                                             string madVrLevelInitial = msett.GetString("levels");
                                             switch (levels)
@@ -1313,32 +1295,33 @@ namespace Emby.Theater.DirectShow
                                         //}
 
                                         //enable/disable bitstreaming
-                                        if ((_config.AudioConfig.AudioBitstreaming &
-                                             BitstreamChoice.SPDIF) == BitstreamChoice.SPDIF)
-                                        {
-                                            _logger.Debug("Enable LAVAudio S/PDIF bitstreaming");
+                                        _logger.Debug("Enable LAVAudio S/PDIF bitstreaming");
 
+                                        if (_config.AudioConfig.BitstreamCodecs.Contains("AC3", StringComparer.OrdinalIgnoreCase))
+                                        {
                                             hr = asett.SetBitstreamConfig(LAVBitstreamCodec.AC3, true);
                                             DsError.ThrowExceptionForHR(hr);
-
+                                        }
+                                        if (_config.AudioConfig.BitstreamCodecs.Contains("DTS", StringComparer.OrdinalIgnoreCase))
+                                        {
                                             hr = asett.SetBitstreamConfig(LAVBitstreamCodec.DTS, true);
                                             DsError.ThrowExceptionForHR(hr);
                                         }
 
-                                        if ((_config.AudioConfig.AudioBitstreaming &
-                                             BitstreamChoice.HDMI) == BitstreamChoice.HDMI)
+                                        if (_config.AudioConfig.BitstreamCodecs.Contains("EAC3", StringComparer.OrdinalIgnoreCase))
                                         {
-                                            _logger.Debug("Enable LAVAudio HDMI bitstreaming");
-
                                             hr = asett.SetBitstreamConfig(LAVBitstreamCodec.EAC3, true);
                                             DsError.ThrowExceptionForHR(hr);
-
+                                        }
+                                        if (_config.AudioConfig.BitstreamCodecs.Contains("TRUE HD", StringComparer.OrdinalIgnoreCase))
+                                        {
                                             hr = asett.SetBitstreamConfig(LAVBitstreamCodec.TRUEHD, true);
                                             DsError.ThrowExceptionForHR(hr);
-
+                                        }
+                                        if (_config.AudioConfig.BitstreamCodecs.Contains("DTS-HD", StringComparer.OrdinalIgnoreCase))
+                                        {
                                             hr = asett.SetBitstreamConfig(LAVBitstreamCodec.DTSHD, true);
                                             DsError.ThrowExceptionForHR(hr);
-
                                         }
 
                                         if (_config.AudioConfig.Delay > 0)
@@ -1487,7 +1470,7 @@ namespace Emby.Theater.DirectShow
                                 {
                                     bool addProcessor = true;
 
-                                    if (_config.AudioConfig.AudioBitstreaming != BitstreamChoice.None)
+                                    if (_config.AudioConfig.BitstreamCodecs.Count > 0)
                                     {
                                         _logger.Log(LogSeverity.Debug, "Bit streaming is enabled, we need to decide whether to add processor");
 
@@ -1517,8 +1500,6 @@ namespace Emby.Theater.DirectShow
                                             //sOutFormat = Marshal.PtrToStringAnsi(outFormat);
 
                                             //_logger.Log(LogSeverity.Debug, "output format: {0} - {1} - {2} - {3}", sOutFormat, nChannels, sRate, cMask);
-
-                                            _config.AudioConfig.SetBitstreamCodecs();
 
                                             if (_config.AudioConfig.BitstreamCodecs.Contains(sCodec.ToUpper()))
                                             {

@@ -43,12 +43,14 @@ namespace Emby.Theater.DirectShowPlayer
             _player = new InternalDirectShowPlayer(logManager, appPaths, isoManager, zipClient, httpClient, configurationManager, context);
         }
 
+        public string MediaFilterPath { get { return _player.MediaFilterPath; } }
+
         public void HandleWindowSizeChanged()
         {
             _player.HandleWindowSizeChanged();
         }
 
-        public void Play(string path, long startPositionTicks, bool isVideo, MediaSourceInfo mediaSource, BaseItemDto item, bool isFullScreen, IntPtr videoWindowHandle)
+        public void Play(string path, long startPositionTicks, bool isVideo, MediaSourceInfo mediaSource, BaseItemDto item, bool isFullScreen, PlayerOptions options, IntPtr videoWindowHandle)
         {
             _isFadingOut = false;
             _isVideo = isVideo;
@@ -91,7 +93,76 @@ namespace Emby.Theater.DirectShowPlayer
             config.AudioConfig.SetDefaults();
             config.SubtitleConfig.SetDefaults();
 
+            config.AudioConfig.ShowTrayIcon = true;
+            config.VideoConfig.ShowTrayIcon = true;
+
+            SetPlayerOptions(options, config);
+
             _player.Play(path, startPositionTicks, isVideo, item, mediaSource, isFullScreen, videoWindowHandle, config);
+        }
+
+        private void SetPlayerOptions(PlayerOptions options, DirectShowPlayerConfiguration config)
+        {
+            if (string.Equals(options.videoOutputLevels, "full", StringComparison.OrdinalIgnoreCase))
+            {
+                config.VideoConfig.NominalRange = 1;
+            }
+            else if (string.Equals(options.videoOutputLevels, "limited", StringComparison.OrdinalIgnoreCase))
+            {
+                config.VideoConfig.NominalRange = 2;
+            }
+
+            config.VideoConfig.VideoRenderer = "madvr";
+
+            //<option value="2">Intel Quick Sync</option>
+            if (string.IsNullOrWhiteSpace(options.hwdec))
+            {
+                config.VideoConfig.HwaMode = 0;
+            }
+            else if (string.Equals(options.hwdec, "dxva2", StringComparison.OrdinalIgnoreCase))
+            {
+                config.VideoConfig.HwaMode = (int)LAVHWAccel.DXVA2Native;
+            }
+            else if (string.Equals(options.hwdec, "dxva2-copy", StringComparison.OrdinalIgnoreCase))
+            {
+                config.VideoConfig.HwaMode = (int)LAVHWAccel.DXVA2CopyBack;
+            }
+
+            config.VideoConfig.AutoChangeRefreshRate = false;
+
+            if (string.Equals(options.deinterlace, "yes", StringComparison.OrdinalIgnoreCase))
+            {
+                config.VideoConfig.SW_DeintModes = (int)LAVSWDeintModes.YADIF;
+            }
+
+            switch (options.audioChannels ?? string.Empty)
+            {
+                case "7.1":
+                    config.AudioConfig.SpeakerLayout = "SevenDotOneSurround";
+                    break;
+                case "5.1":
+                    config.AudioConfig.SpeakerLayout = "FiveDotOneSurround";
+                    break;
+                case "stereo":
+                    config.AudioConfig.SpeakerLayout = "Stereo";
+                    break;
+            }
+
+            config.AudioConfig.ExpandMono = true;
+            config.AudioConfig.Expand61 = false;
+
+            config.AudioConfig.BitstreamCodecs = (options.audioSpdif ?? string.Empty).Split(',').Where(i => !string.IsNullOrWhiteSpace(i)).ToList();
+
+            int drcLevel;
+            if (int.TryParse(options.dynamicRangeCompression, NumberStyles.Integer, CultureInfo.InvariantCulture, out drcLevel))
+            {
+                config.AudioConfig.EnableDRC = true;
+                config.AudioConfig.DRCLevel = drcLevel;
+            }
+            else
+            {
+                config.AudioConfig.EnableDRC = false;
+            }
         }
 
         private static string GetFolderRipPath(VideoType videoType, string root)
@@ -335,7 +406,7 @@ namespace Emby.Theater.DirectShowPlayer
 
                 var playerWindowHandle = new IntPtr(long.Parse(playRequest.windowHandle, CultureInfo.InvariantCulture));
 
-                Play(playRequest.url, playRequest.startPositionTicks ?? 0, playRequest.isVideo, playRequest.mediaSource, playRequest.item, playRequest.fullscreen, playerWindowHandle);
+                Play(playRequest.url, playRequest.startPositionTicks ?? 0, playRequest.isVideo, playRequest.mediaSource, playRequest.item, playRequest.fullscreen, playRequest.playerOptions, playerWindowHandle);
             }
             else if (string.Equals(command, "pause", StringComparison.OrdinalIgnoreCase))
             {
@@ -474,6 +545,19 @@ namespace Emby.Theater.DirectShowPlayer
             public BaseItemDto item { get; set; }
             public MediaSourceInfo mediaSource { get; set; }
             public string windowHandle { get; set; }
+
+            public PlayerOptions playerOptions { get; set; }
+        }
+
+        public class PlayerOptions
+        {
+            public string dynamicRangeCompression { get; set; }
+            public string audioChannels { get; set; }
+            public string audioSpdif { get; set; }
+            public string videoOutputLevels { get; set; }
+            public string deinterlace { get; set; }
+            public string hwdec { get; set; }
+            public string refreshRate { get; set; }
         }
     }
 }

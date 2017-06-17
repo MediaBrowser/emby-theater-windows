@@ -146,6 +146,19 @@ namespace Emby.Theater
                         context.Response.OutputStream.Write(bytes, 0, bytes.Length);
                     }
                 }
+                else if (localPath.StartsWith("mediafilterinfo", StringComparison.OrdinalIgnoreCase))
+                {
+                    using (var reader = new StreamReader(context.Request.InputStream))
+                    {
+                        var bytes = Encoding.UTF8.GetBytes(_dsPlayerBridge.MediaFilterPath);
+                        context.Response.ContentLength64 = bytes.Length;
+                        context.Response.OutputStream.Write(bytes, 0, bytes.Length);
+                    }
+                }
+                else if (localPath.StartsWith("openmadvr", StringComparison.OrdinalIgnoreCase))
+                {
+                    System.Diagnostics.Process.Start(Path.Combine(_dsPlayerBridge.MediaFilterPath, "madVR"));
+                }
             }
             finally
             {

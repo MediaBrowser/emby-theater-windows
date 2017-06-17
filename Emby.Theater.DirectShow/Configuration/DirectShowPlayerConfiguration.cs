@@ -95,12 +95,6 @@ namespace Emby.Theater.DirectShow.Configuration
         public bool UseMadVrSmoothMotion { get; set; }
 
         /// <summary>
-        /// Gets or sets madVR smooth motion mode.
-        /// </summary>
-        /// <value><c>avoidJudder</c>, <c>almostAlways</c> or <c>always</c>.</value>
-        public string MadVrSmoothMotionMode { get; set; }
-
-        /// <summary>
         /// Gets or sets video codecs that will be HWA. 
         /// </summary>
         public List<string> HwEnabledCodecs { get; set; }
@@ -129,7 +123,6 @@ namespace Emby.Theater.DirectShow.Configuration
             EnabledCodecs = new List<string>();
 
             UseMadVrSmoothMotion = false;
-            MadVrSmoothMotionMode = "avoidJudder";
 
             HwaResolution = -1;
             HwaMode = -1;
@@ -259,12 +252,6 @@ namespace Emby.Theater.DirectShow.Configuration
     //add configuration values here as necessary
     public class AudioConfiguration
     {
-        /// <summary>
-        /// Gets or sets a value indicating whether [enable audio bitstreaming].
-        /// </summary>
-        /// <value><c>true</c> if [enable audio bitstreaming]; otherwise, <c>false</c>.</value>
-        public BitstreamChoice AudioBitstreaming { get; set; }
-
         public int Delay { get; set; }
 
         public bool EnableAutoSync { get; set; }
@@ -334,22 +321,8 @@ namespace Emby.Theater.DirectShow.Configuration
             SetDefaults();
         }
 
-        public void SetBitstreamCodecs()
-        {
-            if (BitstreamCodecs.Count == 0)
-            {
-                BitstreamCodecs.Add("AC3");
-                BitstreamCodecs.Add("EAC3");
-                BitstreamCodecs.Add("TRUEHD");
-                BitstreamCodecs.Add("DTS");
-                BitstreamCodecs.Add("DCA");
-            }
-        }
-
         public void SetDefaults()
         {
-            SetBitstreamCodecs();
-
             if (EnabledCodecs.Count == 0)
             {
                 EnabledCodecs.Add("AAC");

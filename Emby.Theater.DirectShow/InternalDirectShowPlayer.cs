@@ -43,6 +43,7 @@ namespace Emby.Theater.DirectShow
         //}
 
         private readonly Dispatcher _dispatcher;
+        public string MediaFilterPath { get; private set; }
 
         public InternalDirectShowPlayer(
             ILogManager logManager
@@ -69,7 +70,7 @@ namespace Emby.Theater.DirectShow
             //use a static object so we keep the libraries in the same place. Doesn't usually matter, but the EVR Presenter does some COM hooking that has problems if we change the lib address.
             //if (_privateCom == null)
             //    _privateCom = new URCOMLoader(_config, _zipClient);
-            URCOMLoader.Instance.Initialize(appPaths.ProgramDataPath, _zipClient, logManager, configurationManager);
+            MediaFilterPath = URCOMLoader.Instance.Initialize(appPaths.ProgramDataPath, _zipClient, logManager, configurationManager);
 
             EnsureMediaFilters(appPaths.ProgramDataPath);
         }
@@ -80,10 +81,11 @@ namespace Emby.Theater.DirectShow
             {
                 try
                 {
-                    URCOMLoader.Instance.EnsureObjects(appProgramDataPath, _zipClient, false);
+                    URCOMLoader.Instance.EnsureObjects(appProgramDataPath, _zipClient);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    _logger.ErrorException("Error loading filters", ex);
                 }
             });
         }

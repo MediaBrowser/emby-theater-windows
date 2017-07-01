@@ -79,7 +79,7 @@ namespace Emby.Theater.DirectShow
 
         private string GetComObjectsFilterPath(string appProgramDataPath)
         {
-            return Path.Combine(appProgramDataPath, OJB_FOLDER, "2017-06-12");
+            return Path.Combine(appProgramDataPath, OJB_FOLDER);
         }
 
         public bool EnsureObjects(string appProgramDataPath, IZipClient zipClient)

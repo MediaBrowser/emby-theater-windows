@@ -21,7 +21,7 @@ namespace Emby.Theater
         {
             get
             {
-                if (Is64Bit)
+                if (Environment.Is64BitOperatingSystem)
                 {
                     return "emby-theater-x64.zip";
                 }
@@ -33,11 +33,6 @@ namespace Emby.Theater
         private static bool Is64BitElectron
         {
             get { return Environment.Is64BitOperatingSystem; }
-        }
-
-        private static bool Is64Bit
-        {
-            get { return Environment.Is64BitProcess; }
         }
 
         private static Mutex _singleInstanceMutex;

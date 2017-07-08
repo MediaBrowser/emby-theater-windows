@@ -1313,7 +1313,7 @@ namespace Emby.Theater.DirectShow
                                             hr = asett.SetBitstreamConfig(LAVBitstreamCodec.EAC3, true);
                                             DsError.ThrowExceptionForHR(hr);
                                         }
-                                        if (_config.AudioConfig.BitstreamCodecs.Contains("TRUE HD", StringComparer.OrdinalIgnoreCase))
+                                        if (_config.AudioConfig.BitstreamCodecs.Contains("TRUEHD", StringComparer.OrdinalIgnoreCase))
                                         {
                                             hr = asett.SetBitstreamConfig(LAVBitstreamCodec.TRUEHD, true);
                                             DsError.ThrowExceptionForHR(hr);

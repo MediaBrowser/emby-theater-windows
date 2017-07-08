@@ -314,13 +314,6 @@ namespace Emby.Theater.DirectShow.Configuration
             BitstreamCodecs = new List<string>();
         }
 
-        public void ResetDefaults()
-        {
-            EnabledCodecs.Clear();
-            BitstreamCodecs.Clear();
-            SetDefaults();
-        }
-
         public void SetDefaults()
         {
             if (EnabledCodecs.Count == 0)

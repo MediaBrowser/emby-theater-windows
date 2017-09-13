@@ -225,7 +225,7 @@
 
             // Update the text url in the media source with the full url from the options object
             mediaSource.MediaStreams.forEach(function (ms) {
-                var textTrack = options.tracks.filter(function (t) {
+                var textTrack = options.textTracks.filter(function (t) {
                     return t.index == ms.Index;
 
                 })[0];

@@ -111,7 +111,7 @@ namespace Emby.Theater.DirectShow
 
         public bool IsVideo
         {
-            get { return OriginalItem.IsVideo; }
+            get { return string.Equals(OriginalItem.MediaType, "Video", StringComparison.OrdinalIgnoreCase); }
         }
 
         public List<MediaStream> MediaStreams

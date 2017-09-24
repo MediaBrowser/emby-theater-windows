@@ -1,9 +1,9 @@
 ﻿using Emby.Theater.App;
 using MediaBrowser.Common.Configuration;
-using MediaBrowser.Common.Implementations.Configuration;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Serialization;
 using System;
+using Emby.Theater.AppBase;
 using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.IO;
 

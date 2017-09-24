@@ -1,16 +1,21 @@
 ﻿using Emby.Theater.App;
-using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Model.Logging;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using Emby.Theater.IO;
+using Emby.Theater.Logging;
+using Emby.Theater.Networking;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Net;
+using MediaBrowser.Model.IO;
+using MediaBrowser.Model.System;
 using Microsoft.Win32;
 
 namespace Emby.Theater
@@ -30,14 +35,19 @@ namespace Emby.Theater
             }
         }
 
-        private static bool Is64BitElectron
+        public static bool Is64BitElectron
         {
             get { return Environment.Is64BitOperatingSystem; }
         }
 
-        private static Mutex _singleInstanceMutex;
-        private static ApplicationHost _appHost;
         private static ILogger _logger;
+        private static IApplicationPaths _appPaths;
+        private static ILogManager _logManager;
+
+        public static string ApplicationPath;
+
+        private static IFileSystem FileSystem;
+        private static bool _restartOnShutdown;
 
         /// <summary>
         /// /// The main entry point for the application.
@@ -45,119 +55,197 @@ namespace Emby.Theater
         [STAThread]
         static void Main()
         {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            ApplicationPath = Assembly.GetEntryAssembly().Location;
 
-            bool createdNew;
+            var environmentInfo = GetEnvironmentInfo();
 
-            _singleInstanceMutex = new Mutex(true, @"Local\" + typeof(Program).Assembly.GetName().Name, out createdNew);
+            var appPaths = new ApplicationPaths(GetProgramDataPath(ApplicationPath), ApplicationPath);
+            _appPaths = appPaths;
 
-            if (!createdNew)
+            using (var logManager = new SimpleLogManager(appPaths.LogDirectoryPath, "server"))
             {
-                _singleInstanceMutex = null;
-                return;
-            }
+                _logManager = logManager;
+                logManager.ReloadLogger(LogSeverity.Debug);
+                logManager.AddConsoleOutput();
 
-            var appPath = Process.GetCurrentProcess().MainModule.FileName;
+                var logger = _logger = logManager.GetLogger("Main");
 
-            // Look for the existence of an update archive
-            var appPaths = new ApplicationPaths(GetProgramDataPath(appPath), appPath);
-            var logManager = new NlogManager(appPaths.LogDirectoryPath, "theater");
-            logManager.ReloadLogger(LogSeverity.Debug);
+                logger.Info("Application path: {0}", ApplicationPath);
 
-            var updateArchive = Path.Combine(appPaths.TempUpdatePath, "emby.theater.zip");
+                ApplicationHost.LogEnvironmentInfo(logger, appPaths, true);
 
-            if (File.Exists(updateArchive))
-            {
-                ReleaseMutex();
+                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-                // Update is there - execute update
-                try
+                // Mutex credit: https://stackoverflow.com/questions/229565/what-is-a-good-pattern-for-using-a-global-mutex-in-c/229567
+
+                // unique id for global mutex - Global prefix means it is global to the machine
+                string mutexId = string.Format("Global\\{{{0}}}", "EmbyServer");
+
+                // Need a place to store a return value in Mutex() constructor call
+                bool createdNew;
+
+                // edited by MasonGZhwiti to prevent race condition on security settings via VanNguyen
+                using (var mutex = new Mutex(false, mutexId, out createdNew))
                 {
-                    new ApplicationUpdater().UpdateApplication(appPaths, updateArchive, logManager.GetLogger("ApplicationUpdater"));
+                    // edited by acidzombie24
+                    var hasHandle = false;
+                    try
+                    {
+                        // note, you may want to time out here instead of waiting forever
+                        // edited by acidzombie24
+                        hasHandle = mutex.WaitOne(5000, false);
+                        if (hasHandle == false)
+                        {
+                            logger.Info("Exiting because another instance is already running.");
+                            return;
+                        }
+                    }
+                    catch (AbandonedMutexException)
+                    {
+                        // Log the fact that the mutex was abandoned in another process,
+                        // it will still get acquired
+                        hasHandle = true;
+                        logger.Info("Mutex was abandoned in another process.");
+                    }
 
-                    // And just let the app exit so it can update
-                    return;
+                    using (new MutexHandle(mutex, hasHandle, _logger))
+                    {
+                        if (PerformUpdateIfNeeded(appPaths, environmentInfo, logger))
+                        {
+                            logger.Info("Exiting to perform application update.");
+                            return;
+                        }
+
+                        RunApplication(appPaths, logManager, environmentInfo, new StartupOptions(Environment.GetCommandLineArgs()));
+                    }
                 }
-                catch (Exception e)
+
+                logger.Info("Shutdown complete");
+
+                if (_restartOnShutdown)
                 {
-                    MessageBox.Show(string.Format("Error attempting to update application.\n\n{0}\n\n{1}",
-                        e.GetType().Name, e.Message));
+                    // This is artificial, but add some delay to ensure sockets are released.
+                    var delay = environmentInfo.OperatingSystem == MediaBrowser.Model.System.OperatingSystem.Windows
+                        ? 5000
+                        : 60000;
+
+                    var task = Task.Delay(delay);
+                    Task.WaitAll(task);
+
+                    logger.Info("Starting new server process");
+                    var restartCommandLine = GetRestartCommandLine();
+
+                    Process.Start(restartCommandLine.Item1, restartCommandLine.Item2);
                 }
-            }
-
-            _logger = logManager.GetLogger("App");
-
-            bool supportsTransparency;
-
-            try
-            {
-                supportsTransparency = NativeWindowMethods.DwmIsCompositionEnabled();
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error in DwmIsCompositionEnabled", ex);
-                supportsTransparency = true;
-            }
-
-            _logger.Info("OS Supports window transparency?: {0}", supportsTransparency);
-
-            try
-            {
-                var task = InstallVcredist2015IfNeeded(_appHost, _logger);
-                Task.WaitAll(task);
-
-                _appHost = new ApplicationHost(appPaths, logManager);
-
-                var initTask = _appHost.Init(new Progress<Double>());
-                Task.WaitAll(initTask);
-
-                task = InstallCecDriver(appPaths);
-                Task.WaitAll(task);
-
-                var electronTask = StartElectron(appPaths);
-                Task.WaitAll(electronTask);
-
-                var electronProcess = electronTask.Result;
-
-                electronProcess.Exited += ElectronProcess_Exited;
-
-                var server = new TheaterServer(_logger, _appHost.TheaterConfigurationManager, electronProcess, _appHost);
-
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-
-                Application.Run(new AppContext(server, electronProcess));
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error launching application", ex);
-
-                MessageBox.Show("There was an error launching Emby: " + ex.Message);
-
-                // Shutdown the app with an error code
-                Environment.Exit(1);
-            }
-            finally
-            {
-                ReleaseMutex();
             }
         }
 
-        private static void ElectronProcess_Exited(object sender, EventArgs e)
+        public static Tuple<string, string> GetRestartCommandLine()
+        {
+            var currentProcess = Process.GetCurrentProcess();
+            var processModulePath = currentProcess.MainModule.FileName;
+
+            return new Tuple<string, string>(processModulePath, Environment.CommandLine);
+        }
+        /// <summary>
+        /// Runs the application.
+        /// </summary>
+        private static void RunApplication(ApplicationPaths appPaths, ILogManager logManager, IEnvironmentInfo environmentInfo, StartupOptions options)
+        {
+            var fileSystem = new ManagedFileSystem(logManager.GetLogger("FileSystem"), environmentInfo, appPaths.TempDirectory);
+
+            FileSystem = fileSystem;
+
+            INetworkManager networkManager = new NetworkManager(logManager.GetLogger("NetworkManager"));
+
+            using (var appHost = new ApplicationHost(appPaths,
+                logManager,
+                options,
+                fileSystem,
+                null,
+                UpdatePackageName,
+                environmentInfo,
+                new Emby.Theater.App.SystemEvents(logManager.GetLogger("SystemEvents")),
+                networkManager))
+            {
+                var initProgress = new Progress<double>();
+
+                Func<IHttpClient> httpClient = () => appHost.HttpClient;
+
+                using (new ElectronApp(_logger, appPaths, httpClient, environmentInfo))
+                {
+                    var task = appHost.Init(initProgress);
+                    Task.WaitAll(task);
+
+                    task = InstallVcredist2015IfNeeded(appHost.HttpClient, _logger);
+                    Task.WaitAll(task);
+
+                    task = InstallCecDriver(appPaths, appHost.HttpClient);
+                    Task.WaitAll(task);
+
+                    using (var server = new TheaterServer(_logger, appHost))
+                    {
+                        task = appHost.RunStartupTasks();
+                        Task.WaitAll(task);
+
+                        Application.EnableVisualStyles();
+                        Application.SetCompatibleTextRenderingDefault(false);
+
+                        Application.Run(new AppContext(server));
+                    }
+                }
+            }
+        }
+
+        public static void Exit()
         {
             Application.Exit();
         }
 
-        private static async Task InstallVcredist2013IfNeeded(ApplicationHost appHost, ILogger logger)
+        private static IEnvironmentInfo GetEnvironmentInfo()
+        {
+            var info = new EnvironmentInfo();
+
+            return info;
+        }
+
+        /// <summary>
+        /// Performs the update if needed.
+        /// </summary>
+        private static bool PerformUpdateIfNeeded(IApplicationPaths appPaths, IEnvironmentInfo environmentInfo, ILogger logger)
+        {
+            //// Look for the existence of an update archive
+            var updateArchive = Path.Combine(appPaths.TempUpdatePath, UpdatePackageName);
+
+            if (File.Exists(updateArchive))
+            {
+                logger.Info("An update is available from {0}", updateArchive);
+
+                // Update is there - execute update
+                try
+                {
+                    new ApplicationUpdater().UpdateApplication(appPaths, updateArchive, logger);
+
+                    // And just let the app exit so it can update
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    logger.ErrorException("Error running updater.", e);
+                }
+            }
+
+            return false;
+        }
+
+        private static async Task InstallVcredist2013IfNeeded(IHttpClient httpClient, ILogger logger)
         {
             // Reference 
             // http://stackoverflow.com/questions/12206314/detect-if-visual-c-redistributable-for-visual-studio-2012-is-installed
 
-            var is64Bit = Is64BitElectron;
-
             try
             {
-                var subkey = is64Bit
+                var subkey = Environment.Is64BitProcess
                     ? "SOFTWARE\\WOW6432Node\\Microsoft\\VisualStudio\\12.0\\VC\\Runtimes\\x64"
                     : "SOFTWARE\\Microsoft\\VisualStudio\\12.0\\VC\\Runtimes\\x86";
 
@@ -180,11 +268,9 @@ namespace Emby.Theater
                 return;
             }
 
-            MessageBox.Show("The Visual C++ 2013 Runtime will now be installed.");
-
             try
             {
-                await InstallVcredist(GetVcredist2013Url(is64Bit)).ConfigureAwait(false);
+                await InstallVcredist(httpClient, GetVcredist2013Url()).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -192,9 +278,9 @@ namespace Emby.Theater
             }
         }
 
-        private static string GetVcredist2013Url(bool is64Bit)
+        private static string GetVcredist2013Url()
         {
-            if (is64Bit)
+            if (Is64BitElectron)
             {
                 return "https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2013/vcredist_x64.exe";
             }
@@ -204,21 +290,19 @@ namespace Emby.Theater
             return "https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2013/vcredist_x86.exe";
         }
 
-        private static async Task InstallVcredist2015IfNeeded(ApplicationHost appHost, ILogger logger)
+        private static async Task InstallVcredist2015IfNeeded(IHttpClient httpClient, ILogger logger)
         {
             // Reference 
             // http://stackoverflow.com/questions/12206314/detect-if-visual-c-redistributable-for-visual-studio-2012-is-installed
-
-            var is64Bit = Is64BitElectron;
 
             try
             {
                 RegistryKey key;
 
-                if (is64Bit)
+                if (Environment.Is64BitProcess)
                 {
                     key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default)
-                       .OpenSubKey("SOFTWARE\\Classes\\Installer\\Dependencies\\{d992c12e-cab2-426f-bde3-fb8c53950b0d}");
+                        .OpenSubKey("SOFTWARE\\Classes\\Installer\\Dependencies\\{d992c12e-cab2-426f-bde3-fb8c53950b0d}");
 
                     if (key == null)
                     {
@@ -260,11 +344,9 @@ namespace Emby.Theater
                 return;
             }
 
-            MessageBox.Show("The Visual C++ 2015 Runtime will now be installed.");
-
             try
             {
-                await InstallVcredist(GetVcredist2015Url(is64Bit)).ConfigureAwait(false);
+                await InstallVcredist(httpClient, GetVcredist2015Url()).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -272,9 +354,9 @@ namespace Emby.Theater
             }
         }
 
-        private static string GetVcredist2015Url(bool is64Bit)
+        private static string GetVcredist2015Url()
         {
-            if (is64Bit)
+            if (Is64BitElectron)
             {
                 return "https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2015/vc_redist.x64.exe";
             }
@@ -284,10 +366,8 @@ namespace Emby.Theater
             return "https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2015/vc_redist.x86.exe";
         }
 
-        private async static Task InstallVcredist(string url)
+        private async static Task InstallVcredist(IHttpClient httpClient, string url)
         {
-            var httpClient = _appHost.HttpClient;
-
             var tmp = await httpClient.GetTempFile(new HttpRequestOptions
             {
                 Url = url,
@@ -316,7 +396,7 @@ namespace Emby.Theater
             }
         }
 
-        private static async Task InstallCecDriver(IApplicationPaths appPaths)
+        private static async Task InstallCecDriver(IApplicationPaths appPaths, IHttpClient httpClient)
         {
             var path = Path.Combine(appPaths.ProgramDataPath, "cec-driver");
             Directory.CreateDirectory(path);
@@ -333,7 +413,7 @@ namespace Emby.Theater
                 _logger.Info("HDMI CEC driver already installed.");
 
                 // Needed by CEC
-                await InstallVcredist2013IfNeeded(_appHost, _logger).ConfigureAwait(false);
+                await InstallVcredist2013IfNeeded(httpClient, _logger).ConfigureAwait(false);
 
                 return;
             }
@@ -347,11 +427,11 @@ namespace Emby.Theater
             }
 
             // Needed by CEC
-            await InstallVcredist2013IfNeeded(_appHost, _logger).ConfigureAwait(false);
+            await InstallVcredist2013IfNeeded(httpClient, _logger).ConfigureAwait(false);
 
             try
             {
-                var installerPath = Path.Combine(Path.GetDirectoryName(appPaths.ApplicationPath), "cec", "p8-usbcec-driver-installer.exe");
+                var installerPath = Path.Combine(Path.GetDirectoryName(ApplicationPath), "cec", "p8-usbcec-driver-installer.exe");
 
                 using (var process = new Process
                 {
@@ -374,83 +454,6 @@ namespace Emby.Theater
             {
                 _logger.ErrorException("Error installing cec driver", ex);
             }
-        }
-
-        private static async Task<Process> StartElectron(IApplicationPaths appPaths)
-        {
-            var appDirectoryPath = Path.GetDirectoryName(appPaths.ApplicationPath);
-
-            var is64BitElectron = Is64BitElectron;
-
-            var architecture = is64BitElectron ? "x64" : "x86";
-            var archPath = Path.Combine(appDirectoryPath, architecture);
-            var electronExePath = Path.Combine(archPath, "electron", "electron.exe");
-            var electronAppPath = Path.Combine(appDirectoryPath, "electronapp");
-            var mpvExePath = Path.Combine(archPath, "mpv", "mpv.exe");
-
-            var dataPath = Path.Combine(appPaths.DataPath, "electron");
-
-            var cecPath = Path.Combine(Path.GetDirectoryName(appPaths.ApplicationPath), "cec");
-            if (is64BitElectron)
-            {
-                cecPath = Path.Combine(cecPath, "cec-client.x64.exe");
-            }
-            else
-            {
-                cecPath = Path.Combine(cecPath, "cec-client.exe");
-            }
-
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    UseShellExecute = false,
-
-                    FileName = electronExePath,
-                    Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", electronAppPath, dataPath, cecPath, mpvExePath)
-                },
-
-                EnableRaisingEvents = true,
-            };
-
-            _logger.Info("{0} {1}", process.StartInfo.FileName, process.StartInfo.Arguments);
-
-            process.Start();
-            process.Exited += process_Exited;
-
-            //process.WaitForInputIdle(3000);
-
-            while (process.MainWindowHandle.Equals(IntPtr.Zero))
-            {
-                await Task.Delay(50);
-            }
-            return process;
-        }
-
-        static void process_Exited(object sender, EventArgs e)
-        {
-            _appHost.Shutdown();
-        }
-
-        public static void Exit()
-        {
-            Application.Exit();
-        }
-
-        /// <summary>
-        /// Releases the mutex.
-        /// </summary>
-        private static void ReleaseMutex()
-        {
-            if (_singleInstanceMutex == null)
-            {
-                return;
-            }
-
-            _singleInstanceMutex.ReleaseMutex();
-            _singleInstanceMutex.Close();
-            _singleInstanceMutex.Dispose();
-            _singleInstanceMutex = null;
         }
 
         public static string GetProgramDataPath(string applicationPath)
@@ -493,13 +496,11 @@ namespace Emby.Theater
         {
             var exception = (Exception)e.ExceptionObject;
 
-            new UnhandledExceptionWriter(_appHost.TheaterConfigurationManager.ApplicationPaths, _logger, _appHost.LogManager).Log(exception);
-
-            MessageBox.Show("Unhandled exception: " + exception.Message);
+            new UnhandledExceptionWriter(_appPaths, _logger, _logManager, FileSystem, new ConsoleLogger()).Log(exception);
 
             if (!Debugger.IsAttached)
             {
-                Environment.Exit(Marshal.GetHRForException(exception));
+                Environment.Exit(System.Runtime.InteropServices.Marshal.GetHRForException(exception));
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using MediaBrowser.Common.Implementations;
+﻿using Emby.Theater.AppBase;
 
 namespace Emby.Theater.App
 {

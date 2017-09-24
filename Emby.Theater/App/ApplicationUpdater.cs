@@ -42,11 +42,13 @@ namespace Emby.Theater.App
 
             logger.Info("Starting updater process.");
 
+            var appPath = Process.GetCurrentProcess().MainModule.FileName;
+
             // installpath = program data folder
             // startpath = executable to launch
             // systempath = folder containing installation
             var args = string.Format("product=\"{0}\" archive=\"{1}\" caller={2} pismo=false version={3} installpath=\"{4}\" startpath=\"{5}\" systempath=\"{6}\"",
-                    product, archive, Process.GetCurrentProcess().Id, version, appPaths.ProgramDataPath, appPaths.ApplicationPath, systemPath);
+                    product, archive, Process.GetCurrentProcess().Id, version, appPaths.ProgramDataPath, appPath, systemPath);
 
             logger.Info("Args: {0}", args);
             Process.Start(tempUpdater, args);

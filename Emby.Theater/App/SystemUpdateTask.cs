@@ -4,9 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Common;
 using MediaBrowser.Common.Configuration;
-using MediaBrowser.Common.ScheduledTasks;
-using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Tasks;
+using MediaBrowser.Model.Logging;
 
 namespace Emby.Theater.App
 {

@@ -21,16 +21,14 @@ namespace Emby.Theater
         private readonly ILogger _logger;
         private readonly ITheaterConfigurationManager _config;
 
-        private readonly Process _electronProcess;
         private HttpListener _listener;
         private DirectShowPlayerBridge _dsPlayerBridge;
         private readonly ApplicationHost _appHost;
 
-        public TheaterServer(ILogger logger, ITheaterConfigurationManager config, Process electronProcess, ApplicationHost appHost)
+        public TheaterServer(ILogger logger, ApplicationHost appHost)
         {
             _logger = logger;
-            _config = config;
-            _electronProcess = electronProcess;
+            _config = (ITheaterConfigurationManager)appHost.ConfigurationManager;
             _appHost = appHost;
         }
 
@@ -39,7 +37,14 @@ namespace Emby.Theater
             //var serverPort = GetRandomUnusedPort();
             var serverPort = 8154;
 
-            var listener = new HttpListener(new PatternsLogger(_logger), (string)null);
+            var listener = new HttpListener(_logger, 
+                _appHost.CryptographyProvider, 
+                _appHost.SocketFactory, 
+                _appHost.NetworkManager, 
+                _appHost.TextEncoding, 
+                _appHost.MemoryStreamFactory,
+                _appHost.FileSystemManager,
+                _appHost.EnvironmentInfo);
 
             listener.Prefixes.Add("http://localhost:" + serverPort + "/");
             listener.OnContext = ProcessContext;
@@ -177,24 +182,6 @@ namespace Emby.Theater
 
         public void Dispose()
         {
-            try
-            {
-                _electronProcess.CloseMainWindow();
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-            try
-            {
-                _electronProcess.WaitForExit(2000);
-            }
-            catch (Exception ex)
-            {
-
-            }
-
             if (_listener != null)
             {
                 foreach (var prefix in _listener.Prefixes.ToList())

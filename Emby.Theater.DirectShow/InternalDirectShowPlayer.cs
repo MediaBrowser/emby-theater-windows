@@ -229,7 +229,7 @@ namespace Emby.Theater.DirectShow
 
                     }
 
-                    if (playableItem.OriginalItem.IsVideo)
+                    if (playableItem.IsVideo)
                     {
                         var audioIndex = playableItem.MediaSource.DefaultAudioStreamIndex;
                         var subtitleIndex = playableItem.MediaSource.DefaultSubtitleStreamIndex;

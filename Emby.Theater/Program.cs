@@ -79,7 +79,7 @@ namespace Emby.Theater
                 // Mutex credit: https://stackoverflow.com/questions/229565/what-is-a-good-pattern-for-using-a-global-mutex-in-c/229567
 
                 // unique id for global mutex - Global prefix means it is global to the machine
-                string mutexId = string.Format("Global\\{{{0}}}", "EmbyServer");
+                string mutexId = string.Format("Global\\{{{0}}}", "EmbyTheater");
 
                 // Need a place to store a return value in Mutex() constructor call
                 bool createdNew;

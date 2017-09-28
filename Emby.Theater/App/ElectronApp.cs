@@ -75,6 +75,8 @@ namespace Emby.Theater.App
 
             _logger.Info("{0} {1}", process.StartInfo.FileName, process.StartInfo.Arguments);
 
+            process.Exited += Process_Exited;
+
             process.Start();
 
             //process.WaitForInputIdle(3000);
@@ -84,6 +86,11 @@ namespace Emby.Theater.App
                 var task = Task.Delay(50);
                 Task.WaitAll(task);
             }
+        }
+
+        private void Process_Exited(object sender, EventArgs e)
+        {
+            Program.Exit();
         }
 
         private void CloseProcess()

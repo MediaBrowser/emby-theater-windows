@@ -62,7 +62,7 @@ namespace Emby.Theater
             var appPaths = new ApplicationPaths(GetProgramDataPath(ApplicationPath), ApplicationPath);
             _appPaths = appPaths;
 
-            using (var logManager = new SimpleLogManager(appPaths.LogDirectoryPath, "server"))
+            using (var logManager = new SimpleLogManager(appPaths.LogDirectoryPath, "theater"))
             {
                 _logManager = logManager;
                 logManager.ReloadLogger(LogSeverity.Debug);
@@ -215,7 +215,7 @@ namespace Emby.Theater
         private static bool PerformUpdateIfNeeded(IApplicationPaths appPaths, IEnvironmentInfo environmentInfo, ILogger logger)
         {
             //// Look for the existence of an update archive
-            var updateArchive = Path.Combine(appPaths.TempUpdatePath, UpdatePackageName);
+            var updateArchive = Path.Combine(appPaths.TempUpdatePath, "emby-theater.zip");
 
             if (File.Exists(updateArchive))
             {

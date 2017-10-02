@@ -245,9 +245,11 @@ namespace Emby.Theater
             // Reference 
             // http://stackoverflow.com/questions/12206314/detect-if-visual-c-redistributable-for-visual-studio-2012-is-installed
 
+            bool is64Bit = Is64BitElectron;
+
             try
             {
-                var subkey = Environment.Is64BitProcess
+                var subkey = is64Bit
                     ? "SOFTWARE\\WOW6432Node\\Microsoft\\VisualStudio\\12.0\\VC\\Runtimes\\x64"
                     : "SOFTWARE\\Microsoft\\VisualStudio\\12.0\\VC\\Runtimes\\x86";
 
@@ -272,7 +274,7 @@ namespace Emby.Theater
 
             try
             {
-                await InstallVcredist(httpClient, GetVcredist2013Url()).ConfigureAwait(false);
+                await InstallVcredist(httpClient, GetVcredist2013Url(is64Bit)).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -280,9 +282,9 @@ namespace Emby.Theater
             }
         }
 
-        private static string GetVcredist2013Url()
+        private static string GetVcredist2013Url(bool is64Bit)
         {
-            if (Is64BitElectron)
+            if (is64Bit)
             {
                 return "https://github.com/MediaBrowser/Emby.Resources/raw/master/vcredist2013/vcredist_x64.exe";
             }

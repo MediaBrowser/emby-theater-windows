@@ -177,8 +177,8 @@ namespace Emby.Theater
                     var task = appHost.Init(initProgress);
                     Task.WaitAll(task);
 
-                    task = InstallVcredist2015IfNeeded(appHost.HttpClient, _logger);
-                    Task.WaitAll(task);
+                    //task = InstallVcredist2015IfNeeded(appHost.HttpClient, _logger);
+                    //Task.WaitAll(task);
 
                     task = InstallCecDriver(appPaths, appHost.HttpClient);
                     Task.WaitAll(task);

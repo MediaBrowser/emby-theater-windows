@@ -912,7 +912,7 @@ namespace Emby.Theater.App
         {
             var updateLevel = SystemUpdateLevel;
             return new GithubUpdater(HttpClient, JsonSerializer)
-                .CheckForUpdateResult("MediaBrowser", "Emby.Theater.Windows", ApplicationVersion, updateLevel, Program.UpdatePackageName, "emby.theater", "emby.theater.zip", TimeSpan.FromTicks(0), cancellationToken);
+                .CheckForUpdateResult("MediaBrowser", "Emby.Theater.Windows", ApplicationVersion, updateLevel, Program.UpdatePackageName, "emby.theater", Program.DownloadedPackageFilename, TimeSpan.FromTicks(0), cancellationToken);
         }
 
         /// <summary>

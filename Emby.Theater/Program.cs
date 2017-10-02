@@ -35,6 +35,8 @@ namespace Emby.Theater
             }
         }
 
+        public static string DownloadedPackageFilename = "emby-theater.zip";
+
         public static bool Is64BitElectron
         {
             get { return Environment.Is64BitOperatingSystem; }
@@ -215,7 +217,7 @@ namespace Emby.Theater
         private static bool PerformUpdateIfNeeded(IApplicationPaths appPaths, IEnvironmentInfo environmentInfo, ILogger logger)
         {
             //// Look for the existence of an update archive
-            var updateArchive = Path.Combine(appPaths.TempUpdatePath, "emby-theater.zip");
+            var updateArchive = Path.Combine(appPaths.TempUpdatePath, DownloadedPackageFilename);
 
             if (File.Exists(updateArchive))
             {

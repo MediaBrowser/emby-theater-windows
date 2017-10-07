@@ -27,7 +27,7 @@
     autospeed-method="always"   String     - Set how often to check if framerate conforms to settings
 					     "always": (original behaviour) contstantly checks during playback
 					     "start": only does initial change at start
-
+						 
     Example: mpv file.mkv --script-opts=autospeed-nircmd=true,autospeed-minspeed=0.8
 --]]
 --[[
@@ -54,9 +54,9 @@ local _global = {
     utils = require 'mp.utils',
     rateCache = {},
     lastDrr = 0,
-    initialRefreshFound = false,
     speedCache = {},
     next = next,
+    initialRefreshFound = false,
 }
 
 function round(number)
@@ -98,7 +98,7 @@ function getOptions()
         if (opt ~= nil) then
             if ((key == "nircmd" or key == "speed" or key == "osd" or key == "estfps") and opt == "true") then
                 _global.options[key] = true
-            elseif (key == "minspeed" or key == "maxspeed" or key == "osdtime" or key == "monitor" or key == "dwidth" or key == "dheight" or key == "bdepth" or key == "exitrate" or key == "spause") then
+            elseif (key == "minspeed" or key == "maxspeed" or key == "osdtime" --[[or key == "monitor"--]] or key == "dwidth" or key == "dheight" or key == "bdepth" or key == "exitrate" or key == "spause") then
                 local test = tonumber(opt)
                 if (test ~= nil) then
                     _global.options[key] = test
@@ -112,20 +112,22 @@ end
 getOptions()
 
 function main(name, fps)
-    if ((_global.initialRefreshFound == false) or (_global.options["method"] == "always")) then
-	    if (fps == nil) then
-		return
-	    end
-	    _global.temp["fps"] = fps
-	    findRefreshRate()
-	    determineSpeed()
-	    if (_global.options["speed"] == true and _global.temp["speed"] >= _global.options["minspeed"] and _global.temp["speed"] <= _global.options["maxspeed"]) then
-		mp.set_property_number("speed", _global.temp["speed"])
-	    else
-		_global.temp["speed"] = _global.confSpeed
-	    end
-	    _global.initialRefreshFound = true
-    end
+	if(_global.options["nircmd"] == true) then
+		if ((_global.initialRefreshFound == false) or (_global.options["method"] == "always")) then
+			if (fps == nil) then
+				return
+			end
+			_global.temp["fps"] = fps
+			findRefreshRate()
+			determineSpeed()
+			if (_global.options["speed"] == true and _global.temp["speed"] >= _global.options["minspeed"] and _global.temp["speed"] <= _global.options["maxspeed"]) then
+				mp.set_property_number("speed", _global.temp["speed"])
+			else
+				_global.temp["speed"] = _global.confSpeed
+			end
+			_global.initialRefreshFound = true
+		end
+	end
 end
 
 function setOSD()
@@ -191,7 +193,7 @@ end
 
 function findRefreshRate()
     -- This is to prevent a system call if the screen refresh / video fps has not changed.
-    if (_global.temp["drr"] == _global.lastDrr) then
+    if (_global.temp["drr"] == _global.lastDrr and _global.initialRefreshFound == true) then
         return
     elseif (_global.rateCache[_global.temp["drr"]] ~= nil) then
         setRate(_global.rateCache[_global.temp["drr"]])
@@ -259,19 +261,19 @@ end
 function setRate(rate)
     local paused = mp.get_property("pause")
     if (_global.options["spause"] > 0 and paused ~= "yes") then
-	mp.set_property("pause", "yes")
+        mp.set_property("pause", "yes")
     end
     _global.utils.subprocess({
-	["cancellable"] = false,
-	["args"] = {
-	    [1] = _global.options["nircmdc"],
-	    [2] = "setdisplay",
-	    [3] = "monitor:" .. _global.options["monitor"],
-	    [4] = _global.options["dwidth"],
-	    [5] = _global.options["dheight"],
-	    [6] = _global.options["bdepth"],
-	    [7] = rate
-	}
+        ["cancellable"] = false,
+        ["args"] = {
+            [1] = _global.options["nircmdc"],
+            [2] = "setdisplay",
+            [3] = "monitor:" .. _global.options["monitor"],
+            [4] = _global.options["dwidth"],
+            [5] = _global.options["dheight"],
+            [6] = _global.options["bdepth"],
+            [7] = rate
+        }
     })
     if (_global.options["spause"] > 0 and paused ~= "yes") then
 		--os.execute("ping -n " .. _global.options["spause"] .. " localhost > NUL")
@@ -286,7 +288,7 @@ function setRate(rate)
 				[6] = "NUL"
 			}
 		})
-	mp.set_property("pause", "no")
+        mp.set_property("pause", "no")
     end
 	--os.execute("ping -n 2 localhost > NUL")
 	_global.utils.subprocess({
@@ -305,13 +307,20 @@ function setRate(rate)
     _global.lastDrr = _global.temp["drr"]
 end
 
+function rate_builder(rate)
+	local rates = tostring(rate) .. ";" .. tostring(math.floor(rate)) .. ";" .. tostring(math.ceil(rate))
+	for i=10,1,-1 
+	do 
+	   rates = rates .. ";" .. tostring(math.floor(rate) * i) .. ";" .. tostring(math.ceil(rate) * i)
+	end
+	return rates
+end
+
 function start()
     mp.unobserve_property(start)
     _global.temp = {}
-    _global.temp["start_drr"] = mp.get_property_native("display-fps")
-    _global.options["monitor"] = mp.get_property_native("display-names")
-    _global.options["exitrate"] = _global.temp["start_drr"]
-	
+    _global.temp["start_drr"] = math.floor(mp.get_property_native("display-fps"))
+    _global.options["exitrate"] = _global.temp["start_drr"]	
     if not (_global.temp["start_drr"]) then
         return
     end
@@ -319,19 +328,17 @@ function start()
     if not (_global.confSpeed) then
         _global.confSpeed = mp.get_property_native("speed")
     end
-    
-	local test = mp.get_property("container-fps")
-    _global.options["rates"] = test
-	
+    local test = mp.get_property("container-fps")
+	_global.options["rates"] = rate_builder(test)
     if (test == nil or test == "nil property unavailable") then
         if (_global.options["estfps"] ~= true) then
             return
         end
         test = mp.get_property("estimated-vf-fps")
+		_global.options["rates"] = rate_builder(test)
         if (test == nil or test == "nil property unavailable") then
             return
         end
-	_global.options["rates"] = test
         mp.observe_property("estimated-vf-fps", "number", main)
     else
         mp.observe_property("container-fps", "number", main)

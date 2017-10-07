@@ -25,8 +25,8 @@
     autospeed-spause            true/false - Pause video while switching display modes.
                                 Number     - If you set this a number, it will pause for that amount of seconds.
     autospeed-method="always"   String     - Set how often to check if framerate conforms to settings
-											"always": (original behaviour) contstantly checks during playback
-											"start": only does initial change at start
+					     "always": (original behaviour) contstantly checks during playback
+					     "start": only does initial change at start
 						 
     Example: mpv file.mkv --script-opts=autospeed-nircmd=true,autospeed-minspeed=0.8
 --]]
@@ -91,7 +91,7 @@ function getOptions()
         ["osdkey"]    = "y",
         ["estfps"]    = false,
         ["spause"]    = 0,
-		["method"]   = "once",
+	["method"]   = "once",
     }
     for key, value in pairs(_global.options) do
         local opt = mp.get_opt("autospeed-" .. key)

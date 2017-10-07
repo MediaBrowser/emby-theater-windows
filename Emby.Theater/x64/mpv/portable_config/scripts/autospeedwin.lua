@@ -24,7 +24,10 @@
     autospeed-estfps=false      true/false - Calculate/change speed if a video has a variable fps at the cost of higher CPU usage (most videos have a fixed fps).
     autospeed-spause            true/false - Pause video while switching display modes.
                                 Number     - If you set this a number, it will pause for that amount of seconds.
-
+    autospeed-method="always"   String     - Set how often to check if framerate conforms to settings
+											"always": (original behaviour) contstantly checks during playback
+											"start": only does initial change at start
+						 
     Example: mpv file.mkv --script-opts=autospeed-nircmd=true,autospeed-minspeed=0.8
 --]]
 --[[

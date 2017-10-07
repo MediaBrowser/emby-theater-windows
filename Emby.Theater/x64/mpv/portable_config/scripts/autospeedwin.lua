@@ -308,7 +308,7 @@ function setRate(rate)
 end
 
 function rate_builder(rate)
-	local rates = tostring(rate) .. ";" .. tostring(math.floor(rate)) .. ";" .. tostring(math.ceil(rate))
+	local rates = tostring(math.floor(rate)) .. ";" .. tostring(math.ceil(rate))
 	for i=10,1,-1 
 	do 
 	   rates = rates .. ";" .. tostring(math.floor(rate) * i) .. ";" .. tostring(math.ceil(rate) * i)

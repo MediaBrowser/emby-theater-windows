@@ -202,7 +202,7 @@ function findRefreshRate()
     if (_global.options["nircmd"] ~= true or _global.options["rates"] == "") then
         return
     end
-    local round_fps = round(_global.temp["fps"])
+    local raw_fps = _global.temp["fps"]
     if (_global.temp["maxrate"] == nil) then
         _global.temp["maxrate"] = 0
         for rate in string.gmatch(_global.options["rates"], "[%w.]+") do
@@ -217,10 +217,10 @@ function findRefreshRate()
         end
     end
     local iterator = 1
-    if (_global.temp["maxrate"] > round_fps) then
-        iterator = round(_global.temp["maxrate"] / round_fps)
-    elseif (_global.temp["maxrate"] < round_fps) then
-        iterator = round(round_fps / _global.temp["maxrate"])
+    if (_global.temp["maxrate"] > raw_fps) then
+        iterator = round(_global.temp["maxrate"] / raw_fps)
+    elseif (_global.temp["maxrate"] < raw_fps) then
+        iterator = round(raw_fps / _global.temp["maxrate"])
     else
         setRate(_global.temp["maxrate"])
         return
@@ -232,7 +232,7 @@ function findRefreshRate()
         local min = (rate * _global.options["minspeed"])
         local max = (rate * _global.options["maxspeed"])
         for multiplier = 1, iterator do
-            local multiplied_fps = (multiplier * round_fps)
+            local multiplied_fps = (multiplier * raw_fps)
             if (multiplied_fps >= min and multiplied_fps <= max) then
                 if (multiplied_fps < rate) then
                     local difference = (rate - multiplied_fps)

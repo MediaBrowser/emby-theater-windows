@@ -56,7 +56,9 @@ local _global = {
     lastDrr = 0,
     speedCache = {},
     next = next,
-    initialRefreshFound = false,
+    trigger_refreshFound = false,
+	initial_start = false,
+	item_count = 0,
 }
 
 function round(number)
@@ -91,7 +93,7 @@ function getOptions()
         ["osdkey"]    = "y",
         ["estfps"]    = false,
         ["spause"]    = 0,
-	["method"]   = "once",
+		["method"]	  = "once",
     }
     for key, value in pairs(_global.options) do
         local opt = mp.get_opt("autospeed-" .. key)
@@ -113,7 +115,7 @@ getOptions()
 
 function main(name, fps)
 	if(_global.options["nircmd"] == true) then
-		if ((_global.initialRefreshFound == false) or (_global.options["method"] == "always")) then
+		if ((_global.trigger_refreshFound == false) or (_global.options["method"] == "always")) then
 			if (fps == nil) then
 				return
 			end
@@ -125,14 +127,14 @@ function main(name, fps)
 			else
 				_global.temp["speed"] = _global.confSpeed
 			end
-			_global.initialRefreshFound = true
+			_global.trigger_refreshFound = true
 		end
 	end
 end
 
 function setOSD()
     _global.temp["output"] = (_global.osd_start ..
-        "{\\b1}Original monitor refresh rate{\\b0}\\h\\h" .. _global.temp["start_drr"] .. "Hz\\N" ..
+        "{\\b1}Original monitor refresh rate{\\b0}\\h\\h" .. _global.temp["initial_drr"] .. "Hz\\N" ..
         "{\\b1}Current  monitor refresh rate{\\b0}\\h\\h" .. _global.temp["drr"] .. "Hz\\N" ..
         "{\\b1}Original video fps{\\b0}\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h" .. _global.temp["fps"] .. "fps\\N" ..
         "{\\b1}Current  video fps{\\b0}\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h\\h" .. (_global.temp["fps"] * _global.temp["speed"]) .. "fps\\N" ..
@@ -193,7 +195,7 @@ end
 
 function findRefreshRate()
     -- This is to prevent a system call if the screen refresh / video fps has not changed.
-    if (_global.temp["drr"] == _global.lastDrr and _global.initialRefreshFound == true) then
+    if (_global.temp["drr"] == _global.lastDrr and _global.trigger_refreshFound == true) then
         return
     elseif (_global.rateCache[_global.temp["drr"]] ~= nil) then
         setRate(_global.rateCache[_global.temp["drr"]])
@@ -202,7 +204,7 @@ function findRefreshRate()
     if (_global.options["nircmd"] ~= true or _global.options["rates"] == "") then
         return
     end
-    local raw_fps = _global.temp["fps"]
+    local raw_fps = math.floor(_global.temp["fps"])
     if (_global.temp["maxrate"] == nil) then
         _global.temp["maxrate"] = 0
         for rate in string.gmatch(_global.options["rates"], "[%w.]+") do
@@ -318,13 +320,18 @@ end
 
 function start()
     mp.unobserve_property(start)
+	_global.item_count = _global.item_count + 1
+	_global.trigger_refreshFound = false
     _global.temp = {}
-    _global.temp["start_drr"] = math.floor(mp.get_property_native("display-fps"))
-    _global.options["exitrate"] = _global.temp["start_drr"]	
-    if not (_global.temp["start_drr"]) then
+	if(_global.initial_start == false) then
+		_global.options["exitrate"] = math.floor(mp.get_property_native("display-fps"))
+		_global.initial_start = true
+	end
+	_global.temp["initial_drr"] = math.floor(mp.get_property_native("display-fps"))
+    if not (_global.temp["initial_drr"]) then
         return
     end
-    _global.temp["drr"] = _global.temp["start_drr"]
+    _global.temp["drr"] = _global.temp["initial_drr"]
     if not (_global.confSpeed) then
         _global.confSpeed = mp.get_property_native("speed")
     end

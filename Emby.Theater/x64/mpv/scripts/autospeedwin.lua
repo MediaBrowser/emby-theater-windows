@@ -65,6 +65,14 @@ function round(number)
     return math.floor(number + 0.5)
 end
 
+function sleep(n)  -- seconds
+	local clock = os.clock
+	local t0 = clock()
+	while 
+		clock() - t0 <= n do 
+	end
+end
+
 function osdEcho()
     if (_global.options["osd"] ~= true) then
         return
@@ -79,7 +87,7 @@ function getOptions()
     _global.options = {
         ["enabled"]    = false,
         ["speed"]     = false,
-        ["nircmdc"]   = "nircmdc",
+        ["program"]   = "nircmdc",
         ["monitor"]   = 0,
         ["dwidth"]    = 1920,
         ["dheight"]   = 1080,
@@ -261,49 +269,32 @@ function findRefreshRate()
 end
 
 function setRate(rate)
-    local paused = mp.get_property("pause")
-    if (_global.options["spause"] > 0 and paused ~= "yes") then
-        mp.set_property("pause", "yes")
-    end
-    _global.utils.subprocess({
-        ["cancellable"] = false,
-        ["args"] = {
-            [1] = _global.options["nircmdc"],
-            [2] = "setdisplay",
-            [3] = "monitor:" .. _global.options["monitor"],
-            [4] = _global.options["dwidth"],
-            [5] = _global.options["dheight"],
-            [6] = _global.options["bdepth"],
-            [7] = rate
-        }
-    })
-    if (_global.options["spause"] > 0 and paused ~= "yes") then
-		--os.execute("ping -n " .. _global.options["spause"] .. " localhost > NUL")
+	if(_global.temp["initial_drr"] ~= rate) then
+		local paused = mp.get_property("pause")
+		if (_global.options["spause"] > 0 and paused ~= "yes") then
+			mp.set_property("pause", "yes")
+			paused = mp.get_property("pause")
+		end
+
 		_global.utils.subprocess({
 			["cancellable"] = false,
 			["args"] = {
-				[1] = "ping",
-				[2] = "-n",
-				[3] = _global.options["spause"],
-				[4] = "localhost",
-				[5] = ">",
-				[6] = "NUL"
+				[1] = _global.options["program"],
+				[2] = "setdisplay",
+				[3] = "monitor:" .. _global.options["monitor"],
+				[4] = _global.options["dwidth"],
+				[5] = _global.options["dheight"],
+				[6] = _global.options["bdepth"],
+				[7] = rate
 			}
 		})
-        mp.set_property("pause", "no")
-    end
-	--os.execute("ping -n 2 localhost > NUL")
-	_global.utils.subprocess({
-			["cancellable"] = false,
-			["args"] = {
-				[1] = "ping",
-				[2] = "-n",
-				[3] = "2",
-				[4] = "localhost",
-				[5] = ">",
-				[6] = "NUL"
-			}
-		})
+
+		if (_global.options["spause"] > 0 and paused == "yes") then
+			sleep(_global.options["spause"])
+			mp.set_property("pause", "no")
+		end
+	end
+
     _global.temp["drr"] = mp.get_property_native("display-fps")
     _global.rateCache[_global.temp["drr"]] = rate
     _global.lastDrr = _global.temp["drr"]
@@ -361,7 +352,7 @@ function start()
             _global.utils.subprocess({
                 ["cancellable"] = false,
                 ["args"] = {
-                    [1] = _global.options["nircmdc"],
+                    [1] = _global.options["program"],
                     [2] = "setdisplay",
                     [3] = "monitor:" .. _global.options["monitor"],
                     [4] = _global.options["dwidth"],

@@ -275,7 +275,7 @@
     <None Include="x64\mpv\mpv.com">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="x64\mpv\portable_config\scripts\autospeedwin.lua">
+    <None Include="x64\mpv\scripts\autospeedwin.lua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="x86\electron\blink_image_resources_200_percent.pak">
@@ -320,7 +320,7 @@
     <None Include="x86\mpv\mpv.com">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="x86\mpv\portable_config\scripts\autospeedwin.lua">
+    <None Include="x86\mpv\scripts\autospeedwin.lua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

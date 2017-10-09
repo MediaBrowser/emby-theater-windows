@@ -269,28 +269,30 @@ function findRefreshRate()
 end
 
 function setRate(rate)
-    local paused = mp.get_property("pause")
-    if (_global.options["spause"] > 0 and paused ~= "yes") then
-        mp.set_property("pause", "yes")
-		paused = mp.get_property("pause")
-    end
+	if(_global.temp["initial_drr"] ~= rate) then
+		local paused = mp.get_property("pause")
+		if (_global.options["spause"] > 0 and paused ~= "yes") then
+			mp.set_property("pause", "yes")
+			paused = mp.get_property("pause")
+		end
 
-    _global.utils.subprocess({
-        ["cancellable"] = false,
-        ["args"] = {
-            [1] = _global.options["program"],
-            [2] = "setdisplay",
-            [3] = "monitor:" .. _global.options["monitor"],
-            [4] = _global.options["dwidth"],
-            [5] = _global.options["dheight"],
-            [6] = _global.options["bdepth"],
-            [7] = rate
-        }
-    })
+		_global.utils.subprocess({
+			["cancellable"] = false,
+			["args"] = {
+				[1] = _global.options["program"],
+				[2] = "setdisplay",
+				[3] = "monitor:" .. _global.options["monitor"],
+				[4] = _global.options["dwidth"],
+				[5] = _global.options["dheight"],
+				[6] = _global.options["bdepth"],
+				[7] = rate
+			}
+		})
 
-	if (_global.options["spause"] > 0 and paused == "yes") then
-		sleep(_global.options["spause"])
-		mp.set_property("pause", "no")
+		if (_global.options["spause"] > 0 and paused == "yes") then
+			sleep(_global.options["spause"])
+			mp.set_property("pause", "no")
+		end
 	end
 
     _global.temp["drr"] = mp.get_property_native("display-fps")

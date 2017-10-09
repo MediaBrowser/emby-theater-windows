@@ -98,7 +98,7 @@ function getOptions()
     for key, value in pairs(_global.options) do
         local opt = mp.get_opt("autospeed-" .. key)
         if (opt ~= nil) then
-            if ((key == "nircmd" or key == "speed" or key == "osd" or key == "estfps") and opt == "true") then
+            if ((key == "enabled" or key == "speed" or key == "osd" or key == "estfps") and opt == "true") then
                 _global.options[key] = true
             elseif (key == "minspeed" or key == "maxspeed" or key == "osdtime" --[[or key == "monitor"--]] or key == "dwidth" or key == "dheight" or key == "bdepth" or key == "exitrate" or key == "spause") then
                 local test = tonumber(opt)
@@ -310,12 +310,12 @@ function setRate(rate)
 end
 
 function rate_builder(rate)
-	if(_global.options["rates"] ~= "") then
+	if(_global.options["rates"] == "") then
 		local rates = tostring(math.floor(rate)) .. ";" .. tostring(math.ceil(rate)) .. ";" .. tostring(math.floor(rate) + math.ceil(rate))
 		for i=10,1,-1 
 		do 
 		   rates = rates .. ";" .. tostring(math.floor(rate) * i) .. ";" .. tostring(math.ceil(rate) * i)
-		end 29 + 30 = 59
+		end
 		return rates
 	else
 		return _global.options["rates"]
@@ -341,7 +341,7 @@ function start()
         _global.confSpeed = mp.get_property_native("speed")
     end
     local test = mp.get_property("container-fps")
-	if(_global.temp["rates_internal"] = rate_builder(test)
+	_global.temp["rates_internal"] = rate_builder(test)
     if (test == nil or test == "nil property unavailable") then
         if (_global.options["estfps"] ~= true) then
             return

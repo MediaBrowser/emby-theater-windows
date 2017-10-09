@@ -2,7 +2,7 @@
     See script details on https://github.com/kevinlekiller/mpv_scripts
     
     Valid --script-opts are (they are all optional):
-    autospeed-nircmd=false      true/false - Use nircmd to change the refresh rate of your monitor.
+    autospeed-enabled=false      true/false - Use nircmd to change the refresh rate of your monitor.
     autospeed-speed=false       true/false - Adjust speed of the video?.
     autospeed-nircmdc="nircmdc" String     - Path to nircmdc executable file. If not set, nircmdc will be searched in Windows PATH variable.
     autospeed-monitor=0         Number     - Which monitor (display) to set the refresh rate on.
@@ -28,7 +28,7 @@
 					     "always": (original behaviour) contstantly checks during playback
 					     "start": only does initial change at start
 						 
-    Example: mpv file.mkv --script-opts=autospeed-nircmd=true,autospeed-minspeed=0.8
+    Example: mpv file.mkv --script-opts=autospeed-enabled=true,autospeed-minspeed=0.8
 --]]
 --[[
     Copyright (C) 2016-2017  kevinlekiller
@@ -77,7 +77,7 @@ end
 
 function getOptions()
     _global.options = {
-        ["nircmd"]    = false,
+        ["enabled"]    = false,
         ["speed"]     = false,
         ["nircmdc"]   = "nircmdc",
         ["monitor"]   = 0,
@@ -92,7 +92,7 @@ function getOptions()
         ["osdtime"]   = 10,
         ["osdkey"]    = "y",
         ["estfps"]    = false,
-        ["spause"]    = 0,
+        ["spause"]    = 3,
 		["method"]	  = "once",
     }
     for key, value in pairs(_global.options) do
@@ -114,7 +114,7 @@ end
 getOptions()
 
 function main(name, fps)
-	if(_global.options["nircmd"] == true) then
+	if(_global.options["enabled"] == true) then
 		if ((_global.trigger_refreshFound == false) or (_global.options["method"] == "always")) then
 			if (fps == nil) then
 				return
@@ -201,20 +201,20 @@ function findRefreshRate()
         setRate(_global.rateCache[_global.temp["drr"]])
         return
     end
-    if (_global.options["nircmd"] ~= true or _global.options["rates"] == "") then
+    if (_global.options["enabled"] ~= true or _global.temp["rates_internal"] == "") then
         return
     end
     local raw_fps = math.floor(_global.temp["fps"])
     if (_global.temp["maxrate"] == nil) then
         _global.temp["maxrate"] = 0
-        for rate in string.gmatch(_global.options["rates"], "[%w.]+") do
+        for rate in string.gmatch(_global.temp["rates_internal"], "[%w.]+") do
             rate = tonumber(rate)
             if (rate > _global.temp["maxrate"]) then
                 _global.temp["maxrate"] = rate
             end
         end
         if (_global.temp["maxrate"] == 0) then
-            _global.options["rates"] = ""
+            _global.temp["rates_internal"] = ""
             return
         end
     end
@@ -229,7 +229,7 @@ function findRefreshRate()
     end
     local smallest = 0
     local foundRate = false
-    for rate in string.gmatch(_global.options["rates"], "[%w.]+") do
+    for rate in string.gmatch(_global.temp["rates_internal"], "[%w.]+") do
         rate = tonumber(rate)
         local min = (rate * _global.options["minspeed"])
         local max = (rate * _global.options["maxspeed"])
@@ -310,12 +310,17 @@ function setRate(rate)
 end
 
 function rate_builder(rate)
-	local rates = tostring(math.floor(rate)) .. ";" .. tostring(math.ceil(rate))
-	for i=10,1,-1 
-	do 
-	   rates = rates .. ";" .. tostring(math.floor(rate) * i) .. ";" .. tostring(math.ceil(rate) * i)
+	if(_global.options["rates"] ~= "") then
+		local rates = tostring(math.floor(rate)) .. ";" .. tostring(math.ceil(rate)) .. ";" .. tostring(math.floor(rate) + math.ceil(rate))
+		for i=10,1,-1 
+		do 
+		   rates = rates .. ";" .. tostring(math.floor(rate) * i) .. ";" .. tostring(math.ceil(rate) * i)
+		end 29 + 30 = 59
+		return rates
+	else
+		return _global.options["rates"]
 	end
-	return rates
+
 end
 
 function start()
@@ -336,13 +341,13 @@ function start()
         _global.confSpeed = mp.get_property_native("speed")
     end
     local test = mp.get_property("container-fps")
-	_global.options["rates"] = rate_builder(test)
+	if(_global.temp["rates_internal"] = rate_builder(test)
     if (test == nil or test == "nil property unavailable") then
         if (_global.options["estfps"] ~= true) then
             return
         end
         test = mp.get_property("estimated-vf-fps")
-		_global.options["rates"] = rate_builder(test)
+		_global.temp["rates_internal"] = rate_builder(test)
         if (test == nil or test == "nil property unavailable") then
             return
         end
@@ -351,7 +356,7 @@ function start()
         mp.observe_property("container-fps", "number", main)
     end
     mp.add_key_binding(_global.options["osdkey"], mp.get_script_name(), osdEcho, {repeatable=true})
-    if (_global.options["nircmd"] == true and _global.options["exitrate"] > 0) then
+    if (_global.options["enabled"] == true and _global.options["exitrate"] > 0) then
         function revertDrr()
             _global.utils.subprocess({
                 ["cancellable"] = false,

@@ -100,7 +100,7 @@ function getOptions()
         ["osdtime"]   = 10,
         ["osdkey"]    = "y",
         ["estfps"]    = false,
-        ["spause"]    = 3,
+        ["spause"]    = 4,
 		["method"]	  = "once",
     }
     for key, value in pairs(_global.options) do
@@ -124,6 +124,9 @@ getOptions()
 function main(name, fps)
 	if(_global.options["enabled"] == true) then
 		if ((_global.trigger_refreshFound == false) or (_global.options["method"] == "always")) then
+			mp.msg.info("New Media Loaded #" .. tostring(_global.item_count) .. ", Estimated Refresh Rate -: " .. tostring(fps) .. ", Type -: " .. name)
+			_global.temp["rates_internal"] = rate_builder(fps)
+			mp.msg.info("Speed Adjustment -: " .. tostring(_global.options["speed"]))
 			if (fps == nil) then
 				return
 			end
@@ -269,6 +272,7 @@ function findRefreshRate()
 end
 
 function setRate(rate)
+	mp.msg.info("Current Refresh Rate -: " .. tostring(_global.temp["initial_drr"]) .. ", Requested Rate -: " .. tostring(rate))
 	if(_global.temp["initial_drr"] ~= rate) then
 		local paused = mp.get_property("pause")
 		if (_global.options["spause"] > 0 and paused ~= "yes") then
@@ -276,6 +280,7 @@ function setRate(rate)
 			paused = mp.get_property("pause")
 		end
 
+		mp.msg.info("Trying Requested Rate -: " .. tostring(rate))
 		_global.utils.subprocess({
 			["cancellable"] = false,
 			["args"] = {
@@ -290,6 +295,7 @@ function setRate(rate)
 		})
 
 		if (_global.options["spause"] > 0 and paused == "yes") then
+			mp.msg.info("Pausing Playback for " .. tostring(_global.options["spause"]) .. " second(s)")
 			sleep(_global.options["spause"])
 			mp.set_property("pause", "no")
 		end
@@ -303,12 +309,14 @@ end
 function rate_builder(rate)
 	if(_global.options["rates"] == "") then
 		local rates = tostring(math.floor(rate)) .. ";" .. tostring(math.ceil(rate)) .. ";" .. tostring(math.floor(rate) + math.ceil(rate))
-		for i=10,1,-1 
+		for i=10,2,-1 
 		do 
 		   rates = rates .. ";" .. tostring(math.floor(rate) * i) .. ";" .. tostring(math.ceil(rate) * i)
 		end
+		mp.msg.info("Possible Refresh Rates (Computed) -: " .. rates)
 		return rates
 	else
+		mp.msg.info("Possible Refresh Rates (User) -: " .. _global.options["rates"])
 		return _global.options["rates"]
 	end
 
@@ -322,6 +330,7 @@ function start()
 	if(_global.initial_start == false) then
 		_global.options["exitrate"] = math.floor(mp.get_property_native("display-fps"))
 		_global.initial_start = true
+		mp.msg.info("Saving Exit Refresh Rate -: " .. tostring(_global.options["exitrate"]))
 	end
 	_global.temp["initial_drr"] = math.floor(mp.get_property_native("display-fps"))
     if not (_global.temp["initial_drr"]) then
@@ -332,13 +341,11 @@ function start()
         _global.confSpeed = mp.get_property_native("speed")
     end
     local test = mp.get_property("container-fps")
-	_global.temp["rates_internal"] = rate_builder(test)
     if (test == nil or test == "nil property unavailable") then
         if (_global.options["estfps"] ~= true) then
             return
         end
         test = mp.get_property("estimated-vf-fps")
-		_global.temp["rates_internal"] = rate_builder(test)
         if (test == nil or test == "nil property unavailable") then
             return
         end
@@ -349,6 +356,7 @@ function start()
     mp.add_key_binding(_global.options["osdkey"], mp.get_script_name(), osdEcho, {repeatable=true})
     if (_global.options["enabled"] == true and _global.options["exitrate"] > 0) then
         function revertDrr()
+			mp.msg.info("Reverting Refresh To -: " .. tostring(_global.options["exitrate"]))
             _global.utils.subprocess({
                 ["cancellable"] = false,
                 ["args"] = {
@@ -362,7 +370,9 @@ function start()
                 }
             })
         end
-        mp.register_event("shutdown", revertDrr)
+		if(_global.item_count == 1) then 
+			mp.register_event("shutdown", revertDrr)
+		end
     end
 end
 

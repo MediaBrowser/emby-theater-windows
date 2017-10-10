@@ -124,13 +124,9 @@ getOptions()
 function main(name, fps)
 	if(_global.options["enabled"] == true) then
 		if ((_global.trigger_refreshFound == false) or (_global.options["method"] == "always")) then
-			mp.msg.info("New Media Loaded #" .. tostring(_global.item_count) .. ", Estimated Refresh Rate -: " .. tostring(fps))
+			mp.msg.info("New Media Loaded #" .. tostring(_global.item_count) .. ", Estimated Refresh Rate -: " .. tostring(fps) .. ", Type -: " .. name)
+			_global.temp["rates_internal"] = rate_builder(fps)
 			mp.msg.info("Speed Adjustment -: " .. tostring(_global.options["speed"]))
-			if(_global.options["rates"] == "") then
-				mp.msg.info("Possible Refresh Rates (Computed) -: " .. _global.temp["rates_internal"])
-			else
-				mp.msg.info("Possible Refresh Rates (User) -: " .. _global.temp["rates_internal"])
-			end
 			if (fps == nil) then
 				return
 			end
@@ -276,6 +272,7 @@ function findRefreshRate()
 end
 
 function setRate(rate)
+	mp.msg.info("Current Refresh Rate -: " .. tostring(_global.temp["initial_drr"]) .. ", Requested Rate -: " .. tostring(rate))
 	if(_global.temp["initial_drr"] ~= rate) then
 		local paused = mp.get_property("pause")
 		if (_global.options["spause"] > 0 and paused ~= "yes") then
@@ -283,7 +280,7 @@ function setRate(rate)
 			paused = mp.get_property("pause")
 		end
 
-		mp.msg.info("Trying Rate -: " .. tostring(rate))
+		mp.msg.info("Trying Requested Rate -: " .. tostring(rate))
 		_global.utils.subprocess({
 			["cancellable"] = false,
 			["args"] = {
@@ -316,8 +313,10 @@ function rate_builder(rate)
 		do 
 		   rates = rates .. ";" .. tostring(math.floor(rate) * i) .. ";" .. tostring(math.ceil(rate) * i)
 		end
+		mp.msg.info("Possible Refresh Rates (Computed) -: " .. rates)
 		return rates
 	else
+		mp.msg.info("Possible Refresh Rates (User) -: " .. _global.options["rates"])
 		return _global.options["rates"]
 	end
 
@@ -342,13 +341,11 @@ function start()
         _global.confSpeed = mp.get_property_native("speed")
     end
     local test = mp.get_property("container-fps")
-	_global.temp["rates_internal"] = rate_builder(test)
     if (test == nil or test == "nil property unavailable") then
         if (_global.options["estfps"] ~= true) then
             return
         end
         test = mp.get_property("estimated-vf-fps")
-		_global.temp["rates_internal"] = rate_builder(test)
         if (test == nil or test == "nil property unavailable") then
             return
         end

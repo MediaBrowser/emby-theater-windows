@@ -327,6 +327,8 @@ function start()
 	_global.item_count = _global.item_count + 1
 	_global.trigger_refreshFound = false
     _global.temp = {}
+	_global.rateCache = {}
+	_global.speedCache = {}
 	if(_global.initial_start == false) then
 		_global.options["exitrate"] = math.floor(mp.get_property_native("display-fps"))
 		_global.initial_start = true

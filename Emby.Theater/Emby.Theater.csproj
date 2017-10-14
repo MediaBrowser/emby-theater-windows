@@ -501,12 +501,7 @@
     <Content Include="x64\mpv\mpv.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="x64\mpv\nircmd.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="x64\mpv\nircmdc.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="x64\mpv\RefreshRate.exe" />
     <Content Include="x86\electron\d3dcompiler_47.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -544,12 +539,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />
-    <Content Include="x86\mpv\nircmd.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="x86\mpv\nircmdc.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="x86\mpv\RefreshRate.exe" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Emby.Theater.DirectShow\Emby.Theater.DirectShow.csproj">

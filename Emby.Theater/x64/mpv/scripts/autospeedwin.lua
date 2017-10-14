@@ -87,7 +87,7 @@ function getOptions()
     _global.options = {
         ["enabled"]    = false,
         ["speed"]     = false,
-        ["program"]   = "nircmdc",
+        ["program"]   = "refreshrate",
         ["monitor"]   = 0,
         ["dwidth"]    = 1920,
         ["dheight"]   = 1080,
@@ -100,13 +100,14 @@ function getOptions()
         ["osdtime"]   = 10,
         ["osdkey"]    = "y",
         ["estfps"]    = false,
-        ["spause"]    = 4,
+		["skipmultiples"]    = false,
+        ["spause"]    = 3,
 		["method"]	  = "once",
     }
     for key, value in pairs(_global.options) do
         local opt = mp.get_opt("autospeed-" .. key)
         if (opt ~= nil) then
-            if ((key == "enabled" or key == "speed" or key == "osd" or key == "estfps") and opt == "true") then
+            if ((key == "enabled" or key == "speed" or key == "skipmultiples" or key == "osd" or key == "estfps") and opt == "true") then
                 _global.options[key] = true
             elseif (key == "minspeed" or key == "maxspeed" or key == "osdtime" --[[or key == "monitor"--]] or key == "dwidth" or key == "dheight" or key == "bdepth" or key == "exitrate" or key == "spause") then
                 local test = tonumber(opt)
@@ -126,15 +127,16 @@ function main(name, fps)
 		if ((_global.trigger_refreshFound == false) or (_global.options["method"] == "always")) then
 			mp.msg.info("New Media Loaded #" .. tostring(_global.item_count) .. ", Estimated Refresh Rate -: " .. tostring(fps) .. ", Type -: " .. name)
 			_global.temp["rates_internal"] = rate_builder(fps)
-			mp.msg.info("Speed Adjustment -: " .. tostring(_global.options["speed"]))
+			mp.msg.info("Try Speed Adjustment -: " .. tostring(_global.options["speed"]))
 			if (fps == nil) then
 				return
 			end
 			_global.temp["fps"] = fps
-			findRefreshRate()
+			findRefreshRate(fps)
 			determineSpeed()
 			if (_global.options["speed"] == true and _global.temp["speed"] >= _global.options["minspeed"] and _global.temp["speed"] <= _global.options["maxspeed"]) then
 				mp.set_property_number("speed", _global.temp["speed"])
+				mp.msg.info("Adjusting Speed -: " .. tostring(_global.temp["speed"]))
 			else
 				_global.temp["speed"] = _global.confSpeed
 			end
@@ -204,117 +206,54 @@ function determineSpeed()
     _global.speedCache[id] = _global.temp["speed"]
 end
 
-function findRefreshRate()
+function findRefreshRate(fps)
     -- This is to prevent a system call if the screen refresh / video fps has not changed.
-    if (_global.temp["drr"] == _global.lastDrr and _global.trigger_refreshFound == true) then
+    if (math.floor(fps) == _global.lastDrr or _global.temp["rates_internal"] == "") then
         return
-    elseif (_global.rateCache[_global.temp["drr"]] ~= nil) then
-        setRate(_global.rateCache[_global.temp["drr"]])
-        return
-    end
-    if (_global.options["enabled"] ~= true or _global.temp["rates_internal"] == "") then
-        return
-    end
-    local raw_fps = math.floor(_global.temp["fps"])
-    if (_global.temp["maxrate"] == nil) then
-        _global.temp["maxrate"] = 0
-        for rate in string.gmatch(_global.temp["rates_internal"], "[%w.]+") do
-            rate = tonumber(rate)
-            if (rate > _global.temp["maxrate"]) then
-                _global.temp["maxrate"] = rate
-            end
-        end
-        if (_global.temp["maxrate"] == 0) then
-            _global.temp["rates_internal"] = ""
-            return
-        end
-    end
-    local iterator = 1
-    if (_global.temp["maxrate"] > raw_fps) then
-        iterator = round(_global.temp["maxrate"] / raw_fps)
-    elseif (_global.temp["maxrate"] < raw_fps) then
-        iterator = round(raw_fps / _global.temp["maxrate"])
-    else
-        setRate(_global.temp["maxrate"])
-        return
-    end
-    local smallest = 0
-    local foundRate = false
-    for rate in string.gmatch(_global.temp["rates_internal"], "[%w.]+") do
-        rate = tonumber(rate)
-        local min = (rate * _global.options["minspeed"])
-        local max = (rate * _global.options["maxspeed"])
-        for multiplier = 1, iterator do
-            local multiplied_fps = (multiplier * raw_fps)
-            if (multiplied_fps >= min and multiplied_fps <= max) then
-                if (multiplied_fps < rate) then
-                    local difference = (rate - multiplied_fps)
-                    if (smallest == 0 or difference < smallest) then
-                        smallest = difference
-                        foundRate = rate
-                    end
-                elseif (multiplied_fps > rate) then
-                    local difference = (multiplied_fps - rate)
-                    if (smallest == 0 or difference < smallest) then
-                        smallest = difference
-                        foundRate = rate
-                    end
-                else
-                    setRate(rate)
-                    return
-                end
-            end
-        end
-    end
-    if (foundRate ~= false) then
-        setRate(foundRate)
+	else
+		setRate(_global.temp["rates_internal"])
     end
 end
 
 function setRate(rate)
-	mp.msg.info("Current Refresh Rate -: " .. tostring(_global.temp["initial_drr"]) .. ", Requested Rate -: " .. tostring(rate))
-	if(_global.temp["initial_drr"] ~= rate) then
-		local paused = mp.get_property("pause")
-		if (_global.options["spause"] > 0 and paused ~= "yes") then
-			mp.set_property("pause", "yes")
-			paused = mp.get_property("pause")
-		end
-
-		mp.msg.info("Trying Requested Rate -: " .. tostring(rate))
-		_global.utils.subprocess({
-			["cancellable"] = false,
-			["args"] = {
-				[1] = _global.options["program"],
-				[2] = "setdisplay",
-				[3] = "monitor:" .. _global.options["monitor"],
-				[4] = _global.options["dwidth"],
-				[5] = _global.options["dheight"],
-				[6] = _global.options["bdepth"],
-				[7] = rate
-			}
-		})
-
-		if (_global.options["spause"] > 0 and paused == "yes") then
-			mp.msg.info("Pausing Playback for " .. tostring(_global.options["spause"]) .. " second(s)")
-			sleep(_global.options["spause"])
-			mp.set_property("pause", "no")
-		end
+	mp.msg.info("Current Refresh Rate -: " .. tostring(_global.temp["initial_drr"]) .. ", Requested Rates -: " .. tostring(rate))
+	local paused = mp.get_property("pause")
+	if (_global.options["spause"] > 0 and paused ~= "yes") then
+		mp.set_property("pause", "yes")
+		paused = mp.get_property("pause")
 	end
 
-    _global.temp["drr"] = mp.get_property_native("display-fps")
-    _global.rateCache[_global.temp["drr"]] = rate
+	local new_rate = change_rate(rate)
+	mp.msg.info("Current Refresh Rate -: " .. tostring(new_rate))		
+	
+	if (_global.options["spause"] > 0 and paused == "yes") then
+		mp.msg.info("Pausing Playback for " .. tostring(_global.options["spause"]) .. " second(s)")
+		sleep(_global.options["spause"])
+		mp.set_property("pause", "no")
+	end
+
+    _global.temp["drr"] = tonumber(new_rate)
     _global.lastDrr = _global.temp["drr"]
 end
 
 function rate_builder(rate)
 	if(_global.options["rates"] == "") then
-		local rates = tostring(math.floor(rate)) .. ";" .. tostring(math.ceil(rate)) .. ";" .. tostring(math.floor(rate) + math.ceil(rate))
-		for i=10,2,-1 
-		do 
-		   rates = rates .. ";" .. tostring(math.floor(rate) * i) .. ";" .. tostring(math.ceil(rate) * i)
+		local actual_rates = possible_rate()
+		mp.msg.info("Possible Refresh Rates (Actual) -: " .. actual_rates)
+		local rates_table = {}
+		if check_rates(actual_rates, tostring(math.floor(rate))) then table.insert(rates_table, tostring(math.floor(rate))) end
+		if check_rates(actual_rates, tostring(math.ceil(rate))) then table.insert(rates_table, tostring(math.ceil(rate))) end
+		if check_rates(actual_rates, tostring(math.floor(rate) + math.ceil(rate))) then table.insert(rates_table, tostring(math.floor(rate) + math.ceil(rate))) end
+		if(_global.options["skipmultiples"] == false) then
+			for i=10,2,-1 
+			do 
+				if check_rates(actual_rates, tostring(math.floor(rate) * i)) then table.insert(rates_table, tostring(math.floor(rate) * i)) end
+				if check_rates(actual_rates, tostring(math.ceil(rate) * i)) then table.insert(rates_table, tostring(math.ceil(rate) * i)) end
+			end
 		end
-		mp.msg.info("Possible Refresh Rates (Computed) -: " .. rates)
-		return rates
+		mp.msg.info("Possible Refresh Rates (Computed) -: " .. table.concat(rates_table, ";"))
+		
+		return table.concat(rates_table, ";")
 	else
 		mp.msg.info("Possible Refresh Rates (User) -: " .. _global.options["rates"])
 		return _global.options["rates"]
@@ -322,60 +261,101 @@ function rate_builder(rate)
 
 end
 
+function change_rate(rates)
+	local data = _global.utils.subprocess({
+		["cancellable"] = false,
+		["args"] = {
+			[1] = _global.options["program"],
+			[2] = "change",
+			[3] = _global.options["monitor"],
+			[4] = rates
+		}
+	})
+	return tonumber(tostring(string.gsub(data.stdout:gsub('%W',''),"CurrentRefreshRate","")))
+end
+
+function check_rates(actual, computed)
+	for x in string.gmatch(actual,'([^;]+)')
+	do
+		if x==computed then
+			return true
+		end
+	end
+	return false
+end
+
+function possible_rate()
+	local data = _global.utils.subprocess({
+		["cancellable"] = false,
+		["args"] = {
+			[1] = _global.options["program"],
+			[2] = "list_possible",
+			[3] = _global.options["monitor"],
+		}
+	})
+	return tostring(data.stdout)
+end
+
+function current_rate()
+	local data = _global.utils.subprocess({
+		["cancellable"] = false,
+		["args"] = {
+			[1] = _global.options["program"],
+			[2] = "current",
+			[3] = _global.options["monitor"],
+		}
+	})
+	return tonumber(tostring(string.gsub(data.stdout:gsub('%W',''),"CurrentRefreshRate","")))
+end
+
 function start()
     mp.unobserve_property(start)
-	_global.item_count = _global.item_count + 1
-	_global.trigger_refreshFound = false
-    _global.temp = {}
-	_global.rateCache = {}
-	_global.speedCache = {}
-	if(_global.initial_start == false) then
-		_global.options["exitrate"] = math.floor(mp.get_property_native("display-fps"))
-		_global.initial_start = true
-		mp.msg.info("Saving Exit Refresh Rate -: " .. tostring(_global.options["exitrate"]))
-	end
-	_global.temp["initial_drr"] = math.floor(mp.get_property_native("display-fps"))
-    if not (_global.temp["initial_drr"]) then
-        return
-    end
-    _global.temp["drr"] = _global.temp["initial_drr"]
-    if not (_global.confSpeed) then
-        _global.confSpeed = mp.get_property_native("speed")
-    end
-    local test = mp.get_property("container-fps")
-    if (test == nil or test == "nil property unavailable") then
-        if (_global.options["estfps"] ~= true) then
-            return
-        end
-        test = mp.get_property("estimated-vf-fps")
-        if (test == nil or test == "nil property unavailable") then
-            return
-        end
-        mp.observe_property("estimated-vf-fps", "number", main)
-    else
-        mp.observe_property("container-fps", "number", main)
-    end
-    mp.add_key_binding(_global.options["osdkey"], mp.get_script_name(), osdEcho, {repeatable=true})
-    if (_global.options["enabled"] == true and _global.options["exitrate"] > 0) then
-        function revertDrr()
-			mp.msg.info("Reverting Refresh To -: " .. tostring(_global.options["exitrate"]))
-            _global.utils.subprocess({
-                ["cancellable"] = false,
-                ["args"] = {
-                    [1] = _global.options["program"],
-                    [2] = "setdisplay",
-                    [3] = "monitor:" .. _global.options["monitor"],
-                    [4] = _global.options["dwidth"],
-                    [5] = _global.options["dheight"],
-                    [6] = _global.options["bdepth"],
-                    [7] = _global.options["exitrate"]
-                }
-            })
-        end
-		if(_global.item_count == 1) then 
-			mp.register_event("shutdown", revertDrr)
+	_global.options["monitor"] = mp.get_property("display-names")
+	mp.msg.info(_global.options["monitor"])
+	_global.temp = {}
+	_global.temp["initial_drr"] = current_rate()
+	mp.msg.info("Current Refresh Rate -: " .. tostring(_global.temp["initial_drr"]))
+	if (_global.options["enabled"] == true) then
+		mp.msg.info("Refresh Ajustment Script Enabled")
+		_global.item_count = _global.item_count + 1
+		_global.trigger_refreshFound = false
+		_global.rateCache = {}
+		_global.speedCache = {}
+		if(_global.initial_start == false) then
+			_global.options["exitrate"] = _global.temp["initial_drr"]
+			_global.initial_start = true
+			mp.msg.info("Saving Exit Refresh Rate -: " .. tostring(_global.options["exitrate"]))
 		end
-    end
+		if not (_global.temp["initial_drr"]) then
+			return
+		end
+		_global.temp["drr"] = _global.temp["initial_drr"]
+		if not (_global.confSpeed) then
+			_global.confSpeed = mp.get_property_native("speed")
+		end
+		local test = mp.get_property("container-fps")
+		if (test == nil or test == "nil property unavailable") then
+			if (_global.options["estfps"] ~= true) then
+				return
+			end
+			test = mp.get_property("estimated-vf-fps")
+			if (test == nil or test == "nil property unavailable") then
+				return
+			end
+			mp.observe_property("estimated-vf-fps", "number", main)
+		else
+			mp.observe_property("container-fps", "number", main)
+		end
+		mp.add_key_binding(_global.options["osdkey"], mp.get_script_name(), osdEcho, {repeatable=true})
+		if (_global.options["enabled"] == true and _global.options["exitrate"] > 0) then
+			function revertDrr()
+				mp.msg.info("Reverting Refresh To -: " .. tostring(change_rate(_global.options["exitrate"])))
+			end
+			if(_global.item_count == 1) then 
+				mp.register_event("shutdown", revertDrr)
+			end
+		end
+	end 
 end
 
 -- Wait until we get a video fps.

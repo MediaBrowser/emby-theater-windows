@@ -208,7 +208,11 @@ end
 
 function findRefreshRate(fps)
     -- This is to prevent a system call if the screen refresh / video fps has not changed.
-    if (math.floor(fps) == _global.lastDrr or _global.temp["rates_internal"] == "") then
+    if (math.floor(fps) == _global.lastDrr) then
+		mp.msg.info("Current Refresh Rate -: No Switch (Match)")
+		return
+	elseif (_global.temp["rates_internal"] == "") then
+		mp.msg.info("Current Refresh Rate -: No Switch (No Request)")
         return
 	else
 		setRate(_global.temp["rates_internal"])
@@ -224,7 +228,6 @@ function setRate(rate)
 	end
 
 	local new_rate = change_rate(rate)
-	mp.msg.info("Current Refresh Rate -: " .. tostring(new_rate))		
 	
 	if (_global.options["spause"] > 0 and paused == "yes") then
 		mp.msg.info("Pausing Playback for " .. tostring(_global.options["spause"]) .. " second(s)")
@@ -237,10 +240,10 @@ function setRate(rate)
 end
 
 function rate_builder(rate)
+	local actual_rates = possible_rate()
+	mp.msg.info("Possible Refresh Rates (Actual) -: " .. actual_rates)
+	local rates_table = {}
 	if(_global.options["rates"] == "") then
-		local actual_rates = possible_rate()
-		mp.msg.info("Possible Refresh Rates (Actual) -: " .. actual_rates)
-		local rates_table = {}
 		if check_rates(actual_rates, tostring(math.floor(rate))) then table.insert(rates_table, tostring(math.floor(rate))) end
 		if check_rates(actual_rates, tostring(math.ceil(rate))) then table.insert(rates_table, tostring(math.ceil(rate))) end
 		if check_rates(actual_rates, tostring(math.floor(rate) + math.ceil(rate))) then table.insert(rates_table, tostring(math.floor(rate) + math.ceil(rate))) end
@@ -252,11 +255,15 @@ function rate_builder(rate)
 			end
 		end
 		mp.msg.info("Possible Refresh Rates (Computed) -: " .. table.concat(rates_table, ";"))
-		
 		return table.concat(rates_table, ";")
 	else
-		mp.msg.info("Possible Refresh Rates (User) -: " .. _global.options["rates"])
-		return _global.options["rates"]
+		mp.msg.info("Provided Refresh Rates (User) -: " .. _global.options["rates"])
+		for x in string.gmatch(_global.options["rates"],'([^;]+)')
+		do
+			if check_rates(actual_rates, tostring(math.floor(x))) then table.insert(rates_table, tostring(math.floor(x))) end
+		end
+		mp.msg.info("Possible Refresh Rates (User) -: " .. table.concat(rates_table, ";"))
+		return table.concat(rates_table, ";")
 	end
 
 end
@@ -271,6 +278,7 @@ function change_rate(rates)
 			[4] = rates
 		}
 	})
+	mp.msg.info(tostring(data.stdout))
 	return tonumber(tostring(string.gsub(data.stdout:gsub('%W',''),"CurrentRefreshRate","")))
 end
 
@@ -285,6 +293,7 @@ function check_rates(actual, computed)
 end
 
 function possible_rate()
+	mp.msg.info("Querying Supported Refresh Rates...")
 	local data = _global.utils.subprocess({
 		["cancellable"] = false,
 		["args"] = {
@@ -297,6 +306,7 @@ function possible_rate()
 end
 
 function current_rate()
+	mp.msg.info("Querying Refresh Rate...")
 	local data = _global.utils.subprocess({
 		["cancellable"] = false,
 		["args"] = {
@@ -305,6 +315,7 @@ function current_rate()
 			[3] = _global.options["monitor"],
 		}
 	})
+	mp.msg.info(tostring(data.stdout))
 	return tonumber(tostring(string.gsub(data.stdout:gsub('%W',''),"CurrentRefreshRate","")))
 end
 
@@ -314,7 +325,6 @@ function start()
 	mp.msg.info(_global.options["monitor"])
 	_global.temp = {}
 	_global.temp["initial_drr"] = current_rate()
-	mp.msg.info("Current Refresh Rate -: " .. tostring(_global.temp["initial_drr"]))
 	if (_global.options["enabled"] == true) then
 		mp.msg.info("Refresh Ajustment Script Enabled")
 		_global.item_count = _global.item_count + 1
@@ -349,7 +359,8 @@ function start()
 		mp.add_key_binding(_global.options["osdkey"], mp.get_script_name(), osdEcho, {repeatable=true})
 		if (_global.options["enabled"] == true and _global.options["exitrate"] > 0) then
 			function revertDrr()
-				mp.msg.info("Reverting Refresh To -: " .. tostring(change_rate(_global.options["exitrate"])))
+				mp.msg.info("Reverting Refresh To -: " .. tostring(_global.options["exitrate"]))
+				change_rate(_global.options["exitrate"])
 			end
 			if(_global.item_count == 1) then 
 				mp.register_event("shutdown", revertDrr)

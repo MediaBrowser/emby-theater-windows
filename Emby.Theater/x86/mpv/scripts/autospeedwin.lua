@@ -89,11 +89,8 @@ function getOptions()
         ["speed"]     = false,
         ["program"]   = "refreshrate",
         ["monitor"]   = 0,
-        ["dwidth"]    = 1920,
-        ["dheight"]   = 1080,
-        ["bdepth"]    = 32,
         ["rates"]     = "",
-        ["exitrate"]  = 0,
+		["exitrate"]     = 0,
         ["minspeed"]  = 0.9,
         ["maxspeed"]  = 1.1,
         ["osd"]       = false,
@@ -103,13 +100,14 @@ function getOptions()
 		["skipmultiples"]    = false,
         ["spause"]    = 3,
 		["method"]	  = "once",
+		["theme"] = false,
     }
     for key, value in pairs(_global.options) do
         local opt = mp.get_opt("autospeed-" .. key)
         if (opt ~= nil) then
-            if ((key == "enabled" or key == "speed" or key == "skipmultiples" or key == "osd" or key == "estfps") and opt == "true") then
+            if ((key == "enabled" or key == "speed" or key == "skipmultiples" or key == "osd" or key == "estfps" or key == "theme") and opt == "true") then
                 _global.options[key] = true
-            elseif (key == "minspeed" or key == "maxspeed" or key == "osdtime" --[[or key == "monitor"--]] or key == "dwidth" or key == "dheight" or key == "bdepth" or key == "exitrate" or key == "spause") then
+            elseif (key == "minspeed" or key == "maxspeed" or key == "osdtime" --[[or key == "monitor"--]] or key == "spause") then
                 local test = tonumber(opt)
                 if (test ~= nil) then
                     _global.options[key] = test
@@ -322,12 +320,13 @@ end
 function start()
     mp.unobserve_property(start)
 	_global.options["monitor"] = mp.get_property("display-names")
-	mp.msg.info(_global.options["monitor"])
+	mp.msg.info(_global.options["monitor"])	
 	_global.temp = {}
+	_global.item_count = _global.item_count + 1
 	_global.temp["initial_drr"] = current_rate()
-	if (_global.options["enabled"] == true) then
+	if(_global.options["theme"] == true and _global.item_count == 1) then mp.msg.info("Looks like theme video, skipping refresh switch") end
+	if (_global.options["enabled"] == true and (_global.options["theme"] == false or (_global.options["theme"] == true and _global.item_count > 1))) then
 		mp.msg.info("Refresh Ajustment Script Enabled")
-		_global.item_count = _global.item_count + 1
 		_global.trigger_refreshFound = false
 		_global.rateCache = {}
 		_global.speedCache = {}

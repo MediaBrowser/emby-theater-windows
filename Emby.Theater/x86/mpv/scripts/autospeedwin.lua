@@ -334,6 +334,15 @@ function start()
 			_global.options["exitrate"] = _global.temp["initial_drr"]
 			_global.initial_start = true
 			mp.msg.info("Saving Exit Refresh Rate -: " .. tostring(_global.options["exitrate"]))
+			if (_global.options["enabled"] == true and _global.options["exitrate"] > 0) then
+				function revertDrr()
+					mp.msg.info("Reverting Refresh To -: " .. tostring(_global.options["exitrate"]))
+					change_rate(_global.options["exitrate"])
+				end
+				if(_global.item_count == 1) then 
+					mp.register_event("shutdown", revertDrr)
+				end
+			end
 		end
 		if not (_global.temp["initial_drr"]) then
 			return
@@ -356,15 +365,6 @@ function start()
 			mp.observe_property("container-fps", "number", main)
 		end
 		mp.add_key_binding(_global.options["osdkey"], mp.get_script_name(), osdEcho, {repeatable=true})
-		if (_global.options["enabled"] == true and _global.options["exitrate"] > 0) then
-			function revertDrr()
-				mp.msg.info("Reverting Refresh To -: " .. tostring(_global.options["exitrate"]))
-				change_rate(_global.options["exitrate"])
-			end
-			if(_global.item_count == 1) then 
-				mp.register_event("shutdown", revertDrr)
-			end
-		end
 	end 
 end
 

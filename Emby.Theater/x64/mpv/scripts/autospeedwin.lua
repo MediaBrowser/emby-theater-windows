@@ -339,9 +339,7 @@ function start()
 					mp.msg.info("Reverting Refresh To -: " .. tostring(_global.options["exitrate"]))
 					change_rate(_global.options["exitrate"])
 				end
-				if(_global.item_count == 1) then 
-					mp.register_event("shutdown", revertDrr)
-				end
+				mp.register_event("shutdown", revertDrr)
 			end
 		end
 		if not (_global.temp["initial_drr"]) then

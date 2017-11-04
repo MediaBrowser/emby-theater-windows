@@ -42,7 +42,7 @@ end
 
 function getOptions()
     _global.options = {
-        ["enabled"]    = true,
+        ["enabled"]    = false,
         ["program"]   = "refreshrate",
         ["monitor"]   = 0,
         ["rates"]     = "",

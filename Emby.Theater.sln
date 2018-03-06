@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emby.Theater", "Emby.Theater\Emby.Theater.csproj", "{3D8F6D3F-9F2F-4F89-A5FF-604186F6A920}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emby.Theater.DirectShow", "Emby.Theater.DirectShow\Emby.Theater.DirectShow.csproj", "{F9D197A5-FA0F-4BBC-9020-F707879B8B30}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emby.Theater.RefreshRate", "Emby.Theater.RefreshRate\Emby.Theater.RefreshRate.csproj", "{E2328411-0308-436D-8939-2F833DEE6348}"
 EndProject
@@ -31,18 +29,6 @@ Global
 		{3D8F6D3F-9F2F-4F89-A5FF-604186F6A920}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{3D8F6D3F-9F2F-4F89-A5FF-604186F6A920}.Release|x86.ActiveCfg = Release|Any CPU
 		{3D8F6D3F-9F2F-4F89-A5FF-604186F6A920}.Release|x86.Build.0 = Release|Any CPU
-		{F9D197A5-FA0F-4BBC-9020-F707879B8B30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F9D197A5-FA0F-4BBC-9020-F707879B8B30}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F9D197A5-FA0F-4BBC-9020-F707879B8B30}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{F9D197A5-FA0F-4BBC-9020-F707879B8B30}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{F9D197A5-FA0F-4BBC-9020-F707879B8B30}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F9D197A5-FA0F-4BBC-9020-F707879B8B30}.Debug|x86.Build.0 = Debug|Any CPU
-		{F9D197A5-FA0F-4BBC-9020-F707879B8B30}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F9D197A5-FA0F-4BBC-9020-F707879B8B30}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F9D197A5-FA0F-4BBC-9020-F707879B8B30}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{F9D197A5-FA0F-4BBC-9020-F707879B8B30}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{F9D197A5-FA0F-4BBC-9020-F707879B8B30}.Release|x86.ActiveCfg = Release|Any CPU
-		{F9D197A5-FA0F-4BBC-9020-F707879B8B30}.Release|x86.Build.0 = Release|Any CPU
 		{E2328411-0308-436D-8939-2F833DEE6348}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E2328411-0308-436D-8939-2F833DEE6348}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2328411-0308-436D-8939-2F833DEE6348}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

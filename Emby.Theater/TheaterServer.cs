@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using Emby.Theater.App;
 using Emby.Theater.Configuration;
-using Emby.Theater.DirectShowPlayer;
-using MediaBrowser.Common;
 using MediaBrowser.Model.Logging;
 using SocketHttpListener.Net;
 
@@ -22,7 +20,6 @@ namespace Emby.Theater
         private readonly ITheaterConfigurationManager _config;
 
         private HttpListener _listener;
-        private DirectShowPlayerBridge _dsPlayerBridge;
         private readonly ApplicationHost _appHost;
 
         public TheaterServer(ILogger logger, ApplicationHost appHost)
@@ -51,10 +48,6 @@ namespace Emby.Theater
 
             listener.Start();
             _listener = listener;
-
-            _dsPlayerBridge = new DirectShowPlayerBridge(_appHost.LogManager, _config.CommonApplicationPaths,
-                _appHost.GetIsoManager(), _appHost.GetZipClient(), _appHost.GetHttpClient(), _config,
-                _appHost.JsonSerializer, context);
         }
 
         private void ProcessContext(HttpListenerContext context)
@@ -90,26 +83,7 @@ namespace Emby.Theater
 
             try
             {
-                if (string.Equals(localPath, "windowstate-maximized", StringComparison.OrdinalIgnoreCase))
-                {
-                    _dsPlayerBridge.HandleWindowSizeChanged();
-                }
-                else if (string.Equals(localPath, "windowstate-normal", StringComparison.OrdinalIgnoreCase))
-                {
-                    _dsPlayerBridge.HandleWindowSizeChanged();
-                }
-                else if (string.Equals(localPath, "windowstate-minimized", StringComparison.OrdinalIgnoreCase))
-                {
-                }
-                else if (string.Equals(localPath, "windowstate-fullscreen", StringComparison.OrdinalIgnoreCase))
-                {
-                    _dsPlayerBridge.HandleWindowSizeChanged();
-                }
-                else if (string.Equals(localPath, "windowsize", StringComparison.OrdinalIgnoreCase))
-                {
-                    _dsPlayerBridge.HandleWindowSizeChanged();
-                }
-                else if (string.Equals(localPath, "runatstartup-true", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(localPath, "runatstartup-true", StringComparison.OrdinalIgnoreCase))
                 {
                     if (!_config.Configuration.RunAtStartup)
                     {
@@ -124,10 +98,6 @@ namespace Emby.Theater
                         _config.Configuration.RunAtStartup = false;
                         _config.SaveConfiguration();
                     }
-                }
-                else if (localPath.StartsWith("directshowplayer", StringComparison.OrdinalIgnoreCase))
-                {
-                    _dsPlayerBridge.ProcessRequest(context, localPath);
                 }
                 else if (localPath.StartsWith("fileexists", StringComparison.OrdinalIgnoreCase))
                 {
@@ -150,19 +120,6 @@ namespace Emby.Theater
                         context.Response.ContentLength64 = bytes.Length;
                         context.Response.OutputStream.Write(bytes, 0, bytes.Length);
                     }
-                }
-                else if (localPath.StartsWith("mediafilterinfo", StringComparison.OrdinalIgnoreCase))
-                {
-                    using (var reader = new StreamReader(context.Request.InputStream))
-                    {
-                        var bytes = Encoding.UTF8.GetBytes(_dsPlayerBridge.MediaFilterPath);
-                        context.Response.ContentLength64 = bytes.Length;
-                        context.Response.OutputStream.Write(bytes, 0, bytes.Length);
-                    }
-                }
-                else if (localPath.StartsWith("openmadvr", StringComparison.OrdinalIgnoreCase))
-                {
-                    System.Diagnostics.Process.Start(Path.Combine(_dsPlayerBridge.MediaFilterPath, "madVR"));
                 }
             }
             finally

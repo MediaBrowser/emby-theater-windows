@@ -26,8 +26,6 @@
         });
     }
 
-    require(['css!electronfile://windowstyle']);
-
     return {
         fileExists: function (path) {
             return exits('fileexists', path);

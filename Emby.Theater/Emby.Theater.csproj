@@ -407,6 +407,7 @@
     </Content>
     <Content Include="..\..\Emby.Theater.Electron\wakeonlan\wakeonlan.js">
       <Link>electronapp\wakeonlan\wakeonlan.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\ThirdParty\cec\cec-client.exe">
       <Link>cec\cec-client.exe</Link>

@@ -82,21 +82,21 @@ namespace Emby.Theater.App
 
             //process.WaitForInputIdle(3000);
 
-            while (process.MainWindowHandle.Equals(IntPtr.Zero))
-            {
-                var task = Task.Delay(50);
-                Task.WaitAll(task);
-            }
+            //while (process.MainWindowHandle.Equals(IntPtr.Zero))
+            //{
+            //    var task = Task.Delay(50);
+            //    Task.WaitAll(task);
+            //}
 
-            try
-            {
-                Task.WaitAll(Task.Delay(2000));
-                Win32.SendMessage(process.MainWindowHandle.ToInt32(), Win32.WM_LBUTTONDOWN, 0x00000001, 0x1E5025B);
-            }
-            catch
-            {
+            //try
+            //{
+            //    Task.WaitAll(Task.Delay(2000));
+            //    Win32.SendMessage(process.MainWindowHandle.ToInt32(), Win32.WM_LBUTTONDOWN, 0x00000001, 0x1E5025B);
+            //}
+            //catch
+            //{
 
-            }
+            //}
         }
 
         private void Process_Exited(object sender, EventArgs e)

@@ -191,6 +191,10 @@
       <Link>electronapp\plugins\mpvplayer\strings\it.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\lt-LT.json">
+      <Link>electronapp\plugins\mpvplayer\strings\lt-LT.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\nl.json">
       <Link>electronapp\plugins\mpvplayer\strings\nl.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -213,6 +217,10 @@
     </None>
     <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\sv.json">
       <Link>electronapp\plugins\mpvplayer\strings\sv.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Emby.Theater.Electron\plugins\mpvplayer\strings\zh-CN.json">
+      <Link>electronapp\plugins\mpvplayer\strings\zh-CN.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="app.manifest" />

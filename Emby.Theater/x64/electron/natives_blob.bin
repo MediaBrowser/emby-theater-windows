@@ -1443,7 +1443,7 @@ getReadableStreamController,
 getReadableStreamStoredError,
 });
 });
-8WritableStreamv¥
+8WritableStreamº£
 (function(global, binding, v8) {
 'use strict';
 const _abortAlgorithm = v8.createPrivateSymbol('[[abortAlgorithm]]');
@@ -1523,7 +1523,6 @@ const verbUsedToGetTheDesiredSize = 'used to get the desiredSize';
 const verbAborted = 'aborted';
 const verbClosed = 'closed';
 const verbWrittenTo = 'written to';
-let useCounted = false;
 function createWriterLockReleasedError(verb) {
 return new TypeError(errWriterLockReleasedPrefix + verb);
 }
@@ -1540,10 +1539,6 @@ queue.forEach(promise => rejectPromise(promise, e));
 }
 class WritableStream {
 constructor(underlyingSink = {}, strategy = {}) {
-if (!useCounted) {
-binding.countUse('WritableStreamConstructor');
-useCounted = true;
-}
 InitializeWritableStream(this);
 const size = strategy.size;
 let highWaterMark = strategy.highWaterMark;
@@ -2234,7 +2229,7 @@ getWritableStreamController,
 WritableStreamDefaultControllerClose,
 });
 });
-<TransformStreamMË
+<TransformStreamË
 (function(global, binding, v8) {
 'use strict';
 const _backpressure = v8.createPrivateSymbol('[[backpressure]]');
@@ -2486,7 +2481,8 @@ const readableController =
 binding.getReadableStreamController(stream[_readable]);
 if (!binding.ReadableStreamDefaultControllerCanCloseOrEnqueue(
 readableController)) {
-throw binding.getReadableStreamEnqueueError(stream[_readable]);
+throw binding.getReadableStreamEnqueueError(stream[_readable],
+readableController);
 }
 try {
 binding.ReadableStreamDefaultControllerEnqueue(readableController, chunk);

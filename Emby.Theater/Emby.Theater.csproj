@@ -298,18 +298,18 @@
     <Content Include="electronapp\libmpv\x64\RefreshRate.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="electronapp\libmpv\x86\mpv-1.dll">
+    <Content Include="electronapp\libmpv\ia32\mpv-1.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\Emby.Theater.Electron\libmpv\x64\mpv-win32-x64.node">
       <Link>electronapp\libmpv\x64\mpv-win32-x64.node</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\libmpv\x86\mpv-win32-x86.node">
-      <Link>electronapp\libmpv\x86\mpv-win32-x86.node</Link>
+    <Content Include="..\..\Emby.Theater.Electron\libmpv\ia32\mpv-win32-ia32.node">
+      <Link>electronapp\libmpv\ia32\mpv-win32-ia32.node</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="electronapp\libmpv\x86\RefreshRate.exe">
+    <Content Include="electronapp\libmpv\ia32\RefreshRate.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="electronapp\scripts\windowsync.js">

@@ -159,7 +159,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="..\..\Emby.Theater.Electron\package.json">
+    <None Include="..\..\emby-theater-electron\package.json">
       <Link>electronapp\package.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -185,71 +185,71 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\Emby.Theater.Electron\apphost.js">
+    <Content Include="..\..\emby-theater-electron\apphost.js">
       <Link>electronapp\apphost.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\cec\cec.js">
+    <Content Include="..\..\emby-theater-electron\cec\cec.js">
       <Link>electronapp\cec\cec.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\cec\command-map.js">
+    <Content Include="..\..\emby-theater-electron\cec\command-map.js">
       <Link>electronapp\cec\command-map.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\fullscreenmanager.js">
+    <Content Include="..\..\emby-theater-electron\fullscreenmanager.js">
       <Link>electronapp\fullscreenmanager.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\icon.ico">
+    <Content Include="..\..\emby-theater-electron\icon.ico">
       <Link>electronapp\icon.ico</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\logowhite.png">
+    <Content Include="..\..\emby-theater-electron\logowhite.png">
       <Link>electronapp\logowhite.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\main.js">
+    <Content Include="..\..\emby-theater-electron\main.js">
       <Link>electronapp\main.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\node_modules\**\*.*">
+    <Content Include="..\..\emby-theater-electron\node_modules\**\*.*">
       <Link>electronapp\node_modules\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\plugins\**\*.*">
+    <Content Include="..\..\emby-theater-electron\plugins\**\*.*">
       <Link>electronapp\plugins\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\scripts\appclose.js">
+    <Content Include="..\..\emby-theater-electron\scripts\appclose.js">
       <Link>electronapp\scripts\appclose.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\scripts\videohandler.js">
+    <Content Include="..\..\emby-theater-electron\scripts\videohandler.js">
       <Link>electronapp\scripts\videohandler.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\serverdiscovery\serverdiscovery-native.js">
+    <Content Include="..\..\emby-theater-electron\serverdiscovery\serverdiscovery-native.js">
       <Link>electronapp\serverdiscovery\serverdiscovery-native.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\serverdiscovery\serverdiscovery.js">
+    <Content Include="..\..\emby-theater-electron\serverdiscovery\serverdiscovery.js">
       <Link>electronapp\serverdiscovery\serverdiscovery.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\shell.js">
+    <Content Include="..\..\emby-theater-electron\shell.js">
       <Link>electronapp\shell.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\splash.html">
+    <Content Include="..\..\emby-theater-electron\splash.html">
       <Link>electronapp\splash.html</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\wakeonlan\wakeonlan.js">
+    <Content Include="..\..\emby-theater-electron\wakeonlan\wakeonlan.js">
       <Link>electronapp\wakeonlan\wakeonlan.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\wakeonlan\wakeonlan-native.js">
+    <Content Include="..\..\emby-theater-electron\wakeonlan\wakeonlan-native.js">
       <Link>electronapp\wakeonlan\wakeonlan-native.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -297,11 +297,11 @@
     <Content Include="electronapp\libmpv\ia32\mpv-1.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\libmpv\x64\mpv-win32-x64.node">
+    <Content Include="..\..\emby-theater-electron\libmpv\x64\mpv-win32-x64.node">
       <Link>electronapp\libmpv\x64\mpv-win32-x64.node</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Emby.Theater.Electron\libmpv\ia32\mpv-win32-ia32.node">
+    <Content Include="..\..\emby-theater-electron\libmpv\ia32\mpv-win32-ia32.node">
       <Link>electronapp\libmpv\ia32\mpv-win32-ia32.node</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

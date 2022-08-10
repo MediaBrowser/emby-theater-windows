@@ -1,7 +1,13 @@
 ﻿define([], function () {
     'use strict';
 
-    function exits(endpoint, path) {
+    function exists(endpoint, path) {
+
+        // we're doing a windows file system call which will not work with an nfs path
+        if (path.indexOf('://') !== -1) {
+            return Promise.reject();
+        }
+
         return new Promise(function (resolve, reject) {
 
             var xhr = new XMLHttpRequest();
@@ -28,10 +34,10 @@
 
     return {
         fileExists: function (path) {
-            return exits('fileexists', path);
+            return exists('fileexists', path);
         },
         directoryExists: function (path) {
-            return exits('directoryexists', path);
+            return exists('directoryexists', path);
         }
     };
 });

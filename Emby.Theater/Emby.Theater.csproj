@@ -253,6 +253,14 @@
       <Link>electronapp\wakeonlan\wakeonlan-native.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\Emby.Binaries\mpv\win-x64\mpv-2.dll">
+      <Link>electronapp\libmpv\x64\mpv-1.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Emby.Binaries\mpv\win-x86\mpv-2.dll">
+      <Link>electronapp\libmpv\ia32\mpv-1.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\ThirdParty\cec\cec-client.exe">
       <Link>cec\cec-client.exe</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -288,13 +296,7 @@
     <Content Include="electronapp\filesystem.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="electronapp\libmpv\x64\mpv-1.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="electronapp\libmpv\x64\RefreshRate.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="electronapp\libmpv\ia32\mpv-1.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\emby-theater-electron\libmpv\x64\mpv-win32-x64.node">

@@ -1,0 +1,4 @@
+[submodule "Emby.Binaries"]
+	path = Emby.Binaries
+	url = https://github.com/MediaBrowser/Emby.Binaries.git
+	branch = main

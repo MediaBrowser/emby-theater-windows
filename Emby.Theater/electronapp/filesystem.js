@@ -10,25 +10,23 @@
 
         return new Promise(function (resolve, reject) {
 
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'http://localhost:8154/' + endpoint, true);
-            xhr.onload = function () {
-                if (this.response == 'true') {
-                    resolve();
-                } else {
-                    reject();
-                }
-            };
-
             try {
-                //xhr.setRequestHeader('Content-Length', path.length);
-            } catch (err) {
-                //console.log(err);
-            }
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'http://localhost:8154/' + endpoint, true);
+                xhr.onload = function () {
+                    if (this.response == 'true') {
+                        resolve();
+                    } else {
+                        reject();
+                    }
+                };
 
-            xhr.setRequestHeader('Content-Type', 'text/plain');
-            xhr.onerror = reject;
-            xhr.send(path);
+                xhr.setRequestHeader('Content-Type', 'text/plain');
+                xhr.onerror = reject;
+                xhr.send(path);
+            } catch (err) {
+                reject();
+            }
         });
     }
 

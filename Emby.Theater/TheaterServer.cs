@@ -104,8 +104,16 @@ namespace Emby.Theater
                     using (var reader = new StreamReader(context.Request.InputStream))
                     {
                         var path = reader.ReadToEnd();
-                        var exists = File.Exists(path);
-                        var bytes = Encoding.UTF8.GetBytes(exists.ToString().ToLower());
+                        bool exists = false;
+                        try
+                        {
+                            exists = File.Exists(path);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.ErrorException("Error checking File exists for {0}", ex, path);
+                        }
+                        var bytes = Encoding.UTF8.GetBytes(exists.ToString().ToLowerInvariant());
                         context.Response.ContentLength64 = bytes.Length;
                         context.Response.OutputStream.Write(bytes, 0, bytes.Length);
                     }
@@ -115,8 +123,16 @@ namespace Emby.Theater
                     using (var reader = new StreamReader(context.Request.InputStream))
                     {
                         var path = reader.ReadToEnd();
-                        var exists = Directory.Exists(path);
-                        var bytes = Encoding.UTF8.GetBytes(exists.ToString().ToLower());
+                        bool exists = false;
+                        try
+                        {
+                            exists = Directory.Exists(path);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.ErrorException("Error checking Directory exists for {0}", ex, path);
+                        }
+                        var bytes = Encoding.UTF8.GetBytes(exists.ToString().ToLowerInvariant());
                         context.Response.ContentLength64 = bytes.Length;
                         context.Response.OutputStream.Write(bytes, 0, bytes.Length);
                     }
